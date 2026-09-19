@@ -140,9 +140,13 @@ function pickLocation(name, inList) {
 }
 
 const engine = () => (localStorage.getItem(KEY_STORE) || proxyUrl()) ? 'claude' : 'local';
+window.addEventListener('tracker-account-changed', () => { lastScan = null; });
 
 async function handleReceipt(file) {
   if (!file) return;
+  if (document.querySelector('dialog[open]') || $('trackerContent').inert) return;
+  const owner = window.trackerAccount?.generation;
+  const receiptState = state;
   if (!activeBuckets().some(b => b.period !== 'unlimited')) { scanStatus('Pick your meal plan first so I know what buckets to charge.', 'error'); return; }
 
   $('scanLabel').classList.add('busy');
@@ -158,6 +162,7 @@ async function handleReceipt(file) {
       img = { dataUrl: r.dataUrl };
     }
     if (!r.is_receipt) { scanStatus("That doesn't look like a receipt. Try again with the whole receipt in frame.", 'error'); return; }
+    if (owner !== window.trackerAccount?.generation || receiptState !== state) return;
     const defs = school().buckets;
     const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100 }));
     if (!parts.length) { scanStatus(`Read "${r.location}" but couldn't find a meal-plan payment on it${r.notes ? ` (${r.notes})` : ''}. ${engine() === 'local' ? 'Try a sharper photo, or log it by hand below.' : 'Paid with card?'}`, 'error'); return; }
@@ -168,6 +173,7 @@ async function handleReceipt(file) {
     showScanResult(tx, r);
     scanStatus('');
   } catch (e) {
+    if (owner !== window.trackerAccount?.generation || receiptState !== state) return;
     if (e.message === 'NO_KEY') { openSettings(); scanStatus(''); return; }
     if (e.message === 'ABORT') { scanStatus(''); return; }
     console.error(e);

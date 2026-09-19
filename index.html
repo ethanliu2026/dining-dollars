@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=bbb3bfc">
+<link rel="stylesheet" href="style.css?v=df3e931-e7a8c5">
 </head>
 <body>
 <main>
@@ -14,7 +14,7 @@
       <h1>Meal Plan Tracker</h1>
       <p class="sub">Blocks, FLEX, Dining Dollars — log what you use, see where it goes, know your safe daily pace.</p>
     </div>
-    <div class="toolbar">
+    <div class="toolbar" id="dataTools">
       <button class="link" id="btnSample">Load sample data</button>
       <button class="link" id="btnExport">Export</button>
       <button class="link" id="btnImport">Import</button>
@@ -23,6 +23,24 @@
     </div>
   </header>
 
+  <section class="account-bar" aria-label="Your account">
+    <div class="account-copy">
+      <strong id="accountName">Your meal plan, wherever you go</strong>
+      <p id="accountStatus" role="status" aria-live="polite">Guest mode · saved on this device</p>
+    </div>
+    <div class="account-actions">
+      <button type="button" id="btnAccount">Sign in / Create account</button>
+      <button type="button" id="btnSyncRetry" hidden>Retry</button>
+      <button type="button" id="btnLoadCloud" hidden>Load cloud version</button>
+      <button type="button" id="btnSignOut" class="link" hidden>Sign out</button>
+    </div>
+  </section>
+  <div class="guest-transfer" id="guestTransfer" hidden>
+    <p>There’s a meal plan saved on this device. Copy it into this account to keep tracking it anywhere.</p>
+    <button type="button" id="btnCopyGuest">Copy device data to my account</button>
+  </div>
+
+  <div id="trackerContent">
   <nav class="tabs-nav" role="tablist" aria-label="Sections">
     <button role="tab" data-tab="home"><span class="ico">🏠</span>Home</button>
     <button role="tab" data-tab="setup"><span class="ico">⚙️</span>Setup</button>
@@ -235,6 +253,7 @@
   </div>
 
   <footer id="footer">Data stays in your browser.</footer>
+  </div>
 
 </main>
 
@@ -254,12 +273,57 @@
   </form>
 </dialog>
 
+<dialog id="accountDialog" aria-labelledby="authTitle" aria-describedby="authIntro">
+  <div class="account-form">
+    <div class="auth-heading">
+      <h2 id="authTitle">Welcome back</h2>
+      <button type="button" class="link" id="authClose" aria-label="Close account dialog">✕</button>
+    </div>
+    <p class="hint" id="authIntro">Sign in to save your meal plan and purchases across devices.</p>
+    <div class="auth-tabs" id="authTabs" aria-label="Account options">
+      <button type="button" id="authSignInTab" aria-pressed="true">Sign in</button>
+      <button type="button" id="authSignUpTab" aria-pressed="false">Create account</button>
+    </div>
+    <p id="authMessage" class="auth-message" role="status" aria-live="polite" hidden></p>
+    <form id="authForm">
+      <fieldset id="authFields">
+        <div id="authEmailField">
+          <label for="authEmail">Email address</label>
+          <input id="authEmail" type="email" autocomplete="username" placeholder="you@university.edu" required>
+        </div>
+        <div id="authPasswordField">
+          <label for="authPassword" id="authPasswordLabel">Password</label>
+          <input id="authPassword" type="password" autocomplete="current-password" required>
+        </div>
+        <div id="authConfirmField" hidden>
+          <label for="authConfirm">Confirm password</label>
+          <input id="authConfirm" type="password" autocomplete="new-password">
+        </div>
+        <p class="hint" id="authPasswordHint" hidden>Use at least 8 characters.</p>
+        <button type="submit" class="primary" id="authSubmit">Sign in</button>
+      </fieldset>
+    </form>
+    <button type="button" class="link" id="authForgot">Forgot password?</button>
+    <div id="authSocial">
+      <div class="auth-divider">or continue with</div>
+      <div class="auth-providers">
+        <button type="button" id="authGoogle">Google</button>
+        <button type="button" id="authMicrosoft">Microsoft</button>
+      </div>
+    </div>
+    <button type="button" class="link auth-guest" id="authGuest">Continue on this device</button>
+  </div>
+</dialog>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="plans.js?v=bbb3bfc"></script>
-<script src="schools.js?v=bbb3bfc"></script>
-<script src="app.js?v=bbb3bfc"></script>
-<script src="ocr.js?v=bbb3bfc"></script>
-<script src="receipt.js?v=bbb3bfc"></script>
-<script src="advisor.js?v=bbb3bfc"></script>
+<script src="auth-config.js?v=df3e931-e7a8c5"></script>
+<script src="account-store.js?v=df3e931-e7a8c5"></script>
+<script src="plans.js?v=df3e931-e7a8c5"></script>
+<script src="schools.js?v=df3e931-e7a8c5"></script>
+<script src="app.js?v=df3e931-e7a8c5"></script>
+<script src="ocr.js?v=df3e931-e7a8c5"></script>
+<script src="receipt.js?v=df3e931-e7a8c5"></script>
+<script src="advisor.js?v=df3e931-e7a8c5"></script>
+<script src="auth.js?v=df3e931-e7a8c5"></script>
 </body>
 </html>

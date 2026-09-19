@@ -38,8 +38,12 @@ const fmtRate = (b, n) => b.kind === 'money' ? `${fmt$(n)}/day` : `${fmtN(n, 1)}
 // ---------- state ----------
 let state = load();
 function load() {
-  let s = JSON.parse(localStorage.getItem(STORE) || 'null');
+  let s;
+  try { s = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch { s = null; }
   if (!s) s = migrateV2();
+  return normalizeState(s);
+}
+function normalizeState(s) {
   const sch = SCHOOLS[s?.school] || s?.school === OTHER_SCHOOL ? s.school : 'cmu';
   const dates = SCHOOLS[sch] || SCHOOLS.cmu;
   const base = { mode: 'log', school: sch, planId: CUSTOM, start: {}, current: {}, asOf: toISO(today()),
@@ -47,12 +51,14 @@ function load() {
                  eat: { weekends: true, breaks: false } };
   const st = { ...base, ...(s || {}), asOf: s?.asOf || base.asOf,
                custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) }, eat: { ...base.eat, ...(s?.eat || {}) } };
-  st.txns = st.txns.map(normalizeTx);
+  st.school = sch;
+  st.txns = (Array.isArray(st.txns) ? st.txns : []).map(normalizeTx);
   return st;
 }
 // Old single-balance data → put it in the school's money bucket.
 function migrateV2() {
-  const old = JSON.parse(localStorage.getItem('ddt.v2') || 'null');
+  let old;
+  try { old = JSON.parse(localStorage.getItem('ddt.v2') || 'null'); } catch { return null; }
   if (!old) return null;
   const key = old.school === 'pitt' ? 'dd' : 'flex';
   return {
@@ -62,7 +68,34 @@ function migrateV2() {
     txns: (old.txns || []).map(t => ({ ...t, bucket: key })),
   };
 }
-function save() { localStorage.setItem(STORE, JSON.stringify(state)); }
+function save() {
+  if (window.trackerAccount) { window.trackerAccount.save(state); return; }
+  localStorage.setItem(STORE, JSON.stringify(state));
+}
+
+// Replace the entire visible state when changing accounts; never merge identities.
+function replaceTrackerState(value) {
+  state = normalizeState(value);
+  $('schoolSearch').value = schoolLabel(state.school);
+  for (const id of ['semStart', 'semEnd', 'asOf']) $(id).value = state[id];
+  $('txForm').reset();
+  $('txDate').value = toISO(today());
+  $('txLocationOther').hidden = true;
+  $('txLocationOther').required = false;
+  $('splitFields').hidden = true;
+  $('btnSplit').hidden = false;
+  $('pasteText').value = '';
+  $('scanResult').hidden = true;
+  $('scanBody').replaceChildren();
+  $('scanStatus').hidden = true;
+  chartBalance?.destroy(); chartBalance = null;
+  chartPlaces?.destroy(); chartPlaces = null;
+  chartKey = null;
+  refreshSchool();
+  setMode(state.mode, false);
+  showTab(Object.values(state.start || {}).some(v => v > 0) || state.txns.length ? 'home' : 'setup', false);
+  window.dispatchEvent(new Event('tracker-account-changed'));
+}
 
 // A purchase can be paid from more than one bucket (a block for the meal + FLEX for the
 // extras). Older data had a single bucket/amount; fold it into parts.
@@ -174,8 +207,8 @@ const MODE_HINT = {
   log: 'Log each purchase to get a breakdown by restaurant and meal.',
   quick: 'Just type what you started with and what you have now.',
 };
-function setMode(m) {
-  state.mode = m; save();
+function setMode(m, persist = true) {
+  state.mode = m; if (persist) save();
   for (const b of document.querySelectorAll('.seg button')) b.setAttribute('aria-checked', b.dataset.mode === m);
   $('modeHint').textContent = MODE_HINT[m];
   $('quickFields').hidden = m !== 'quick';
@@ -845,11 +878,13 @@ $('btnExport').addEventListener('click', () => {
 $('btnImport').addEventListener('click', () => $('fileImport').click());
 $('fileImport').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
+  const owner = window.trackerAccount?.generation;
   try {
     const s = JSON.parse(await f.text());
+    if (owner !== window.trackerAccount?.generation) return;
     if (!Array.isArray(s.txns)) throw new Error('bad file');
     s.txns = s.txns.map(normalizeTx);
-    state = s; save(); location.reload();
+    replaceTrackerState(s); save();
   } catch { alert("That file doesn't look like a tracker export."); }
   e.target.value = '';
 });
@@ -870,7 +905,7 @@ document.addEventListener('click', e => { const g = e.target.closest('[data-goto
 
 // ---------- go ----------
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
-$('footer').innerHTML = `Data stays in your browser. Meal plan catalogs for ${Object.keys(PLANS).length} schools, each linked to its official source in the plan picker. Semester dates are defaults — check them in “Semester dates”.`;
+$('footer').innerHTML = `Guest data stays in your browser; signed-in data is saved to your account. Meal plan catalogs for ${Object.keys(PLANS).length} schools, each linked to its official source in the plan picker. Semester dates are defaults — check them in “Semester dates”.`;
 $('customSchool').hidden = state.school !== OTHER_SCHOOL;
 if (state.school === OTHER_SCHOOL) renderCustomEditor();
 fillPlans();
