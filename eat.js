@@ -63,9 +63,10 @@ function decide() {
     const bv = blockValueAt(name);
     const blocksOk = takesBlocks(name);
     if (pay === 'blocks') {
-      if (anyBlockKnown && !blocksOk) return null;
+      // Known block places first; others still allowed (most spots sell a block meal), just flagged.
       if (bv) { const ratio = bv.value / (uv?.value || bv.value); score += (ratio - 1) * 6 + 2; why.push(`A block buys ${fmt$(bv.value)} here${ratio >= 1.05 ? ' — great value' : ratio < 0.85 ? ' — a bit low' : ''}`); }
-      else if (blocksOk) { score += 1; why.push('Takes blocks'); }
+      else if (blocksOk) { score += 1.5; why.push('Takes blocks'); }
+      else if (anyBlockKnown) { score -= 1; flags.push('check that they offer a block meal'); }
     } else if (pay === 'money' && bv && uv && bv.value < uv.value - 1) { score += 1; why.push(`Better paid with ${moneyB?.label || 'dollars'} here (block only covers ${fmt$(bv.value)})`); }
     else if (pay === 'either' && bv && uv) { const ratio = bv.value / uv.value; if (ratio >= 1.05) { score += 2; why.push(`Use a block: it buys ${fmt$(bv.value)} here`); } else if (ratio < 0.85 && moneyB) why.push(`Pay ${moneyB.label} here; a block only covers ${fmt$(bv.value)}`); }
     const since = daysSinceVisit(name);
@@ -79,9 +80,12 @@ function decide() {
   }).filter(Boolean);
 
   scored.sort((a, b) => b.score - a.score);
-  // rotate: don't repeat what was just shown
-  const fresh = scored.filter(p => !lastPicks.includes(p.name));
-  const picks = (fresh.length >= 3 ? fresh : scored).slice(0, 3);
+  // "Not feeling it": never repeat the last top pick; avoid the last three when the pool allows
+  const lastTop = lastPicks[0];
+  let pool = scored.filter(p => !lastPicks.includes(p.name));
+  if (pool.length < 3) pool = scored.filter(p => p.name !== lastTop);
+  if (!pool.length) pool = scored;
+  const picks = pool.slice(0, 3);
   lastPicks = picks.map(p => p.name);
   return { picks, pay, openKnown: !!LIVE, total: scored.length };
 }
@@ -110,7 +114,7 @@ function renderPick(result) {
       </div>
     </div>
     ${alts.length ? `<div class="alts">Also good: ${alts.map(a => `<button type="button" class="link alt" data-alt="${esc(a.name)}">${esc(a.name)}</button>`).join(' · ')}</div>` : ''}
-    <p class="hint">Paying with ${pay === 'blocks' ? (countB?.label || 'blocks') : pay === 'money' ? 'dollars' : 'whatever fits'}${pay !== eatState().pay && eatState().pay === 'auto' ? ' (auto — based on your balances)' : ''}. ${openKnown ? 'Hours, ratings and specials are live.' : 'No live hours for this school, so "open now" is skipped.'} ${total} places considered.</p>`;
+    <p class="hint">Paying with ${pay === 'blocks' ? (countB?.label || 'blocks') : pay === 'money' ? 'dollars' : 'whatever fits'}${pay !== eatState().pay && eatState().pay === 'auto' ? ' (auto — based on your balances)' : ''}. ${openKnown ? 'Hours, ratings and specials are live.' : 'No live hours for this school, so "open now" is skipped.'} ${total} place${total === 1 ? '' : 's'} considered${total <= 3 && openKnown && eatState().openOnly ? ' — few are open right now; untick "Open right now" for more' : ''}.</p>`;
   $('eatAgain').addEventListener('click', () => renderPick());
   $('eatLog').addEventListener('click', () => {
     const sel = $('txLocation');
