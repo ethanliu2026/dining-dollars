@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=8bb1931-09677f">
+<link rel="stylesheet" href="style.css?v=4d9beed-a50c79">
 </head>
 <body>
 <main>
@@ -52,30 +52,31 @@
       <section class="card" id="logCard">
         <h2>Log a purchase</h2>
         <div id="scanCard">
-        <label class="scan-btn" id="scanLabel">
-          <input id="receiptFile" type="file" accept="image/*" capture="environment" hidden>
-          <span class="ico">📷</span>
-          <span><b>Take a photo of your receipt</b><br><small>Logged automatically — check it, undo or edit.</small></span>
-        </label>
-        <div id="scanStatus" class="scan-status" hidden></div>
-        <div id="scanResult" class="scan-result" hidden>
-          <div class="scan-head">
-            <span class="scan-tag" id="scanTag">Logged</span>
-            <span class="scan-where" id="scanWhere"></span>
+          <div class="scan-row">
+            <label class="scan-btn" id="scanLabel">
+              <input id="receiptFile" type="file" accept="image/*" capture="environment" hidden>
+              <span class="ico">📷</span><span>Scan a receipt</span>
+            </label>
+            <details class="paste">
+              <summary>Paste an order</summary>
+              <textarea id="pasteText" rows="4" placeholder="Paste a Grubhub email or GET receipt"></textarea>
+              <button type="button" class="primary" id="pasteGo" style="margin-top:8px;width:auto">Log it</button>
+            </details>
           </div>
-          <div class="scan-body" id="scanBody"></div>
-          <div class="scan-actions">
-            <button type="button" class="link" id="scanEdit">Edit</button>
-            <button type="button" class="link danger" id="scanUndo">Undo</button>
-            <button type="button" class="link" id="scanDismiss">Dismiss</button>
+          <div id="scanStatus" class="scan-status" hidden></div>
+          <div id="scanResult" class="scan-result" hidden>
+            <div class="scan-head">
+              <span class="scan-tag" id="scanTag">Logged</span>
+              <span class="scan-where" id="scanWhere"></span>
+            </div>
+            <div class="scan-body" id="scanBody"></div>
+            <div class="scan-actions">
+              <button type="button" class="link" id="scanEdit">Edit</button>
+              <button type="button" class="link danger" id="scanUndo">Undo</button>
+              <button type="button" class="link" id="scanDismiss">Dismiss</button>
+            </div>
           </div>
-        </div>
-        <p class="hint" id="scanHint"></p>
-        <details class="paste">
-          <summary>Or paste an order confirmation (Grubhub email, GET app receipt…)</summary>
-          <textarea id="pasteText" rows="5" placeholder="Paste the email or receipt text here"></textarea>
-          <button type="button" class="primary" id="pasteGo" style="margin-top:8px">Log it</button>
-        </details>
+          <p class="hint" id="scanHint" hidden></p>
         </div>
         <div class="or"><span>or enter it by hand</span></div>
         <form id="txForm" autocomplete="off">
@@ -420,18 +421,18 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=8bb1931-09677f"></script>
-<script src="account-store.js?v=8bb1931-09677f"></script>
-<script src="plans.js?v=8bb1931-09677f"></script>
-<script src="schools.js?v=8bb1931-09677f"></script>
-<script src="app.js?v=8bb1931-09677f"></script>
-<script src="ocr.js?v=8bb1931-09677f"></script>
-<script src="receipt.js?v=8bb1931-09677f"></script>
-<script src="tips.js?v=8bb1931-09677f"></script>
-<script src="eat.js?v=8bb1931-09677f"></script>
-<script src="today.js?v=8bb1931-09677f"></script>
-<script src="advisor.js?v=8bb1931-09677f"></script>
-<script src="share.js?v=8bb1931-09677f"></script>
-<script src="auth.js?v=8bb1931-09677f"></script>
+<script src="auth-config.js?v=4d9beed-a50c79"></script>
+<script src="account-store.js?v=4d9beed-a50c79"></script>
+<script src="plans.js?v=4d9beed-a50c79"></script>
+<script src="schools.js?v=4d9beed-a50c79"></script>
+<script src="app.js?v=4d9beed-a50c79"></script>
+<script src="ocr.js?v=4d9beed-a50c79"></script>
+<script src="receipt.js?v=4d9beed-a50c79"></script>
+<script src="tips.js?v=4d9beed-a50c79"></script>
+<script src="eat.js?v=4d9beed-a50c79"></script>
+<script src="today.js?v=4d9beed-a50c79"></script>
+<script src="advisor.js?v=4d9beed-a50c79"></script>
+<script src="share.js?v=4d9beed-a50c79"></script>
+<script src="auth.js?v=4d9beed-a50c79"></script>
 </body>
 </html>

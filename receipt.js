@@ -242,7 +242,7 @@ $('settingsSave').addEventListener('click', () => {
 $('scanSettings').hidden = !CLAUDE_ENABLED;
 loadSettingsFields();
 function updateScanHint() {
-  $('scanHint').innerHTML = engine() === 'claude'
+  $('scanLabel').title = engine() === 'claude'
     ? 'Read by Claude. Works best with the whole receipt in frame, flat, in good light.'
     : 'Read on your phone — nothing is uploaded. Flat, well-lit, whole receipt in frame. Always double-check the result.';
 }
