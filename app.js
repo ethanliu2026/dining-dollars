@@ -139,16 +139,20 @@ $('schoolSearch').addEventListener('keydown', e => {
   if (e.key === 'ArrowDown') { e.preventDefault(); if ($('schoolList').hidden) renderSchoolList(e.target.value); highlight(listIndex + 1); }
   else if (e.key === 'ArrowUp') { e.preventDefault(); highlight(listIndex - 1); }
   else if (e.key === 'Enter' || e.key === 'Return') { e.preventDefault(); const items = $('schoolList').querySelectorAll('li[data-id]'); const pick = items[listIndex] || items[0]; if (pick) chooseSchool(pick.dataset.id); }
-  else if (e.key === 'Escape') { openList(false); e.target.value = schoolLabel(state.school); }
+  else if (e.key === 'Escape') closeList();
 });
-$('schoolSearch').addEventListener('blur', () => setTimeout(() => { openList(false); $('schoolSearch').value = schoolLabel(state.school); }, 150));
-for (const ev of ['mousedown', 'click']) $('schoolList').addEventListener(ev, e => {
+// Close on a tap/click anywhere outside the picker. (Not on blur: on iOS the input blurs
+// before a tap on the list lands, which would close the list under the finger.)
+function closeList() { openList(false); $('schoolSearch').value = schoolLabel(state.school); }
+document.addEventListener('pointerdown', e => { if (!e.target.closest('.combo') && !$('schoolList').hidden) closeList(); });
+$('schoolList').addEventListener('mousedown', e => { if (e.target.closest('li[data-id]')) e.preventDefault(); });   // keep input focus on desktop
+$('schoolList').addEventListener('click', e => {
   const li = e.target.closest('li[data-id]');
-  if (li) { e.preventDefault(); if (!$('schoolList').hidden) chooseSchool(li.dataset.id); }
+  if (li) { e.preventDefault(); chooseSchool(li.dataset.id); }
 });
 function chooseSchool(id) {
-  openList(false); $('schoolSearch').blur();
-  if (id === state.school) { $('schoolSearch').value = schoolLabel(id); return; }
+  openList(false); $('schoolSearch').value = schoolLabel(id === state.school ? id : state.school); $('schoolSearch').blur();
+  if (id === state.school) return;
   if (state.txns.length && !confirm('Switching schools clears your logged purchases. Continue?')) { $('schoolSearch').value = schoolLabel(state.school); return; }
   state.school = id;
   state.txns = [];
