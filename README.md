@@ -37,20 +37,26 @@ CMU publishes plans as a [PDF agreement](https://www.cmu.edu/dining/your-dining-
 3. `python3 scripts/update_plans.py --no-fetch`
 
 ## Receipt scanning
-"Scan a receipt" → take a photo (or drop / paste an image on desktop). Claude reads it and the purchase is logged immediately — location matched to the dropdown, items summarized, and **each tender line mapped to a bucket** (a CMU receipt's `MEAL BLOCK` + `FLEX` lines become `1 block + $2.75 FLEX`). A green card shows what was read with **Undo** / **Edit**; it turns amber when the location wasn't a known one or Claude flagged something uncertain.
+"Scan a receipt" → take a photo (or drop / paste an image on desktop). The purchase is logged immediately — location matched to the dropdown, items listed, and **each tender line mapped to a bucket** (a CMU receipt's `MEAL BLOCK` + `FLEX` lines become `1 block + $2.75 FLEX`). A card shows what was read with **Undo** / **Edit**.
 
-Users don't need a key. The app calls a tiny proxy ([`server/worker.js`](server/worker.js), Cloudflare Workers, free tier) that holds the team's Anthropic key and forwards the photo. Deploy once:
+Two engines; the best available is used automatically:
+
+| | On-device OCR (default) | Claude vision (optional) |
+|---|---|---|
+| Setup | none — works for every user out of the box | an API key in Settings, or a deployed proxy |
+| Privacy | photo never leaves the phone | photo sent to the API |
+| Cost | free | ~1–2¢ per scan |
+| Accuracy | good on flat, well-lit receipts; misreads happen, so results are always marked "check this" | much better on crumpled / dim photos and odd formats |
+
+**On-device** ([`ocr.js`](ocr.js)): Tesseract.js (loaded from a CDN on first scan, ~10 MB cached), image is upscaled + Otsu-binarized, with a plain-grayscale second pass if the first finds nothing. Parsing: tender keywords per bucket (`MEAL BLOCK`, `FLEX`, `DINING DOLLARS`, `Points`…) with one-letter fuzzy matching and OCR digit/letter fixes (`BL0CK`), balance/remaining lines ignored, dates in common formats, location matched against the school's list by word overlap. Falls back to the `TOTAL` line (flagged) if no tender line is found. Add keywords in `TENDER_WORDS`.
+
+**Claude** ([`receipt.js`](receipt.js)): `claude-opus-5` with structured outputs whose `bucket` enum is the current plan's buckets. Enable per-browser via Settings (key stored in localStorage) or for everyone by deploying [`server/worker.js`](server/worker.js) to Cloudflare Workers and setting `DEFAULT_PROXY` in `receipt.js`:
 
 ```bash
 cd server && npm i -g wrangler && wrangler login
-wrangler secret put ANTHROPIC_API_KEY      # paste the key
-wrangler deploy                            # prints https://meal-plan-receipts.<you>.workers.dev
+wrangler secret put ANTHROPIC_API_KEY
+wrangler deploy
 ```
-then put that URL in `DEFAULT_PROXY` at the top of `receipt.js`. The worker only accepts requests from the site's origin and caps image size.
-
-Developer overrides in **Settings**: your own API key (stored only in that browser; the app then calls the API directly via the official `@anthropic-ai/sdk`, loaded from a CDN on first scan) or a different proxy URL.
-
-Model: `claude-opus-5` with structured outputs (JSON schema whose `bucket` enum is the current plan's buckets), `effort: medium`. Photos are downscaled to ≤1600px client-side before upload.
 
 ## Roadmap
 1. ~~Manual entry + analytics~~ ✅
@@ -71,7 +77,8 @@ python3 -m http.server 8765
 | `index.html` | markup |
 | `style.css` | styles (light/dark via CSS vars) |
 | `app.js` | state, math, charts, insights |
-| `receipt.js` | receipt scanning (camera → Claude → purchase), Settings dialog |
+| `receipt.js` | receipt scanning UI, engine choice, Claude vision path, Settings dialog |
+| `ocr.js` | on-device OCR path (Tesseract.js + receipt parser) |
 | `server/worker.js` | optional Cloudflare Worker proxy that holds the API key |
 | `schools.js` | per-school config: dates, **bucket definitions**, locations. **Add a school here.** |
 | `plans.json` / `plans.js` | meal plan catalog (see above) |

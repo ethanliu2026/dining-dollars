@@ -1,10 +1,10 @@
 // Receipt scanning: photo → Claude → purchase. Loaded after app.js and uses its globals
 // (state, save, render, school, activeBuckets, fillBuckets, removeTx, $, esc, fmt$, plural, toISO, today, OTHER).
 //
-// Two ways to reach Claude, chosen in Settings:
-//   1. An API key stored in this browser — calls the API directly via the official SDK
-//      (loaded on demand from a CDN, so the page stays a plain static site).
-//   2. A proxy URL (see server/worker.js) that holds the key server-side.
+// Three engines, best available wins:
+//   1. A proxy URL (see server/worker.js) that holds an API key server-side → Claude vision.
+//   2. An API key stored in this browser → Claude vision via the official SDK (CDN-loaded).
+//   3. Nothing configured → on-device OCR (ocr.js, Tesseract.js). Free, private, less accurate.
 
 const KEY_STORE = 'ddt.apiKey';
 const PROXY_STORE = 'ddt.proxyUrl';
@@ -139,21 +139,28 @@ function pickLocation(name, inList) {
     || name.trim();
 }
 
+const engine = () => (localStorage.getItem(KEY_STORE) || proxyUrl()) ? 'claude' : 'local';
+
 async function handleReceipt(file) {
   if (!file) return;
   if (!activeBuckets().some(b => b.period !== 'unlimited')) { scanStatus('Pick your meal plan first so I know what buckets to charge.', 'error'); return; }
-  if (!localStorage.getItem(KEY_STORE) && !proxyUrl()) { openSettings(); return; }
 
   $('scanLabel').classList.add('busy');
   $('scanResult').hidden = true;
   scanStatus('Reading your receipt…', 'busy');
   try {
-    const img = await compressImage(file);
-    const r = await readReceipt(img);
+    let r, img;
+    if (engine() === 'claude') {
+      img = await compressImage(file);
+      r = await readReceipt(img);
+    } else {
+      r = await localReadReceipt(file, msg => scanStatus(msg, 'busy'));
+      img = { dataUrl: r.dataUrl };
+    }
     if (!r.is_receipt) { scanStatus("That doesn't look like a receipt. Try again with the whole receipt in frame.", 'error'); return; }
     const defs = school().buckets;
     const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100 }));
-    if (!parts.length) { scanStatus(`Read "${r.location}" but couldn't find a meal-plan payment on it${r.notes ? ` (${r.notes})` : ''}. Paid with card?`, 'error'); return; }
+    if (!parts.length) { scanStatus(`Read "${r.location}" but couldn't find a meal-plan payment on it${r.notes ? ` (${r.notes})` : ''}. ${engine() === 'local' ? 'Try a sharper photo, or log it by hand below.' : 'Paid with card?'}`, 'error'); return; }
     const date = /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') && parse(r.date) <= today() ? r.date : toISO(today());
     const tx = { id: crypto.randomUUID(), date, location: pickLocation(r.location || 'Unknown', r.location_in_list), item: r.item_summary || (r.items || []).join(', '), parts };
     state.txns.push(tx); save(); render();
@@ -162,6 +169,7 @@ async function handleReceipt(file) {
     scanStatus('');
   } catch (e) {
     if (e.message === 'NO_KEY') { openSettings(); scanStatus(''); return; }
+    if (e.message === 'ABORT') { scanStatus(''); return; }
     console.error(e);
     scanStatus(`Couldn't read that: ${e.message || e}`, 'error');
   } finally {
@@ -173,9 +181,10 @@ async function handleReceipt(file) {
 function showScanResult(tx, r) {
   const defs = school().buckets;
   const paid = tx.parts.map(p => defs[p.bucket].kind === 'money' ? `${fmt$(p.amount)} ${defs[p.bucket].label}` : plural(p.amount, defs[p.bucket].unit)).join(' + ');
-  const uncertain = !r.location_in_list || (r.notes && r.notes.trim());
+  const uncertain = !r.location_in_list || (r.notes && r.notes.trim()) || engine() === 'local';
   $('scanResult').className = 'scan-result' + (uncertain ? ' warn' : '');
   $('scanTag').textContent = uncertain ? 'Logged — check this' : 'Logged';
+  $('scanResult').title = r.raw ? 'OCR text:\n' + r.raw : '';
   $('scanWhere').textContent = tx.location;
   $('scanBody').innerHTML = `${lastScan?.dataUrl ? `<img class="scan-thumb" src="${lastScan.dataUrl}" alt="">` : ''}<b>${esc(paid)}</b>${tx.item ? ` · ${esc(tx.item)}` : ''} · ${esc(fmtDate(parse(tx.date)))}${r.notes ? `<br><small>${esc(r.notes)}</small>` : ''}`;
   $('scanResult').hidden = false;
@@ -221,9 +230,9 @@ $('settings').querySelector('form').addEventListener('submit', () => {
   updateScanHint();
 });
 function updateScanHint() {
-  const has = localStorage.getItem(KEY_STORE) || proxyUrl();
-  $('scanHint').innerHTML = has ? 'Works best with the whole receipt in frame, flat, in good light.' : 'Needs an API key or proxy — <a href="#" id="scanSetup">set it up</a>.';
-  $('scanSetup')?.addEventListener('click', e => { e.preventDefault(); openSettings(); });
+  $('scanHint').innerHTML = engine() === 'claude'
+    ? 'Read by Claude. Works best with the whole receipt in frame, flat, in good light.'
+    : 'Read on your phone — nothing is uploaded. Flat, well-lit, whole receipt in frame. Always double-check the result.';
 }
 
 $('receiptFile').addEventListener('change', e => handleReceipt(e.target.files[0]));
