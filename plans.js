@@ -1,0 +1,226 @@
+// GENERATED from plans.json by scripts/update_plans.py — do not edit by hand.
+window.PLANS = {
+  "cmu": {
+    "source": "https://www.cmu.edu/dining/your-dining-plan/26-27-uc-meal-plan-agreementfinal.pdf",
+    "verified": "2026-09-19",
+    "note": "Upperclass pricing; first-year plans have the same blocks/FLEX at slightly higher cost.",
+    "plans": [
+      {
+        "id": "green",
+        "name": "Green Plan",
+        "cost": 4314,
+        "buckets": {
+          "blocks": 292,
+          "flex": 280
+        }
+      },
+      {
+        "id": "blue",
+        "name": "Blue Plan",
+        "cost": 4084,
+        "buckets": {
+          "blocks": 252,
+          "flex": 540
+        }
+      },
+      {
+        "id": "red",
+        "name": "Red Plan",
+        "cost": 3868,
+        "buckets": {
+          "blocks": 205,
+          "flex": 880
+        }
+      },
+      {
+        "id": "yellow",
+        "name": "Yellow Plan",
+        "cost": 1884,
+        "buckets": {
+          "blocks": 125,
+          "flex": 195
+        }
+      },
+      {
+        "id": "tartan",
+        "name": "Tartan Flex",
+        "cost": 3373,
+        "buckets": {
+          "blocks": 170,
+          "flex": 915
+        },
+        "who": "Community plan"
+      },
+      {
+        "id": "scottys",
+        "name": "Scotty's Choice",
+        "cost": 1929,
+        "buckets": {
+          "blocks": 85,
+          "flex": 655
+        },
+        "who": "Community plan"
+      },
+      {
+        "id": "whitfields",
+        "name": "Whitfield's Favor",
+        "cost": 1317,
+        "buckets": {
+          "blocks": 54,
+          "flex": 500
+        },
+        "who": "Community plan"
+      },
+      {
+        "id": "piper",
+        "name": "Piper Select",
+        "cost": 854,
+        "buckets": {
+          "blocks": 32,
+          "flex": 350
+        },
+        "who": "Community plan"
+      }
+    ]
+  },
+  "pitt": {
+    "source": "https://dineoncampus.com/pitt/20262027-meal-memberships",
+    "verified": "2026-09-19",
+    "plans": [
+      {
+        "id": "fa500",
+        "name": "Full-Access 500",
+        "cost": 3515,
+        "buckets": {
+          "meals": {
+            "amount": 0,
+            "period": "unlimited"
+          },
+          "flexMeals": 10,
+          "dd": 500
+        },
+        "who": "First-year / upperclass resident",
+        "note": "Plus one Meal Exchange per day"
+      },
+      {
+        "id": "fa300",
+        "name": "Full-Access 300",
+        "cost": 3315,
+        "buckets": {
+          "meals": {
+            "amount": 0,
+            "period": "unlimited"
+          },
+          "flexMeals": 10,
+          "dd": 300
+        },
+        "who": "First-year / upperclass resident",
+        "note": "Plus one Meal Exchange per day"
+      },
+      {
+        "id": "fa150",
+        "name": "Full-Access 150",
+        "cost": 3165,
+        "buckets": {
+          "meals": {
+            "amount": 0,
+            "period": "unlimited"
+          },
+          "flexMeals": 10,
+          "dd": 150
+        },
+        "who": "First-year / upperclass resident",
+        "note": "Plus one Meal Exchange per day"
+      },
+      {
+        "id": "weekly14",
+        "name": "Weekly 14",
+        "cost": 3110,
+        "buckets": {
+          "meals": {
+            "amount": 14,
+            "period": "week"
+          },
+          "flexMeals": 10,
+          "dd": 500
+        },
+        "who": "Resident",
+        "note": "Meals reset Sunday 11:59 pm"
+      },
+      {
+        "id": "block145",
+        "name": "Block 145",
+        "cost": 2375,
+        "buckets": {
+          "meals": 145,
+          "flexMeals": 5,
+          "dd": 400
+        },
+        "who": "Upperclass resident / commuter",
+        "note": "Up to 5 meals per day"
+      },
+      {
+        "id": "block90",
+        "name": "Block 90",
+        "cost": 1650,
+        "buckets": {
+          "meals": 90,
+          "dd": 325
+        },
+        "who": "Upperclass resident / commuter",
+        "note": "Up to 5 meals per day"
+      },
+      {
+        "id": "block50",
+        "name": "Block 50",
+        "cost": 1000,
+        "buckets": {
+          "meals": 50,
+          "dd": 200
+        },
+        "who": "Commuter / grad",
+        "note": "Up to 5 meals per day"
+      },
+      {
+        "id": "allday75",
+        "name": "75 All-Day Access",
+        "cost": 2855,
+        "buckets": {
+          "meals": 75,
+          "dd": 150
+        },
+        "who": "Commuter / grad",
+        "note": "Each meal = one all-day dining hall pass"
+      },
+      {
+        "id": "allday40",
+        "name": "40 All-Day Access",
+        "cost": 1690,
+        "buckets": {
+          "meals": 40,
+          "dd": 150
+        },
+        "who": "Commuter / grad",
+        "note": "Each meal = one all-day dining hall pass"
+      },
+      {
+        "id": "dd500",
+        "name": "$500 Plan",
+        "cost": 500,
+        "buckets": {
+          "dd": 500
+        },
+        "who": "Commuter / grad"
+      },
+      {
+        "id": "dd350",
+        "name": "$350 Plan",
+        "cost": 350,
+        "buckets": {
+          "dd": 350
+        },
+        "who": "Commuter / grad"
+      }
+    ]
+  }
+};

@@ -129,3 +129,21 @@ footer { margin-top: 24px; font-size: 12px; color: var(--text-3); }
 .seg button[aria-checked="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
 .hint { font-size: 12px; color: var(--text-3); margin: 6px 0 0; }
 #txLocationOther { margin-top: 6px; }
+
+/* multi-bucket UI */
+.vlist { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; font-size: 14px; color: var(--text-2); }
+.vlist li { padding-left: 18px; position: relative; }
+.vlist li::before { content: ''; position: absolute; left: 2px; top: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
+.vlist li.warn::before { background: var(--warn); }
+.vlist li.bad::before { background: var(--bad); }
+.vlist li.muted::before { background: var(--text-3); }
+#summary td:first-child { font-weight: 600; }
+#summary .sub { display: block; font-size: 12px; color: var(--text-3); font-weight: normal; margin: 0; }
+#summary td.good { color: var(--good); } #summary td.warn { color: var(--warn); } #summary td.bad { color: var(--bad); }
+.tabs { display: inline-flex; gap: 2px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 2px; }
+.tabs button { border: 0; background: none; color: var(--text-2); font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 4px; }
+.tabs button[aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.startgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.startgrid.one { grid-template-columns: 1fr; }
+.startgrid label { margin-top: 12px; }
+.pill { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 99px; background: var(--bg); border: 1px solid var(--border); color: var(--text-2); margin-left: 4px; vertical-align: middle; }

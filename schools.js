@@ -1,10 +1,21 @@
 // School-specific config. Add a school here and it shows up in the picker.
-// Each entry: semester dates, the name of the currency, and a list of dining
-// locations for autocomplete. `fetchLocations` (optional) pulls a live list.
+// Each entry: semester dates, the "buckets" its meal plans are made of, and a list
+// of dining locations for the dropdown. Plans themselves live in plans.js.
+//
+// A bucket is one thing you can pay with:
+//   kind:   'count' (blocks / swipes) or 'money' ($)
+//   period: 'semester' (expires at end), 'week' (resets weekly), 'unlimited'
+//   unit:   singular noun for count buckets
 window.SCHOOLS = {
   cmu: {
     name: 'Carnegie Mellon',
-    currency: 'Dining Dollars',
+    buckets: {
+      blocks: { label: 'Meal blocks', kind: 'count', unit: 'block', period: 'semester',
+                hint: 'Max 4 per day, 2 per meal period' },
+      flex:   { label: 'FLEX', kind: 'money', period: 'semester' },
+      dinex:  { label: 'DineXtra', kind: 'money', period: 'semester', optional: true,
+                hint: 'Bought separately; not part of a plan' },
+    },
     // Fall 2026: first day of classes → last day of finals (26–27 academic calendar)
     semStart: '2026-08-31',
     semEnd: '2026-12-13',
@@ -31,7 +42,14 @@ window.SCHOOLS = {
   },
   pitt: {
     name: 'University of Pittsburgh',
-    currency: 'Dining Dollars',
+    buckets: {
+      meals:     { label: 'Meals', kind: 'count', unit: 'meal', period: 'semester',
+                   hint: 'Dining hall swipe or a Meal Exchange combo' },
+      flexMeals: { label: 'Flex meals', kind: 'count', unit: 'meal', period: 'semester',
+                   hint: 'Guest swipes; expire each semester' },
+      dd:        { label: 'Dining Dollars', kind: 'money', period: 'semester',
+                   hint: '10% off at non-national-brand spots' },
+    },
     // Fall 2026 (approximate — verify against Pitt's academic calendar)
     semStart: '2026-08-24',
     semEnd: '2026-12-12',

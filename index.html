@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dining Dollars Tracker</title>
-<meta name="description" content="Log every meal, see where your Dining Dollars go, and find out whether you'll run out or leave money on the table.">
+<title>Meal Plan Tracker</title>
+<meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main>
   <header>
     <div>
-      <h1>Dining Dollars Tracker</h1>
-      <p class="sub">Log what you buy. See where it goes. Know your safe daily spend.</p>
+      <h1>Meal Plan Tracker</h1>
+      <p class="sub">Blocks, FLEX, Dining Dollars — log what you use, see where it goes, know your safe daily pace.</p>
     </div>
     <div class="toolbar">
       <button class="link" id="btnSample">Load sample data</button>
@@ -36,12 +36,12 @@
         <label for="school">School</label>
         <select id="school"></select>
 
-        <label for="start">Starting balance</label>
-        <div class="money"><span>$</span><input id="start" type="number" min="0" step="0.01" placeholder="1800"></div>
+        <label for="plan">Meal plan</label>
+        <select id="plan"></select>
+        <p class="hint" id="planHint"></p>
 
+        <div id="startFields"></div>
         <div id="quickFields" hidden>
-          <label for="current">Current balance</label>
-          <div class="money"><span>$</span><input id="current" type="number" min="0" step="0.01" placeholder="1240.50"></div>
           <label for="asOf">As of</label>
           <input id="asOf" type="date">
         </div>
@@ -58,8 +58,11 @@
       <section class="card" id="logCard">
         <h2>Log a purchase</h2>
         <form id="txForm" autocomplete="off">
-          <label for="txAmount">Amount</label>
-          <div class="money"><span>$</span><input id="txAmount" type="number" min="0.01" step="0.01" placeholder="12.50" required></div>
+          <label for="txBucket">Paid with</label>
+          <select id="txBucket"></select>
+
+          <label for="txAmount" id="txAmountLabel">Amount</label>
+          <div class="money" id="txAmountWrap"><span>$</span><input id="txAmount" type="number" min="0.01" step="0.01" placeholder="12.50" required></div>
 
           <label for="txLocation">Where</label>
           <select id="txLocation" required></select>
@@ -80,18 +83,19 @@
     <div class="stack">
       <div id="verdict" class="verdict good" hidden>
         <p class="headline" id="vHead"></p>
-        <p class="detail" id="vDetail"></p>
+        <ul class="vlist" id="vList"></ul>
       </div>
 
-      <div class="stats" id="stats" hidden>
-        <div class="stat"><div class="k">Safe daily spend</div><div class="v hero" id="safe"></div><div class="s">to land at $0 on the last day</div></div>
-        <div class="stat"><div class="k">Your current pace</div><div class="v" id="pace"></div><div class="s" id="paceSub"></div></div>
-        <div class="stat"><div class="k">Balance now</div><div class="v" id="balance"></div><div class="s" id="balanceSub"></div></div>
-        <div class="stat"><div class="k">Days left</div><div class="v" id="daysLeft"></div><div class="s" id="daysSub"></div></div>
-      </div>
+      <section class="card" id="summaryCard" hidden>
+        <h2>Your balances</h2>
+        <table id="summary">
+          <thead><tr><th>Bucket</th><th class="num">Left</th><th class="num">Your pace</th><th class="num">Safe pace</th><th class="num">Projected end</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
 
       <section class="card">
-        <h2>Balance over the semester</h2>
+        <h2>Over the semester <span class="right" id="chartTabs"></span></h2>
         <div class="legend">
           <span><i></i>Actual</span>
           <span><i class="dash"></i>Projected at current pace</span>
@@ -99,7 +103,7 @@
         </div>
         <div class="chart-wrap">
           <canvas id="chartBalance" role="img" aria-label="Line chart of balance over the semester"></canvas>
-          <div class="empty" id="emptyBalance">Enter your balances to see the projection.</div>
+          <div class="empty" id="emptyBalance">Pick a plan and enter your balances to see the projection.</div>
         </div>
       </section>
 
@@ -109,13 +113,14 @@
         <div class="chart-wrap short">
           <canvas id="chartPlaces" role="img" aria-label="Bar chart of spending by location"></canvas>
         </div>
+        <p class="hint" id="placesHint"></p>
       </section>
 
       <section class="card" id="txCard">
         <h2>Purchases <span class="right" id="txCount"></span></h2>
         <div class="table-scroll">
           <table id="txTable">
-            <thead><tr><th>Date</th><th>Where</th><th>What</th><th class="num">Amount</th><th></th></tr></thead>
+            <thead><tr><th>Date</th><th>Where</th><th>What</th><th class="num">Paid</th><th></th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
@@ -124,10 +129,11 @@
     </div>
   </div>
 
-  <footer>Data stays in your browser. CMU locations are pulled live from ScottyLabs; Pitt's are a fixed list — free text works too.</footer>
+  <footer id="footer">Data stays in your browser.</footer>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="plans.js"></script>
 <script src="schools.js"></script>
 <script src="app.js"></script>
 </body>
