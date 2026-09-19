@@ -87,6 +87,7 @@
     appliedId = nextUser?.id || null;
     user = nextUser;
     $('accountName').textContent = user?.email || (user ? 'Your account' : 'Your meal plan, wherever you go');
+    document.querySelector('.account-bar').classList.toggle('signed-in', !!user);
     $('btnAccount').hidden = !!user;
     $('btnSignOut').hidden = !user;
     $('authForm').reset();
@@ -194,8 +195,11 @@
   async function initialize() {
     controls();
     if (!config.supabaseUrl || !config.supabaseKey || !/^https?:$/.test(location.protocol)) return;
-    lockTracker(true);
-    $('accountStatus').textContent = 'Checking your account…';
+    // Supabase keeps the session under "sb-<ref>-auth-token". Only make guests wait if there's
+    // actually a session to restore; otherwise the tracker stays usable while the SDK loads.
+    let hasSession = false;
+    try { hasSession = Object.keys(localStorage).some(k => /^sb-.*-auth-token$/.test(k)); } catch {}
+    if (hasSession) { lockTracker(true); $('accountStatus').textContent = 'Checking your account…'; }
     try {
       if (!window.supabase) await new Promise((resolve, reject) => {
         const script = document.createElement('script');

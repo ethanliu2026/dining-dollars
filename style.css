@@ -115,10 +115,17 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .auth-guest { display: block; margin: 20px auto 0; }
 #trackerContent[inert] { opacity: .4; }
 @media (max-width: 600px) {
-  .account-bar { align-items: flex-start; flex-direction: column; gap: 12px; }
-  .account-actions { flex-shrink: 1; }
+  /* one compact row on phones: status text left, action right */
+  .account-bar { padding: 10px 14px; gap: 10px; margin-bottom: 12px; }
+  .account-copy strong { display: none; }          /* the tagline; the status line says it all */
+  .account-copy p { margin: 0; }
+  .account-actions button { font-size: 12px; padding: 7px 10px; }
   .account-form { padding: 20px; }
+  .sub { display: none; }                            /* page tagline */
+  header { margin-bottom: 10px; }
 }
+/* keep the email visible once signed in (it replaces the tagline) */
+@media (max-width: 600px) { .account-bar.signed-in .account-copy strong { display: block; font-size: 13px; } }
 
 .verdict { border-radius: var(--radius); padding: 18px 20px; border: 1px solid transparent; }
 .verdict.good { background: var(--good-bg); border-color: var(--good); }
