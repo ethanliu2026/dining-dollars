@@ -1016,9 +1016,23 @@ function sampleTxns(from, to) {
   return out;
 }
 
+// Purchases as a spreadsheet
+$('btnCsv').addEventListener('click', () => {
+  const defs = school().buckets;
+  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = [['date', 'place', 'item', 'paid_with', 'amount', 'block_value_usd', 'second_paid_with', 'second_amount']];
+  for (const t of [...state.txns].sort((a, b) => a.date.localeCompare(b.date))) {
+    const [p1, p2] = t.parts;
+    rows.push([t.date, t.location, t.item, defs[p1?.bucket]?.label || p1?.bucket, p1?.amount, p1?.value ?? '', p2 ? (defs[p2.bucket]?.label || p2.bucket) : '', p2?.amount ?? '']);
+  }
+  const blob = new Blob(['\ufeff' + rows.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv;charset=utf-8' });
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `purchases-${toISO(today())}.csv` });
+  a.click(); URL.revokeObjectURL(a.href);
+});
+
 $('btnExport').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'meal-plan.json' });
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `meal-plan-backup-${toISO(today())}.json` });
   a.click(); URL.revokeObjectURL(a.href);
 });
 $('btnImport').addEventListener('click', () => $('fileImport').click());

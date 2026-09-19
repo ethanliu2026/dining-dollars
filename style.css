@@ -349,3 +349,9 @@ ul.tips .src { font-size: 11px; color: var(--text-3); margin-left: 4px; }
 .mid-field label { color: var(--accent); }
 
 .share-preview { margin-top: 12px; width: 100%; max-width: 360px; border-radius: 12px; border: 1px solid var(--border); display: block; }
+
+.data-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--border); }
+.data-row:first-of-type { border-top: 0; padding-top: 0; }
+.data-row .hint { margin: 2px 0 0; }
+.data-row button { white-space: nowrap; }
+.data-btns { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }

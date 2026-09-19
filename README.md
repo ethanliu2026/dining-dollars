@@ -22,7 +22,7 @@ Five sections (tabs on desktop, bottom nav on phones): **Home** (verdict, balanc
 - Chart per bucket: actual vs. projected vs. ideal pace
 - "Where it goes": spend by restaurant, plus insights — *"a block costs you $14.58 on this plan; 5 of your FLEX purchases cost more than that"*, *"cut Ciao Bella by 40% to get back on budget"*
 - CMU's restaurant list is pulled live from the [ScottyLabs Dining API](https://dining.apis.scottylabs.org/v2/locations); Pitt's is a fixed list
-- Export / import JSON, sample data for demos. Everything stays in localStorage.
+- **Your data** (Setup): download purchases as .csv; save/restore a .json backup. Sample data for demos. Guests' data stays in localStorage; signed-in users sync.
 
 ## Meal plan data
 `plans.json` is the catalog (source of truth); `plans.js` is generated from it so the page works from `file://`. Each school's entry records its `source` URL and a `verified` date. `schools.js` carries every school's **terms** (Fall 2026 and Spring 2027 — Winter + Spring quarters for Drexel) with start/end and no-class days from the official academic calendars; the app picks the term containing today (or the next one) when you choose a school, offers "Start next term" once a term ends, and dates remain editable. Approximate: Lehigh's breaks (inferred from part-of-term gaps), Villanova's Easter recess, Drexel's spring start.

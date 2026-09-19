@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=ba05ca2-78408e">
+<link rel="stylesheet" href="style.css?v=2b6843d-819986">
 </head>
 <body>
 <main>
@@ -16,10 +16,8 @@
     </div>
     <div class="toolbar" id="dataTools">
       <button class="link" id="btnSample">Load sample data</button>
-      <button class="link" id="btnExport">Export</button>
-      <button class="link" id="btnImport">Import</button>
+      <button class="link" id="btnShareTop">Share</button>
       <button class="link" id="btnSettings">Settings</button>
-      <input id="fileImport" type="file" accept="application/json" hidden>
     </div>
   </header>
 
@@ -158,7 +156,7 @@
     </div>
   </div>
 
-  <div class="tab narrow" data-tab="setup">
+  <div class="tab narrow stack" data-tab="setup">
       <section class="card">
         <h2>Setup</h2>
         <div class="seg" role="radiogroup" aria-label="Mode">
@@ -233,6 +231,18 @@
         </details>
       </section>
 
+      <section class="card" id="dataCard">
+        <h2>Your data</h2>
+        <div class="data-row">
+          <div><b>Purchases spreadsheet</b><p class="hint">Every logged purchase as a .csv — opens in Excel / Google Sheets.</p></div>
+          <button type="button" id="btnCsv">Download .csv</button>
+        </div>
+        <div class="data-row">
+          <div><b>Backup</b><p class="hint">Your whole tracker (plan, purchases, settings) as a .json file. Restore it on any device — or just sign in to sync instead.</p></div>
+          <div class="data-btns"><button type="button" id="btnExport">Save backup</button><button type="button" class="link" id="btnImport">Restore…</button></div>
+        </div>
+        <input id="fileImport" type="file" accept="application/json" hidden>
+      </section>
   </div>
 
   <div class="tab stack" data-tab="insights">
@@ -398,18 +408,18 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=ba05ca2-78408e"></script>
-<script src="account-store.js?v=ba05ca2-78408e"></script>
-<script src="plans.js?v=ba05ca2-78408e"></script>
-<script src="schools.js?v=ba05ca2-78408e"></script>
-<script src="app.js?v=ba05ca2-78408e"></script>
-<script src="ocr.js?v=ba05ca2-78408e"></script>
-<script src="receipt.js?v=ba05ca2-78408e"></script>
-<script src="tips.js?v=ba05ca2-78408e"></script>
-<script src="eat.js?v=ba05ca2-78408e"></script>
-<script src="today.js?v=ba05ca2-78408e"></script>
-<script src="advisor.js?v=ba05ca2-78408e"></script>
-<script src="share.js?v=ba05ca2-78408e"></script>
-<script src="auth.js?v=ba05ca2-78408e"></script>
+<script src="auth-config.js?v=2b6843d-819986"></script>
+<script src="account-store.js?v=2b6843d-819986"></script>
+<script src="plans.js?v=2b6843d-819986"></script>
+<script src="schools.js?v=2b6843d-819986"></script>
+<script src="app.js?v=2b6843d-819986"></script>
+<script src="ocr.js?v=2b6843d-819986"></script>
+<script src="receipt.js?v=2b6843d-819986"></script>
+<script src="tips.js?v=2b6843d-819986"></script>
+<script src="eat.js?v=2b6843d-819986"></script>
+<script src="today.js?v=2b6843d-819986"></script>
+<script src="advisor.js?v=2b6843d-819986"></script>
+<script src="share.js?v=2b6843d-819986"></script>
+<script src="auth.js?v=2b6843d-819986"></script>
 </body>
 </html>

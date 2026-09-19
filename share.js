@@ -114,3 +114,4 @@ async function shareCard() {
   try { await navigator.clipboard.writeText(textLine); $('shareHint').textContent = 'Image downloaded and caption copied to your clipboard.'; } catch { $('shareHint').textContent = 'Image downloaded.'; }
 }
 $('btnShare').addEventListener('click', shareCard);
+$('btnShareTop').addEventListener('click', () => { showTab('insights'); $('shareCard').scrollIntoView({ block: 'start' }); shareCard(); });
