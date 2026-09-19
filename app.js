@@ -18,9 +18,8 @@ const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 let state = load();
 function load() {
   const s = JSON.parse(localStorage.getItem(STORE) || 'null');
-  if (s) return s;
   const sch = SCHOOLS.cmu;
-  return { school: 'cmu', start: '', semStart: sch.semStart, semEnd: sch.semEnd, txns: [] };
+  return { mode: 'log', school: 'cmu', start: '', current: '', semStart: sch.semStart, semEnd: sch.semEnd, txns: [], ...s, asOf: s?.asOf || toISO(today()) };
 }
 function save() { localStorage.setItem(STORE, JSON.stringify(state)); }
 
@@ -30,7 +29,25 @@ $('school').value = state.school;
 $('start').value = state.start;
 $('semStart').value = state.semStart;
 $('semEnd').value = state.semEnd;
+$('current').value = state.current;
+$('asOf').value = state.asOf;
 $('txDate').value = toISO(today());
+
+// mode toggle
+const MODE_HINT = {
+  log: 'Log each purchase to get a breakdown by restaurant and meal.',
+  quick: 'Just type your balances — no logging needed.',
+};
+function setMode(m) {
+  state.mode = m; save();
+  for (const b of document.querySelectorAll('.seg button')) b.setAttribute('aria-checked', b.dataset.mode === m);
+  $('modeHint').textContent = MODE_HINT[m];
+  $('quickFields').hidden = m !== 'quick';
+  $('logCard').hidden = m !== 'log';
+  $('txCard').hidden = m !== 'log';
+  render();
+}
+for (const b of document.querySelectorAll('.seg button')) b.addEventListener('click', () => setMode(b.dataset.mode));
 
 $('school').addEventListener('change', e => {
   state.school = e.target.value;
@@ -39,20 +56,38 @@ $('school').addEventListener('change', e => {
   state.semEnd = $('semEnd').value = sch.semEnd;
   save(); loadLocations(); render();
 });
-for (const id of ['start', 'semStart', 'semEnd']) {
+for (const id of ['start', 'current', 'asOf', 'semStart', 'semEnd']) {
   $(id).addEventListener('input', e => { state[id] = e.target.value; save(); render(); });
 }
 
+const OTHER = '__other__';
 async function loadLocations() {
-  const sch = SCHOOLS[state.school];
+  const id = state.school, sch = SCHOOLS[id];
   const fill = names => {
-    $('locations').replaceChildren(...[...new Set(names)].sort().map(n => new Option(n)));
+    const sel = $('txLocation');
+    const keep = sel.value;
+    sel.replaceChildren(
+      new Option('Pick a place…', '', true, true),
+      ...[...new Set(names)].sort((a, b) => a.localeCompare(b)).map(n => new Option(n)),
+      new Option('Other…', OTHER),
+    );
+    sel.options[0].disabled = true;
+    if ([...sel.options].some(o => o.value === keep)) sel.value = keep;
   };
   fill(sch.locations);
   if (sch.fetchLocations) {
-    try { fill(await sch.fetchLocations()); } catch (e) { console.warn('live locations failed, using fallback', e); }
+    try {
+      const live = await sch.fetchLocations();
+      if (state.school === id) fill(live);   // user may have switched schools meanwhile
+    } catch (e) { console.warn('live locations failed, using fallback', e); }
   }
 }
+$('txLocation').addEventListener('change', e => {
+  const other = e.target.value === OTHER;
+  $('txLocationOther').hidden = !other;
+  $('txLocationOther').required = other;
+  if (other) $('txLocationOther').focus();
+});
 
 // ---------- transactions ----------
 $('txForm').addEventListener('submit', e => {
@@ -60,12 +95,12 @@ $('txForm').addEventListener('submit', e => {
   state.txns.push({
     id: crypto.randomUUID(),
     date: $('txDate').value,
-    location: $('txLocation').value.trim(),
+    location: ($('txLocation').value === OTHER ? $('txLocationOther').value : $('txLocation').value).trim(),
     item: $('txItem').value.trim(),
     amount: Math.round(parseFloat($('txAmount').value) * 100) / 100,
   });
   save(); render();
-  $('txAmount').value = ''; $('txItem').value = '';
+  $('txAmount').value = ''; $('txItem').value = ''; $('txLocationOther').value = '';
   $('txAmount').focus();
 });
 
@@ -82,17 +117,20 @@ function compute() {
   const totalDays = daysBetween(semStart, semEnd);
   if (totalDays <= 0) return null;
 
-  const txns = [...state.txns].sort((a, b) => a.date.localeCompare(b.date));
-  const spent = txns.reduce((s, t) => s + t.amount, 0);
+  const quick = state.mode === 'quick';
+  if (quick && !(parseFloat(state.current) >= 0 && state.asOf)) return null;
+  const txns = quick ? [] : [...state.txns].sort((a, b) => a.date.localeCompare(b.date));
+  const spent = quick ? start - parseFloat(state.current) : txns.reduce((s, t) => s + t.amount, 0);
   const balance = start - spent;
-  const elapsed = Math.max(1, daysBetween(semStart, now));
-  const daysLeft = Math.max(0, daysBetween(now, semEnd));
+  const asOf = quick ? parse(state.asOf) : now;
+  const elapsed = Math.max(1, daysBetween(semStart, asOf));
+  const daysLeft = Math.max(0, daysBetween(asOf, semEnd));
   const pace = spent / elapsed;
   const safe = daysLeft > 0 ? Math.max(0, balance) / daysLeft : 0;
   const endBal = balance - pace * daysLeft;
-  const runOutDate = pace > 0 && balance > 0 ? new Date(now.getTime() + (balance / pace) * DAY) : (balance <= 0 ? now : null);
+  const runOutDate = pace > 0 && balance > 0 ? new Date(asOf.getTime() + (balance / pace) * DAY) : (balance <= 0 ? asOf : null);
 
-  return { start, semStart, semEnd, now, totalDays, elapsed, daysLeft, txns, spent, balance, pace, safe, endBal, runOutDate };
+  return { quick, start, semStart, semEnd, now: asOf, totalDays, elapsed, daysLeft, txns, spent, balance, pace, safe, endBal, runOutDate };
 }
 
 function analyze(r) {
@@ -174,7 +212,7 @@ function render() {
     v.className = 'verdict ' + (r.balance > tol ? 'warn' : 'good');
     $('vHead').textContent = r.balance > tol ? `Semester's over with ${fmt$(r.balance)} left.` : "Semester's over — nicely done.";
     $('vDetail').textContent = '';
-  } else if (!r.txns.length) {
+  } else if (!r.quick && !r.txns.length) {
     v.className = 'verdict good';
     $('vHead').textContent = `Nothing logged yet.`;
     $('vDetail').textContent = `Spend up to ${fmt$(r.safe)}/day and you'll use every dollar.`;
@@ -202,7 +240,7 @@ function render() {
 
   drawBalance(r);
 
-  const a = analyze(r);
+  const a = r.quick ? null : analyze(r);
   $('analytics').hidden = !a;
   if (a) {
     $('insights').innerHTML = a.insights.map(i => `<li class="${i.hot ? 'hot' : ''}">${i.html}</li>`).join('');
@@ -293,6 +331,7 @@ function drawPlaces(a) {
 
 // ---------- sample data / import / export ----------
 $('btnSample').addEventListener('click', () => {
+  if (state.mode !== 'log') setMode('log');
   if (state.txns.length && !confirm('Replace your current purchases with sample data?')) return;
   const sch = SCHOOLS[state.school];
   state.start = state.start || '1800';
@@ -340,4 +379,4 @@ $('fileImport').addEventListener('change', async e => {
 // ---------- go ----------
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
 loadLocations();
-render();
+setMode(state.mode);

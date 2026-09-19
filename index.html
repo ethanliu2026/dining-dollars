@@ -27,11 +27,24 @@
     <div class="stack">
       <section class="card">
         <h2>Setup</h2>
+        <div class="seg" role="radiogroup" aria-label="Mode">
+          <button type="button" data-mode="log">Track purchases</button>
+          <button type="button" data-mode="quick">Quick estimate</button>
+        </div>
+        <p class="hint" id="modeHint"></p>
+
         <label for="school">School</label>
         <select id="school"></select>
 
         <label for="start">Starting balance</label>
         <div class="money"><span>$</span><input id="start" type="number" min="0" step="0.01" placeholder="1800"></div>
+
+        <div id="quickFields" hidden>
+          <label for="current">Current balance</label>
+          <div class="money"><span>$</span><input id="current" type="number" min="0" step="0.01" placeholder="1240.50"></div>
+          <label for="asOf">As of</label>
+          <input id="asOf" type="date">
+        </div>
 
         <details>
           <summary>Semester dates</summary>
@@ -42,15 +55,15 @@
         </details>
       </section>
 
-      <section class="card">
+      <section class="card" id="logCard">
         <h2>Log a purchase</h2>
         <form id="txForm" autocomplete="off">
           <label for="txAmount">Amount</label>
           <div class="money"><span>$</span><input id="txAmount" type="number" min="0.01" step="0.01" placeholder="12.50" required></div>
 
           <label for="txLocation">Where</label>
-          <input id="txLocation" list="locations" placeholder="Start typing a dining location…" required>
-          <datalist id="locations"></datalist>
+          <select id="txLocation" required></select>
+          <input id="txLocationOther" placeholder="Name of the place" hidden>
 
           <label for="txItem">What <span style="color:var(--text-3)">(optional)</span></label>
           <input id="txItem" placeholder="Chicken burrito bowl">
@@ -86,7 +99,7 @@
         </div>
         <div class="chart-wrap">
           <canvas id="chartBalance" role="img" aria-label="Line chart of balance over the semester"></canvas>
-          <div class="empty" id="emptyBalance">Enter a starting balance and log a purchase to see your projection.</div>
+          <div class="empty" id="emptyBalance">Enter your balances to see the projection.</div>
         </div>
       </section>
 
@@ -98,7 +111,7 @@
         </div>
       </section>
 
-      <section class="card">
+      <section class="card" id="txCard">
         <h2>Purchases <span class="right" id="txCount"></span></h2>
         <div class="table-scroll">
           <table id="txTable">

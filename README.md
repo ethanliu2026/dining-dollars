@@ -6,7 +6,8 @@ SteelHacks 2026. Log every meal, see where your Dining Dollars go, and find out 
 
 ## What it does
 - Pick your school (CMU / Pitt) → semester dates and dining locations are pre-filled
-- Log purchases (amount, where, what, when) — location autocompletes; CMU's list is pulled live from the [ScottyLabs Dining API](https://dining.apis.scottylabs.org/v2/locations)
+- Two modes: **Track purchases** (log each meal, pick the restaurant from a dropdown) or **Quick estimate** (just starting + current balance)
+- CMU's location list CMU's list is pulled live from the [ScottyLabs Dining API](https://dining.apis.scottylabs.org/v2/locations)
 - Verdict: run out / on pace / wasting money, plus your **safe daily spend**
 - Balance chart: actual vs. projected vs. ideal pace
 - "Where it goes": spend by location, and insights like *"Ciao Bella is 27% of your spending — cutting it 40% gets you back on budget"*

@@ -45,6 +45,12 @@ export const SCHOOLS = {
   },
 };
 
+const SMALL = new Set(['a', 'an', 'and', 'at', 'by', 'de', 'del', 'di', 'n', 'of', 'the']);
 function titleCase(s) {
-  return s.toLowerCase().replace(/(^|[\s\-'(])([a-z])/g, (m, p, c) => p + c.toUpperCase());
+  return s.split(' ').map((w, i) => {
+    if (/^[A-Z]\.([A-Z]\.)+$/.test(w)) return w;                    // E.A.T.
+    const lw = w.toLowerCase();
+    if (i > 0 && SMALL.has(lw.replace(/[^a-z]/g, ''))) return lw;
+    return lw.replace(/(^|[\-(])([a-z])/g, (m, p, c) => p + c.toUpperCase());
+  }).join(' ');
 }
