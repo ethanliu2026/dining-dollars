@@ -614,13 +614,16 @@ function drawPlaces(a) {
     rows.push({ name: `Other (${rest.length})`, total: rest.reduce((s, p) => s + p.total, 0), count: rest.reduce((s, p) => s + p.count, 0) });
   }
   const accent = css('--accent'), grid = css('--grid'), ink = css('--text-2');
-  const data = { labels: rows.map(p => p.name), datasets: [{
+  const narrow = innerWidth < 480;
+  const short = n => narrow && n.length > 18 ? n.slice(0, 17) + '…' : n;
+  const data = { labels: rows.map(p => short(p.name)), datasets: [{
     data: rows.map(p => Math.round(p.total * 100) / 100), backgroundColor: accent,
     borderRadius: 4, borderSkipped: 'start', barThickness: 14, counts: rows.map(p => p.count),
   }] };
   const options = {
     indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: { duration: 250 },
     plugins: { legend: { display: false }, tooltip: { callbacks: {
+      title: items => rows[items[0].dataIndex].name,
       label: it => ` ${fmt$(it.parsed.x)} · ${it.dataset.counts[it.dataIndex]} visit${it.dataset.counts[it.dataIndex] > 1 ? 's' : ''}`,
     } } },
     scales: {
