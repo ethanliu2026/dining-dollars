@@ -45,8 +45,10 @@ function load() {
   const base = { mode: 'log', school: sch, planId: CUSTOM, start: {}, current: {}, asOf: toISO(today()),
                  semStart: dates.semStart, semEnd: dates.semEnd, txns: [], custom: DEFAULT_CUSTOM(),
                  eat: { weekends: true, breaks: false } };
-  return { ...base, ...(s || {}), asOf: s?.asOf || base.asOf,
-           custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) }, eat: { ...base.eat, ...(s?.eat || {}) } };
+  const st = { ...base, ...(s || {}), asOf: s?.asOf || base.asOf,
+               custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) }, eat: { ...base.eat, ...(s?.eat || {}) } };
+  st.txns = st.txns.map(normalizeTx);
+  return st;
 }
 // Old single-balance data → put it in the school's money bucket.
 function migrateV2() {
@@ -61,6 +63,15 @@ function migrateV2() {
   };
 }
 function save() { localStorage.setItem(STORE, JSON.stringify(state)); }
+
+// A purchase can be paid from more than one bucket (a block for the meal + FLEX for the
+// extras). Older data had a single bucket/amount; fold it into parts.
+function normalizeTx(t) {
+  if (Array.isArray(t.parts) && t.parts.length) return t;
+  const { bucket, amount, ...rest } = t;
+  return { ...rest, parts: [{ bucket, amount }] };
+}
+const partFor = (t, key) => t.parts.find(pt => pt.bucket === key);
 
 function school() {
   if (state.school !== OTHER_SCHOOL) return SCHOOLS[state.school];
@@ -325,7 +336,7 @@ function renderCustomEditor() {
     }
     row.querySelector('.del').addEventListener('click', () => {
       c.buckets.splice(i, 1);
-      state.txns = state.txns.filter(t => t.bucket !== b.key);
+      state.txns = state.txns.map(t => ({ ...t, parts: t.parts.filter(pt => pt.bucket !== b.key) })).filter(t => t.parts.length);
       save(); renderCustomEditor(); renderStartFields(); fillBuckets(); render();
     });
     return row;
@@ -387,40 +398,60 @@ $('txLocation').addEventListener('change', e => {
 
 // ---------- purchase form ----------
 function fillBuckets() {
-  const sel = $('txBucket');
-  const keep = sel.value;
   const opts = activeBuckets().filter(b => b.period !== 'unlimited');
-  sel.replaceChildren(...opts.map(b => new Option(b.label, b.key)));
-  if (opts.some(b => b.key === keep)) sel.value = keep;
+  for (const id of ['txBucket', 'txBucket2']) {
+    const sel = $(id), keep = sel.value;
+    sel.replaceChildren(...opts.map(b => new Option(b.label, b.key)));
+    if (opts.some(b => b.key === keep)) sel.value = keep;
+  }
+  $('btnSplit').hidden = opts.length < 2;
+  if (opts.length < 2) $('splitFields').hidden = true;
   updateAmountField();
 }
-function updateAmountField() {
-  const b = activeBuckets().find(b => b.key === $('txBucket').value);
+// The second bucket defaults to "the other kind" (block ↔ money).
+function pickOtherBucket() {
+  const opts = activeBuckets().filter(b => b.period !== 'unlimited');
+  const first = opts.find(b => b.key === $('txBucket').value);
+  const other = opts.find(b => b.key !== first?.key && b.kind !== first?.kind) || opts.find(b => b.key !== first?.key);
+  if (other) $('txBucket2').value = other.key;
+}
+$('btnSplit').addEventListener('click', () => { $('splitFields').hidden = false; $('btnSplit').hidden = true; pickOtherBucket(); updateAmountField(); $('txAmount2').focus(); });
+$('btnUnsplit').addEventListener('click', () => { $('splitFields').hidden = true; $('btnSplit').hidden = false; $('txAmount2').value = ''; });
+function styleAmount(selId, wrapId, inpId) {
+  const b = activeBuckets().find(b => b.key === $(selId).value);
   const money = !b || b.kind === 'money';
-  $('txAmountLabel').textContent = money ? 'Amount' : `How many ${b.unit}s`;
-  $('txAmountWrap').className = money ? 'money' : '';
-  $('txAmountWrap').querySelector('span').hidden = !money;
-  const inp = $('txAmount');
+  $(wrapId).className = money ? 'money' : '';
+  $(wrapId).querySelector('span').hidden = !money;
+  const inp = $(inpId);
   inp.step = money ? '0.01' : '1'; inp.min = money ? '0.01' : '1';
-  inp.placeholder = money ? '12.50' : '1';
+  inp.placeholder = money ? (inpId === 'txAmount' ? '12.50' : '3.50') : '1';
   if (!money && !inp.value) inp.value = '1';
   if (money && inp.value === '1') inp.value = '';
+  return { b, money };
+}
+function updateAmountField() {
+  const { b, money } = styleAmount('txBucket', 'txAmountWrap', 'txAmount');
+  $('txAmountLabel').textContent = money ? 'Amount' : `How many ${b.unit}s`;
+  styleAmount('txBucket2', 'txAmount2Wrap', 'txAmount2');
 }
 $('txBucket').addEventListener('change', updateAmountField);
+$('txBucket2').addEventListener('change', updateAmountField);
 
 $('txForm').addEventListener('submit', e => {
   e.preventDefault();
   if (!$('txBucket').value) { alert('Pick a meal plan or enter a starting balance first.'); return; }
+  const parts = [{ bucket: $('txBucket').value, amount: Math.round(parseFloat($('txAmount').value) * 100) / 100 }];
+  const amt2 = Math.round(parseFloat($('txAmount2').value || 0) * 100) / 100;
+  if (!$('splitFields').hidden && amt2 > 0 && $('txBucket2').value !== parts[0].bucket) parts.push({ bucket: $('txBucket2').value, amount: amt2 });
   state.txns.push({
     id: crypto.randomUUID(),
     date: $('txDate').value,
     location: ($('txLocation').value === OTHER ? $('txLocationOther').value : $('txLocation').value).trim(),
     item: $('txItem').value.trim(),
-    bucket: $('txBucket').value,
-    amount: Math.round(parseFloat($('txAmount').value) * 100) / 100,
+    parts,
   });
   save(); render();
-  $('txAmount').value = ''; $('txItem').value = ''; $('txLocationOther').value = '';
+  $('txAmount').value = ''; $('txAmount2').value = ''; $('txItem').value = ''; $('txLocationOther').value = '';
   updateAmountField();
   $('txAmount').focus();
 });
@@ -442,7 +473,8 @@ function compute() {
   const txns = quick ? [] : [...state.txns].sort((a, b) => a.date.localeCompare(b.date));
 
   const buckets = activeBuckets().map(b => {
-    const r = { ...b, txns: txns.filter(t => t.bucket === b.key) };
+    // this bucket's share of each purchase, as {date, location, item, amount}
+    const r = { ...b, txns: txns.filter(t => partFor(t, b.key)).map(t => ({ date: t.date, location: t.location, item: t.item, amount: partFor(t, b.key).amount })) };
     if (b.period === 'unlimited') return { ...r, status: 'muted' };
     if (b.passive) {   // e.g. guest swipes: just count them, no pacing
       if (!(b.start > 0)) return { ...r, status: 'muted', noData: true };
@@ -498,7 +530,7 @@ function analyze(r) {
   if (!txns.length) return null;
   const uv = unitValue(r);
   const byKey = Object.fromEntries(r.buckets.map(b => [b.key, b]));
-  const dollars = t => byKey[t.bucket]?.kind === 'count' ? t.amount * (uv?.value || 0) : t.amount;
+  const dollars = t => t.parts.reduce((s, pt) => s + (byKey[pt.bucket]?.kind === 'count' ? pt.amount * (uv?.value || 0) : pt.amount), 0);
   const spent = txns.reduce((s, t) => s + dollars(t), 0);
 
   const byPlace = new Map();
@@ -542,7 +574,7 @@ function analyze(r) {
   const moneyB = r.buckets.find(b => b.kind === 'money' && b.period === 'semester' && !b.noData);
   const countB = r.buckets.find(b => b.kind === 'count' && b.period !== 'unlimited' && !b.noData && !b.passive);
   if (uv && !uv.estimated && moneyB && countB) {
-    const pricey = moneyB.txns.filter(t => t.amount > uv.value);
+    const pricey = moneyB.txns.filter(t => t.amount > uv.value);   // money spent per purchase from this bucket
     if (pricey.length) insights.push({ html: `A ${countB.unit} costs you <b>${fmt$(uv.value)}</b> on this plan. ${pricey.length} of your ${esc(moneyB.label)} purchases cost more than that — ${countB.status === 'warn' ? `and you have ${countB.unit}s to spare.` : `consider using ${countB.unit}s for those.`}` });
     else insights.push({ html: `A ${countB.unit} costs you <b>${fmt$(uv.value)}</b> on this plan; none of your ${esc(moneyB.label)} purchases beat that. Nice.` });
   }
@@ -558,7 +590,7 @@ function analyze(r) {
   }
   insights.push({ html: `${txns.length} purchases, about ${(txns.length / elapsed * 7).toFixed(1)} per week.` });
 
-  return { places, insights, uv, hasCount: txns.some(t => byKey[t.bucket]?.kind === 'count') };
+  return { places, insights, uv, hasCount: txns.some(t => t.parts.some(pt => byKey[pt.bucket]?.kind === 'count')) };
 }
 
 // ---------- render ----------
@@ -662,8 +694,10 @@ function renderTable() {
   $('txTable').hidden = !txns.length;
   const tb = $('txTable').tBodies[0];
   tb.replaceChildren(...txns.map(t => {
-    const d = defs[t.bucket];
-    const paid = !d ? fmt$(t.amount) : d.kind === 'money' ? `${fmt$(t.amount)} <span class="sub">${esc(d.label)}</span>` : plural(t.amount, d.unit);
+    const paid = t.parts.map(pt => {
+      const d = defs[pt.bucket];
+      return !d ? fmt$(pt.amount) : d.kind === 'money' ? `${fmt$(pt.amount)} <span class="sub">${esc(d.label)}</span>` : plural(pt.amount, d.unit);
+    }).join(' <span class="plus">+</span> ');
     const tr = document.createElement('tr');
     tr.innerHTML = `<td class="muted">${fmtDate(parse(t.date))}</td><td>${esc(t.location)}</td><td class="muted">${esc(t.item)}</td><td class="num">${paid}</td><td class="act"><button class="link danger" aria-label="Delete">✕</button></td>`;
     tr.querySelector('button').addEventListener('click', () => removeTx(t.id));
@@ -782,11 +816,14 @@ function sampleTxns(from, to) {
     for (let i = 0; i < meals; i++) {
       const useBlock = countB && (!moneyB || rnd() < 0.45);
       if (useBlock) {
-        out.push({ id: crypto.randomUUID(), date: toISO(d), location: halls[Math.floor(rnd() * halls.length)], item: ['Lunch', 'Dinner', 'Brunch'][Math.floor(rnd() * 3)], bucket: countB.key, amount: 1 });
+        const parts = [{ bucket: countB.key, amount: 1 }];
+        // sometimes a block plus a little money for a drink / extra side
+        if (moneyB && rnd() < 0.35) parts.push({ bucket: moneyB.key, amount: Math.round((2 + rnd() * 4) * 100) / 100 });
+        out.push({ id: crypto.randomUUID(), date: toISO(d), location: halls[Math.floor(rnd() * halls.length)], item: ['Lunch', 'Dinner', 'Brunch'][Math.floor(rnd() * 3)] + (parts.length > 1 ? ' + drink' : ''), parts });
       } else if (moneyB) {
         const loc = rnd() < 0.55 ? favs[Math.floor(rnd() * favs.length)] : cafes[Math.floor(rnd() * cafes.length)];
         const [item, base] = menu[Math.floor(rnd() * menu.length)];
-        out.push({ id: crypto.randomUUID(), date: toISO(d), location: loc, item, bucket: moneyB.key, amount: Math.round((base * (0.85 + rnd() * 0.4)) * 100) / 100 });
+        out.push({ id: crypto.randomUUID(), date: toISO(d), location: loc, item, parts: [{ bucket: moneyB.key, amount: Math.round((base * (0.85 + rnd() * 0.4)) * 100) / 100 }] });
       }
     }
   }
@@ -804,6 +841,7 @@ $('fileImport').addEventListener('change', async e => {
   try {
     const s = JSON.parse(await f.text());
     if (!Array.isArray(s.txns)) throw new Error('bad file');
+    s.txns = s.txns.map(normalizeTx);
     state = s; save(); location.reload();
   } catch { alert("That file doesn't look like a tracker export."); }
   e.target.value = '';

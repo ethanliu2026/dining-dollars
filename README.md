@@ -15,7 +15,7 @@ SteelHacks 2026. Track meal blocks, FLEX, Dining Dollars — whatever your schoo
 - Searchable school picker (type "pitt", "psu", "nova"…). School not listed? **Other** lets you name it, define what your plan is made of (swipes / blocks / dollars, per-semester / weekly / unlimited), list your places to eat, and enter your breaks
 - **Eating days, not calendar days**: choose whether you use the plan on weekends and on breaks/holidays. Every school's Fall 2026 breaks (Labor Day, fall break, Thanksgiving…) come from its official academic calendar, so "safe pace" is per day you'll actually be on campus
 - Every plan is a set of **buckets**: meal blocks/swipes (count) and FLEX/Dining Dollars (money), each per-semester, weekly (Pitt Weekly 14), or unlimited (Pitt Full-Access)
-- Two modes: **Track purchases** (log each meal and which bucket paid for it) or **Quick estimate** (just start + current per bucket)
+- Two modes: **Track purchases** (log each meal and which bucket paid for it — including split payments like a block + $3.50 FLEX) or **Quick estimate** (just start + current per bucket)
 - Per-bucket verdict: run out / on pace / wasting, safe daily pace, projected end
 - Chart per bucket: actual vs. projected vs. ideal pace
 - "Where it goes": spend by restaurant, plus insights — *"a block costs you $14.58 on this plan; 5 of your FLEX purchases cost more than that"*, *"cut Ciao Bella by 40% to get back on budget"*
@@ -66,8 +66,8 @@ state = {
   start:   { blocks: 205, flex: 880 }, // per-bucket starting allotment
   current: { blocks: 150, flex: 420 }, // quick-estimate mode only
   semStart: '2026-08-31', semEnd: '2026-12-13',
-  txns: [{ id, date: 'YYYY-MM-DD', location, item, bucket: 'flex', amount: 12.5 }],
+  txns: [{ id, date: 'YYYY-MM-DD', location, item, parts: [{ bucket: 'blocks', amount: 1 }, { bucket: 'flex', amount: 3.5 }] }],
 }
 ```
-A purchase is `amount` units of one `bucket` (dollars for money buckets, a count for block buckets).
+A purchase is one or more `parts`, each `amount` units of a `bucket` (dollars for money buckets, a count for block buckets). Older single-bucket records are migrated on load.
 Receipt OCR and Grubhub import should both just produce `txns` entries.

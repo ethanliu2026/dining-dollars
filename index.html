@@ -65,20 +65,21 @@
           <input id="asOf" type="date">
         </div>
 
+        <label>I use my plan on…</label>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="eatWeekends"> Weekends</label>
+          <label class="check"><input type="checkbox" id="eatBreaks"> Breaks &amp; holidays</label>
+        </div>
+        <p class="hint" id="eatSummary"></p>
+
         <details id="calendarDetails">
-          <summary>Semester dates &amp; when you eat on campus</summary>
+          <summary>Semester dates &amp; breaks</summary>
           <div class="row">
             <div><label for="semStart">First day</label><input id="semStart" type="date"></div>
             <div><label for="semEnd">Last day</label><input id="semEnd" type="date"></div>
           </div>
-          <label>I use my plan on…</label>
-          <div class="checks">
-            <label class="check"><input type="checkbox" id="eatWeekends"> Weekends</label>
-            <label class="check"><input type="checkbox" id="eatBreaks"> Breaks &amp; holidays</label>
-          </div>
           <p class="hint" id="breaksHint"></p>
         </details>
-        <p class="hint" id="eatSummary"></p>
       </section>
 
       <section class="card" id="logCard">
@@ -89,6 +90,17 @@
 
           <label for="txAmount" id="txAmountLabel">Amount</label>
           <div class="money" id="txAmountWrap"><span>$</span><input id="txAmount" type="number" min="0.01" step="0.01" placeholder="12.50" required></div>
+
+          <button type="button" class="link" id="btnSplit">+ Also paid with…</button>
+          <div id="splitFields" hidden>
+            <label for="txBucket2">Plus</label>
+            <div class="split">
+              <select id="txBucket2"></select>
+              <div class="money" id="txAmount2Wrap"><span>$</span><input id="txAmount2" type="number" min="0" step="0.01" placeholder="3.50"></div>
+              <button type="button" class="link danger" id="btnUnsplit" aria-label="Remove">✕</button>
+            </div>
+            <p class="hint">e.g. a block for the meal plus FLEX for the extras</p>
+          </div>
 
           <label for="txLocation">Where</label>
           <select id="txLocation" required></select>
