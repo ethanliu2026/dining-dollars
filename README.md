@@ -11,6 +11,8 @@ SteelHacks 2026. Track meal blocks, FLEX, Dining Dollars — whatever your schoo
 **Live:** https://ethanliu2026.github.io/dining-dollars/
 
 ## What it does
+Four sections (tabs on desktop, bottom nav on phones): **Home** (verdict, balances, chart, scan & log), **Setup** (school, plan, dates), **Insights** (where it goes, purchases), **Advisor**.
+
 - Pick your school and your **actual meal plan** → allotments and semester dates are filled in. Catalogs (all 2026–27, each linked to its official source): **CMU, Pitt, Penn State, Temple, Penn, Drexel, Duquesne, Villanova, Lehigh, Rutgers–NB**
 - Searchable school picker (type "pitt", "psu", "nova"…). School not listed? **Other** lets you name it, define what your plan is made of (swipes / blocks / dollars, per-semester / weekly / unlimited), list your places to eat, and enter your breaks
 - **Eating days, not calendar days**: choose whether you use the plan on weekends and on breaks/holidays. Every school's Fall 2026 breaks (Labor Day, fall break, Thanksgiving…) come from its official academic calendar, so "safe pace" is per day you'll actually be on campus

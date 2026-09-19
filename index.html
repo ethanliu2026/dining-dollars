@@ -23,66 +23,15 @@
     </div>
   </header>
 
-  <div class="grid">
-    <!-- Left column: setup + log -->
-    <div class="stack">
-      <section class="card">
-        <h2>Setup</h2>
-        <div class="seg" role="radiogroup" aria-label="Mode">
-          <button type="button" data-mode="log">Track purchases</button>
-          <button type="button" data-mode="quick">Quick estimate</button>
-        </div>
-        <p class="hint" id="modeHint"></p>
+  <nav class="tabs-nav" role="tablist" aria-label="Sections">
+    <button role="tab" data-tab="home"><span class="ico">🏠</span>Home</button>
+    <button role="tab" data-tab="setup"><span class="ico">⚙️</span>Setup</button>
+    <button role="tab" data-tab="insights"><span class="ico">📊</span>Insights</button>
+    <button role="tab" data-tab="advisor"><span class="ico">🎓</span>Advisor</button>
+  </nav>
 
-        <label for="schoolSearch">School</label>
-        <div class="combo">
-          <input id="schoolSearch" placeholder="Search your school…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="schoolList" aria-autocomplete="list">
-          <ul id="schoolList" role="listbox" hidden></ul>
-        </div>
-
-        <div id="customSchool" hidden>
-          <label for="customName">School name</label>
-          <input id="customName" placeholder="e.g. West Chester University">
-
-          <label>What your plan is made of</label>
-          <p class="hint" style="margin:0 0 6px">One row per thing you can pay with — swipes, blocks, dining dollars, points…</p>
-          <div id="bucketRows"></div>
-          <button type="button" class="link" id="addBucket">+ Add another</button>
-
-          <label for="customLocations">Places to eat <span style="color:var(--text-3)">(one per line)</span></label>
-          <textarea id="customLocations" rows="4" placeholder="Main Dining Hall&#10;Starbucks (Library)&#10;Chick-fil-A"></textarea>
-
-          <label for="customBreaks">Breaks &amp; holidays <span style="color:var(--text-3)">(one per line: name, start, end)</span></label>
-          <textarea id="customBreaks" rows="3" placeholder="Labor Day, 2026-09-07&#10;Fall Break, 2026-10-12, 2026-10-16&#10;Thanksgiving, 2026-11-25, 2026-11-29"></textarea>
-        </div>
-
-        <label for="plan">Meal plan</label>
-        <select id="plan"></select>
-        <p class="hint" id="planHint"></p>
-
-        <div id="startFields"></div>
-        <div id="quickFields" hidden>
-          <label for="asOf">As of</label>
-          <input id="asOf" type="date">
-        </div>
-
-        <label>I use my plan on…</label>
-        <div class="checks">
-          <label class="check"><input type="checkbox" id="eatWeekends"> Weekends</label>
-          <label class="check"><input type="checkbox" id="eatBreaks"> Breaks &amp; holidays</label>
-        </div>
-        <p class="hint" id="eatSummary"></p>
-
-        <details id="calendarDetails">
-          <summary>Semester dates &amp; breaks</summary>
-          <div class="row">
-            <div><label for="semStart">First day</label><input id="semStart" type="date"></div>
-            <div><label for="semEnd">Last day</label><input id="semEnd" type="date"></div>
-          </div>
-          <p class="hint" id="breaksHint"></p>
-        </details>
-      </section>
-
+  <div class="tab grid" data-tab="home">
+    <div class="stack" id="homeLeft">
       <section class="card" id="scanCard">
         <h2>Scan a receipt</h2>
         <label class="scan-btn" id="scanLabel">
@@ -144,9 +93,8 @@
           <button type="submit" class="primary">Add purchase</button>
         </form>
       </section>
-    </div>
 
-    <!-- Right column: results -->
+    </div>
     <div class="stack">
       <div id="verdict" class="verdict good" hidden>
         <p class="headline" id="vHead"></p>
@@ -172,10 +120,75 @@
         </div>
         <div class="chart-wrap">
           <canvas id="chartBalance" role="img" aria-label="Line chart of balance over the semester"></canvas>
-          <div class="empty" id="emptyBalance">Pick a plan and enter your balances to see the projection.</div>
+          <div class="empty" id="emptyBalance">Pick your school and plan in <button type="button" class="link" data-goto="setup">Setup</button> to see your projection.</div>
         </div>
       </section>
 
+    </div>
+  </div>
+
+  <div class="tab narrow" data-tab="setup">
+      <section class="card">
+        <h2>Setup</h2>
+        <div class="seg" role="radiogroup" aria-label="Mode">
+          <button type="button" data-mode="log">Track purchases</button>
+          <button type="button" data-mode="quick">Quick estimate</button>
+        </div>
+        <p class="hint" id="modeHint"></p>
+
+        <label for="schoolSearch">School</label>
+        <div class="combo">
+          <input id="schoolSearch" placeholder="Search your school…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="schoolList" aria-autocomplete="list">
+          <ul id="schoolList" role="listbox" hidden></ul>
+        </div>
+
+        <div id="customSchool" hidden>
+          <label for="customName">School name</label>
+          <input id="customName" placeholder="e.g. West Chester University">
+
+          <label>What your plan is made of</label>
+          <p class="hint" style="margin:0 0 6px">One row per thing you can pay with — swipes, blocks, dining dollars, points…</p>
+          <div id="bucketRows"></div>
+          <button type="button" class="link" id="addBucket">+ Add another</button>
+
+          <label for="customLocations">Places to eat <span style="color:var(--text-3)">(one per line)</span></label>
+          <textarea id="customLocations" rows="4" placeholder="Main Dining Hall&#10;Starbucks (Library)&#10;Chick-fil-A"></textarea>
+
+          <label for="customBreaks">Breaks &amp; holidays <span style="color:var(--text-3)">(one per line: name, start, end)</span></label>
+          <textarea id="customBreaks" rows="3" placeholder="Labor Day, 2026-09-07&#10;Fall Break, 2026-10-12, 2026-10-16&#10;Thanksgiving, 2026-11-25, 2026-11-29"></textarea>
+        </div>
+
+        <label for="plan">Meal plan</label>
+        <select id="plan"></select>
+        <p class="hint" id="planHint"></p>
+
+        <div id="startFields"></div>
+        <div id="quickFields" hidden>
+          <label for="asOf">As of</label>
+          <input id="asOf" type="date">
+        </div>
+
+        <label>I use my plan on…</label>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="eatWeekends"> Weekends</label>
+          <label class="check"><input type="checkbox" id="eatBreaks"> Breaks &amp; holidays</label>
+        </div>
+        <p class="hint" id="eatSummary"></p>
+
+        <details id="calendarDetails">
+          <summary>Semester dates &amp; breaks</summary>
+          <div class="row">
+            <div><label for="semStart">First day</label><input id="semStart" type="date"></div>
+            <div><label for="semEnd">Last day</label><input id="semEnd" type="date"></div>
+          </div>
+          <p class="hint" id="breaksHint"></p>
+        </details>
+      </section>
+
+  </div>
+
+  <div class="tab stack" data-tab="insights">
+    <div class="card empty" id="insightsEmpty" hidden>Insights need logged purchases — switch to <button type="button" class="link" data-goto="setup">Track purchases</button> in Setup and add a few on <button type="button" class="link" data-goto="home">Home</button>.</div>
       <section class="card" id="analytics" hidden>
         <h2>Where it goes</h2>
         <ul class="insights" id="insights"></ul>
@@ -193,9 +206,12 @@
             <tbody></tbody>
           </table>
         </div>
-        <div class="empty" id="emptyTx">Nothing logged yet.</div>
+        <div class="empty" id="emptyTx">Nothing logged yet — add purchases on <button type="button" class="link" data-goto="home">Home</button>.</div>
       </section>
 
+  </div>
+
+  <div class="tab narrow" data-tab="advisor">
       <section class="card" id="advisorCard" hidden>
         <h2>Plan advisor <span class="right">next semester</span></h2>
         <div class="seg" role="radiogroup" aria-label="Advisor mode">
@@ -215,7 +231,7 @@
         </div>
         <div id="advResults"></div>
       </section>
-    </div>
+
   </div>
 
   <footer id="footer">Data stays in your browser.</footer>

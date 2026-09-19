@@ -178,6 +178,7 @@ textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-c
   #summary th:last-child, #summary td:last-child { padding-right: 0; }
   #summary .sub { font-size: 11px; }
   #summary th:nth-child(5), #summary td:nth-child(5) { display: none; }   /* verdict list covers it */
+  .adv-table th:nth-child(3), .adv-table td:nth-child(3) { display: none; }   /* 'Includes' — fit + true cost matter more */
   table { font-size: 13px; }
   td, th { padding: 6px 5px; }
 }
@@ -247,3 +248,20 @@ input[type=range] { padding: 0; height: 28px; accent-color: var(--accent); backg
 .paste { margin-top: 10px; }
 .paste summary { font-size: 13px; }
 .paste textarea { margin-top: 8px; }
+
+/* section tabs */
+.tabs-nav { display: flex; gap: 4px; margin: 0 0 18px; padding: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.tabs-nav button { flex: 1; border: 0; background: none; color: var(--text-2); font-weight: 600; font-size: 14px; padding: 9px 8px; border-radius: 7px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.tabs-nav button[aria-selected="true"] { background: var(--accent); color: #fff; }
+.tabs-nav .ico { font-size: 15px; }
+.tab[hidden] { display: none !important; }
+.tab.narrow { max-width: 560px; }
+.tab.stack { display: grid; gap: 16px; }
+@media (max-width: 760px) {
+  body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  .tabs-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin: 0; border-radius: 0; border-width: 1px 0 0; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); box-shadow: 0 -6px 20px rgba(0,0,0,.15); }
+  .tabs-nav button { flex-direction: column; gap: 2px; font-size: 11px; padding: 6px 4px; }
+  .tabs-nav .ico { font-size: 20px; }
+  header { margin-bottom: 12px; }
+}
+.grid > .stack[hidden] + .stack { grid-column: 1 / -1; max-width: 720px; }

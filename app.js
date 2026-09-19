@@ -181,6 +181,7 @@ function setMode(m) {
   $('quickFields').hidden = m !== 'quick';
   $('logCard').hidden = m !== 'log';
   $('scanCard').hidden = m !== 'log';
+  $('homeLeft').hidden = m !== 'log';
   $('txCard').hidden = m !== 'log';
   renderStartFields();
   render();
@@ -608,7 +609,7 @@ function render() {
 
   $('verdict').hidden = !r; $('summaryCard').hidden = !r; $('emptyBalance').hidden = !!r;
   $('chartTabs').replaceChildren();
-  if (!r) { chartBalance?.destroy(); chartBalance = null; $('analytics').hidden = true; return; }
+  if (!r) { chartBalance?.destroy(); chartBalance = null; $('analytics').hidden = true; $('insightsEmpty').hidden = !$('txCard').hidden; return; }
 
   renderVerdict(r);
   renderSummary(r);
@@ -616,6 +617,7 @@ function render() {
 
   const a = r.quick ? null : analyze(r);
   $('analytics').hidden = !a;
+  $('insightsEmpty').hidden = !(!a && $('txCard').hidden);
   if (a) {
     $('insights').innerHTML = a.insights.map(i => `<li class="${i.hot ? 'hot' : ''}">${i.html}</li>`).join('');
     $('placesHint').textContent = a.hasCount && a.uv
@@ -852,6 +854,20 @@ $('fileImport').addEventListener('change', async e => {
   e.target.value = '';
 });
 
+// ---------- section tabs ----------
+const TAB_STORE = 'ddt.tab';
+function showTab(name, push = true) {
+  if (!document.querySelector(`.tab[data-tab="${name}"]`)) name = 'home';
+  for (const t of document.querySelectorAll('.tab')) t.hidden = t.dataset.tab !== name;
+  for (const b of document.querySelectorAll('.tabs-nav button')) b.setAttribute('aria-selected', b.dataset.tab === name);
+  try { localStorage.setItem(TAB_STORE, name); } catch {}
+  // charts drawn while hidden have no size; nudge them once visible
+  requestAnimationFrame(() => { chartBalance?.resize(); chartPlaces?.resize(); });
+  if (push) window.scrollTo({ top: 0 });
+}
+for (const b of document.querySelectorAll('.tabs-nav button')) b.addEventListener('click', () => showTab(b.dataset.tab));
+document.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if (g) showTab(g.dataset.goto); });
+
 // ---------- go ----------
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
 $('footer').innerHTML = `Data stays in your browser. Meal plan catalogs for ${Object.keys(PLANS).length} schools, each linked to its official source in the plan picker. Semester dates are defaults — check them in “Semester dates”.`;
@@ -861,3 +877,6 @@ fillPlans();
 loadLocations();
 fillBuckets();
 setMode(state.mode);
+// First visit with nothing set up → start on Setup; otherwise the last tab used.
+const hasSetup = Object.values(state.start || {}).some(v => v > 0) || state.txns.length;
+showTab(hasSetup ? (localStorage.getItem(TAB_STORE) || 'home') : 'setup', false);
