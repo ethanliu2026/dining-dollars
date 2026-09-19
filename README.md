@@ -1,15 +1,45 @@
-# Dining Dollars Burn-Rate Tracker
+# Dining Dollars Tracker
 
-SteelHacks 2026. Tells you whether you'll run out of Dining Dollars before the semester ends — or leave money on the table — and what your safe daily spend is.
+SteelHacks 2026. Log every meal, see where your Dining Dollars go, and find out whether you'll run out before the semester ends — or leave money on the table.
+
+**Live:** https://ethanliu2026.github.io/dining-dollars/
+
+## What it does
+- Pick your school (CMU / Pitt) → semester dates and dining locations are pre-filled
+- Log purchases (amount, where, what, when) — location autocompletes; CMU's list is pulled live from the [ScottyLabs Dining API](https://dining.apis.scottylabs.org/v2/locations)
+- Verdict: run out / on pace / wasting money, plus your **safe daily spend**
+- Balance chart: actual vs. projected vs. ideal pace
+- "Where it goes": spend by location, and insights like *"Ciao Bella is 27% of your spending — cutting it 40% gets you back on budget"*
+- Export / import JSON, sample data for demos. Everything stays in localStorage.
 
 ## Roadmap
-1. **Manual entry** — starting balance, current balance, date → projection + chart + safe daily spend
-2. **Receipt photos** — snap a receipt, auto-log the transaction
-3. **Import from services** — pull transactions from Grubhub / CMU dining portal
+1. ~~Manual entry + analytics~~ ✅
+2. **Receipt photos** — snap a receipt, auto-fill a purchase
+3. **Import** — pull transactions from Grubhub / the campus dining portal
+4. More schools
 
-## Getting started
+## Run locally
+No build step. Open `index.html`, or serve the folder (ES modules need http for the CMU API fetch):
+
 ```bash
-git clone https://github.com/ethanliu2026/dining-dollars.git
-cd dining-dollars
+python3 -m http.server 8765
 ```
-(setup instructions coming once we pick the stack)
+
+## Layout
+| File | What |
+|---|---|
+| `index.html` | markup |
+| `style.css` | styles (light/dark via CSS vars) |
+| `app.js` | state, math, charts, insights |
+| `schools.js` | per-school config: dates, currency name, locations. **Add a school here.** |
+
+### Data model
+```js
+state = {
+  school: 'cmu',
+  start: '1800',             // starting balance
+  semStart: '2026-08-31', semEnd: '2026-12-13',
+  txns: [{ id, date: 'YYYY-MM-DD', location, item, amount }],
+}
+```
+Receipt OCR and Grubhub import should both just produce `txns` entries.
