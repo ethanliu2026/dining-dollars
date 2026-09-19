@@ -25,7 +25,7 @@ Five sections (tabs on desktop, bottom nav on phones): **Home** (verdict, balanc
 - Export / import JSON, sample data for demos. Everything stays in localStorage.
 
 ## Meal plan data
-`plans.json` is the catalog (source of truth); `plans.js` is generated from it so the page works from `file://`. Each school's entry records its `source` URL and a `verified` date. Semester dates and breaks in `schools.js` were taken from each school's official Fall 2026 academic calendar (Lehigh's pacing-break dates are approximate); users can still edit dates under "Semester dates".
+`plans.json` is the catalog (source of truth); `plans.js` is generated from it so the page works from `file://`. Each school's entry records its `source` URL and a `verified` date. `schools.js` carries every school's **terms** (Fall 2026 and Spring 2027 — Winter + Spring quarters for Drexel) with start/end and no-class days from the official academic calendars; the app picks the term containing today (or the next one) when you choose a school, offers "Start next term" once a term ends, and dates remain editable. Approximate: Lehigh's breaks (inferred from part-of-term gaps), Villanova's Easter recess, Drexel's spring start.
 
 ```bash
 python3 scripts/update_plans.py        # re-fetch CMU's official PDF and regenerate
@@ -34,7 +34,7 @@ python3 scripts/update_plans.py --no-fetch   # just regenerate plans.js after ed
 CMU publishes plans as a [PDF agreement](https://www.cmu.edu/dining/your-dining-plan/26-27-uc-meal-plan-agreementfinal.pdf) which the script parses (needs `brew install poppler`). Pitt's [Dine On Campus page](https://dineoncampus.com/pitt/20262027-meal-memberships) blocks scripts, so its entry is hand-maintained — paste the page text into `scripts/pitt.txt` and re-run to parse it. The other eight schools were transcribed by hand from their dining sites (linked in `plans.json`).
 
 ### Adding a school
-1. `schools.js` — add an entry: name, `aliases`, `buckets` (what the plan is made of), Fall dates, `breaks`, `locations`
+1. `schools.js` — add an entry: name, `aliases`, `buckets` (what the plan is made of), `terms` (dates + breaks), `locations`
 2. `plans.json` — add its plans (`buckets` values are per-semester numbers, or `{amount, period}` for weekly/unlimited)
 3. `python3 scripts/update_plans.py --no-fetch`
 

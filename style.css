@@ -335,3 +335,7 @@ ul.tips .src { font-size: 11px; color: var(--text-3); margin-left: 4px; }
 .tip-add { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
 .tip-actions { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
 @media (max-width: 760px) { .tabs-nav button { font-size: 10px; } .pick-name { font-size: 22px; } }
+
+/* term picker */
+.term-over { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--warn-bg); border: 1px solid var(--warn); font-size: 14px; }
+.term-over button { font-size: 13px; }

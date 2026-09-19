@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=76a7e1a-5d06b3">
+<link rel="stylesheet" href="style.css?v=9ab0297-8019ae">
 </head>
 <body>
 <main>
@@ -199,6 +199,15 @@
         </div>
         <p class="hint" id="eatSummary"></p>
 
+        <div id="termOver" class="term-over" hidden>
+          <span id="termOverText"></span>
+          <button type="button" id="termNext">Start next term</button>
+        </div>
+        <div id="termWrap" hidden>
+          <label for="term">Term</label>
+          <select id="term"></select>
+        </div>
+
         <details id="calendarDetails">
           <summary>Semester dates &amp; breaks</summary>
           <div class="row">
@@ -366,16 +375,16 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=76a7e1a-5d06b3"></script>
-<script src="account-store.js?v=76a7e1a-5d06b3"></script>
-<script src="plans.js?v=76a7e1a-5d06b3"></script>
-<script src="schools.js?v=76a7e1a-5d06b3"></script>
-<script src="app.js?v=76a7e1a-5d06b3"></script>
-<script src="ocr.js?v=76a7e1a-5d06b3"></script>
-<script src="receipt.js?v=76a7e1a-5d06b3"></script>
-<script src="tips.js?v=76a7e1a-5d06b3"></script>
-<script src="eat.js?v=76a7e1a-5d06b3"></script>
-<script src="advisor.js?v=76a7e1a-5d06b3"></script>
-<script src="auth.js?v=76a7e1a-5d06b3"></script>
+<script src="auth-config.js?v=9ab0297-8019ae"></script>
+<script src="account-store.js?v=9ab0297-8019ae"></script>
+<script src="plans.js?v=9ab0297-8019ae"></script>
+<script src="schools.js?v=9ab0297-8019ae"></script>
+<script src="app.js?v=9ab0297-8019ae"></script>
+<script src="ocr.js?v=9ab0297-8019ae"></script>
+<script src="receipt.js?v=9ab0297-8019ae"></script>
+<script src="tips.js?v=9ab0297-8019ae"></script>
+<script src="eat.js?v=9ab0297-8019ae"></script>
+<script src="advisor.js?v=9ab0297-8019ae"></script>
+<script src="auth.js?v=9ab0297-8019ae"></script>
 </body>
 </html>

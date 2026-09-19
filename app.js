@@ -45,9 +45,9 @@ function load() {
 }
 function normalizeState(s) {
   const sch = SCHOOLS[s?.school] || s?.school === OTHER_SCHOOL ? s.school : 'cmu';
-  const dates = SCHOOLS[sch] || SCHOOLS.cmu;
+  const t0 = termFor(SCHOOLS[sch] || SCHOOLS.cmu) || { start: '2026-08-31', end: '2026-12-13' };
   const base = { mode: 'log', school: sch, planId: CUSTOM, start: {}, current: {}, asOf: toISO(today()),
-                 semStart: dates.semStart, semEnd: dates.semEnd, txns: [], custom: DEFAULT_CUSTOM(),
+                 semStart: t0.start, semEnd: t0.end, txns: [], custom: DEFAULT_CUSTOM(),
                  eat: { weekends: true, breaks: false }, blockValues: {} };
   const st = { ...base, ...(s || {}), asOf: s?.asOf || base.asOf,
                custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) }, eat: { ...base.eat, ...(s?.eat || {}) }, blockValues: { ...(s?.blockValues || {}) } };
@@ -117,6 +117,22 @@ function blockValueAt(location) {
   return { value: seen.reduce((a, b) => a + b, 0) / seen.length, source: 'receipts', n: seen.length };
 }
 
+// ---------- terms ----------
+// The term that contains `on` (today by default); otherwise the next upcoming one; otherwise the last.
+function termFor(sch, on = today()) {
+  const terms = sch?.terms || [];
+  if (!terms.length) return null;
+  const iso = toISO(on);
+  return terms.find(t => t.start <= iso && iso <= t.end) || terms.find(t => t.start > iso) || terms[terms.length - 1];
+}
+const termById = name => (school().terms || []).find(t => t.name === name) || null;
+// Next term after the one whose end date matches the current semEnd, if any.
+function nextTerm() {
+  const terms = school().terms || [];
+  const i = terms.findIndex(t => t.end === state.semEnd);
+  return i >= 0 ? terms[i + 1] || null : null;
+}
+
 function school() {
   if (state.school !== OTHER_SCHOOL) return SCHOOLS[state.school];
   const c = state.custom;
@@ -124,7 +140,7 @@ function school() {
     name: c.name || 'My school',
     buckets: Object.fromEntries(c.buckets.map(b => [b.key, { label: b.label || 'Untitled', kind: b.kind, period: b.period, unit: b.unit || 'swipe' }])),
     semStart: state.semStart, semEnd: state.semEnd,
-    locations: c.locations, breaks: c.breaks || [], aliases: [],
+    locations: c.locations, breaks: c.breaks || [], aliases: [], terms: [],
   };
 }
 const plan = () => (PLANS[state.school]?.plans || []).find(p => p.id === state.planId) || null;
@@ -201,9 +217,8 @@ function chooseSchool(id) {
   state.school = id;
   state.txns = [];
   if (id !== OTHER_SCHOOL) {
-    const sch = school();
-    state.semStart = $('semStart').value = sch.semStart;
-    state.semEnd = $('semEnd').value = sch.semEnd;
+    const t = termFor(school());
+    if (t) { state.semStart = $('semStart').value = t.start; state.semEnd = $('semEnd').value = t.end; }
   }
   state.planId = CUSTOM; state.start = {}; state.current = {};
   save(); $('schoolSearch').value = schoolLabel(id); refreshSchool();
@@ -278,7 +293,11 @@ $('eatBreaks').checked = state.eat.breaks;
 // optional. All rates (pace, safe pace) are per eating day.
 const WEEKEND = d => d.getDay() === 0 || d.getDay() === 6;
 function breaksFor() {
-  return (school().breaks || []).map(b => ({ ...b, s: parse(b.start), e: parse(b.end || b.start) })).filter(b => !isNaN(b.s) && !isNaN(b.e));
+  const sch = school();
+  const all = sch.terms?.length ? sch.terms.flatMap(t => t.breaks || []) : (sch.breaks || []);
+  const s0 = parse(state.semStart), e0 = parse(state.semEnd);
+  return all.map(b => ({ ...b, s: parse(b.start), e: parse(b.end || b.start) }))
+    .filter(b => !isNaN(b.s) && !isNaN(b.e) && b.e >= s0 && b.s <= e0);
 }
 function inBreak(d, breaks) { return breaks.find(b => d >= b.s && d <= b.e) || null; }
 function isEatDay(d, breaks) {
@@ -349,6 +368,37 @@ function renderStartFields() {
     wrap.appendChild(grid);
   }
 }
+
+function renderTermPicker() {
+  const terms = school().terms || [];
+  const wrap = $('termWrap');
+  wrap.hidden = !terms.length;
+  if (!terms.length) return;
+  const sel = $('term');
+  sel.replaceChildren(...terms.map(t => new Option(`${t.name} · ${fmtDate(parse(t.start))} – ${fmtDate(parse(t.end))}`, t.name)), new Option('Custom dates', '__custom'));
+  const cur = terms.find(t => t.start === state.semStart && t.end === state.semEnd);
+  sel.value = cur ? cur.name : '__custom';
+  // Semester over? Offer the next one.
+  const nt = nextTerm();
+  const over = today() > parse(state.semEnd) && nt;
+  $('termOver').hidden = !over;
+  if (over) $('termOverText').textContent = `${cur?.name || 'This term'} ended ${fmtDate(parse(state.semEnd))}. Start ${nt.name}?`;
+}
+$('term').addEventListener('change', e => {
+  const t = termById(e.target.value);
+  if (!t) return;
+  state.semStart = $('semStart').value = t.start; state.semEnd = $('semEnd').value = t.end;
+  save(); render();
+});
+$('termNext').addEventListener('click', () => {
+  const nt = nextTerm(); if (!nt) return;
+  const p = plan();
+  if (!confirm(`Start ${nt.name}? This clears this term's purchases and resets your balances${p ? ` to the ${p.name} allotment` : ''}. Export first if you want to keep them.`)) return;
+  state.txns = []; state.current = {};
+  if (p) for (const [k, v] of Object.entries(p.buckets)) state.start[k] = typeof v === 'object' ? v.amount : v;
+  state.semStart = $('semStart').value = nt.start; state.semEnd = $('semEnd').value = nt.end;
+  save(); renderStartFields(); fillBuckets(); render();
+});
 
 function refreshSchool() {
   $('customSchool').hidden = state.school !== OTHER_SCHOOL;
@@ -673,6 +723,7 @@ function render() {
   const r = compute();
   renderTable();
   renderEatSummary(r);
+  renderTermPicker();
 
   $('verdict').hidden = !r; $('summaryCard').hidden = !r; $('emptyBalance').hidden = !!r;
   $('chartTabs').replaceChildren();

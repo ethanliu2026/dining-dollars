@@ -8,6 +8,7 @@
 //   unit:   singular noun for count buckets
 window.SCHOOLS = {
   cmu: {
+    aliases: ['CMU', 'Carnegie Mellon University', 'Tartans'],
     name: 'Carnegie Mellon',
     buckets: {
       blocks: { label: 'Meal blocks', kind: 'count', unit: 'block', period: 'semester',
@@ -16,16 +17,21 @@ window.SCHOOLS = {
       dinex:  { label: 'DineXtra', kind: 'money', period: 'semester', optional: true,
                 hint: 'Bought separately; not part of a plan' },
     },
-    // Fall 2026 from the 26–27 academic calendar: first day of classes → last day of finals
-    semStart: '2026-08-31',
-    semEnd: '2026-12-13',
-    aliases: ['CMU', 'Carnegie Mellon University', 'Tartans'],
-    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
-    breaks: [
-      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
-      { name: 'Fall Break', start: '2026-10-12', end: '2026-10-16' },
-      { name: 'Democracy Day', start: '2026-11-03', end: '2026-11-03' },
-      { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+    // Terms with no-class days, from the official academic calendar. The app picks the
+    // term that contains today (or the next one). Dates stay editable in Setup.
+    terms: [
+      { name: 'Fall 2026', start: '2026-08-31', end: '2026-12-13',   // from the 26–27 academic calendar: first day of classes → last day of finals
+        breaks: [
+          { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+          { name: 'Fall Break', start: '2026-10-12', end: '2026-10-16' },
+          { name: 'Democracy Day', start: '2026-11-03', end: '2026-11-03' },
+          { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+        ] },
+      { name: 'Spring 2027', start: '2027-01-19', end: '2027-05-10',   // from the 26–27 academic calendar: first day of classes → last day of finals
+        breaks: [
+          { name: 'Spring Break', start: '2027-03-06', end: '2027-03-14' },
+          { name: 'Spring Carnival', start: '2027-04-15', end: '2027-04-16' },
+        ] },
     ],
     locations: [
       'Au Bon Pain at Skibo Café', 'Baroque Toast', 'Capital Grains', 'Ciao Bella',
@@ -61,6 +67,7 @@ window.SCHOOLS = {
     },
   },
   pitt: {
+    aliases: ['Pitt', 'UPitt', 'University of Pittsburgh', 'Panthers'],
     name: 'University of Pittsburgh',
     buckets: {
       meals:     { label: 'Meals', kind: 'count', unit: 'meal', period: 'semester',
@@ -70,15 +77,20 @@ window.SCHOOLS = {
       dd:        { label: 'Dining Dollars', kind: 'money', period: 'semester',
                    hint: '10% off at non-national-brand spots' },
     },
-    // Fall 2026 per the Registrar's 26–27 calendar: classes Aug 24, term ends Dec 12
-    semStart: '2026-08-24',
-    semEnd: '2026-12-12',
-    aliases: ['Pitt', 'UPitt', 'University of Pittsburgh', 'Panthers'],
-    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
-    breaks: [
-      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
-      { name: 'Fall Break', start: '2026-10-09', end: '2026-10-11' },
-      { name: 'Thanksgiving', start: '2026-11-22', end: '2026-11-29' },
+    // Terms with no-class days, from the official academic calendar. The app picks the
+    // term that contains today (or the next one). Dates stay editable in Setup.
+    terms: [
+      { name: 'Fall 2026', start: '2026-08-24', end: '2026-12-12',   // per the Registrar's 26–27 calendar: classes Aug 24, term ends Dec 12
+        breaks: [
+          { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+          { name: 'Fall Break', start: '2026-10-09', end: '2026-10-11' },
+          { name: 'Thanksgiving', start: '2026-11-22', end: '2026-11-29' },
+        ] },
+      { name: 'Spring 2027', start: '2027-01-11', end: '2027-05-01',   // per the Registrar's 26–27 calendar
+        breaks: [
+          { name: 'MLK Day', start: '2027-01-18', end: '2027-01-18' },
+          { name: 'Spring Recess', start: '2027-03-07', end: '2027-03-14' },
+        ] },
     ],
     locations: [
       'The Eatery (Towers)', 'The Perch (Sutherland)', 'Forbes Street Market', 'Cathedral Café',
@@ -90,6 +102,7 @@ window.SCHOOLS = {
   },
 
   psu: {
+    aliases: ['PSU', 'Penn State', 'Nittany Lions', 'State College'],
     name: 'Penn State (University Park)',
     // No swipes here: dining-commons meals are paid from Dining Dollars at set prices
     // ($3.20 breakfast / $4.90 lunch / $6.05 dinner on the Campus Meal Plan).
@@ -100,14 +113,19 @@ window.SCHOOLS = {
       lioncash: { label: 'LionCash', kind: 'money', period: 'semester', optional: true,
                   hint: 'Separate prepaid account; never expires' },
     },
-    // Fall 2026 per the Registrar: classes Aug 24, finals end Dec 18
-    semStart: '2026-08-24',
-    semEnd: '2026-12-18',
-    aliases: ['PSU', 'Penn State', 'Nittany Lions', 'State College'],
-    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
-    breaks: [
-      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
-      { name: 'Thanksgiving', start: '2026-11-22', end: '2026-11-28' },
+    // Terms with no-class days, from the official academic calendar. The app picks the
+    // term that contains today (or the next one). Dates stay editable in Setup.
+    terms: [
+      { name: 'Fall 2026', start: '2026-08-24', end: '2026-12-18',   // per the Registrar: classes Aug 24, finals end Dec 18
+        breaks: [
+          { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+          { name: 'Thanksgiving', start: '2026-11-22', end: '2026-11-28' },
+        ] },
+      { name: 'Spring 2027', start: '2027-01-11', end: '2027-05-07',   // per the Registrar
+        breaks: [
+          { name: 'MLK Day', start: '2027-01-18', end: '2027-01-18' },
+          { name: 'Spring Break', start: '2027-03-07', end: '2027-03-13' },
+        ] },
     ],
     locations: [
       'Pollock Commons', 'Redifer Commons (South)', 'Findlay Commons (East)', 'Waring Commons (West)',
@@ -118,6 +136,7 @@ window.SCHOOLS = {
     ],
   },
   temple: {
+    aliases: ['TU', 'Temple', 'Owls'],
     name: 'Temple University',
     buckets: {
       meals:   { label: 'Meals', kind: 'count', unit: 'meal', period: 'week',
@@ -126,15 +145,20 @@ window.SCHOOLS = {
       diamond: { label: 'Diamond Dollars', kind: 'money', period: 'semester', optional: true,
                  hint: 'Separate declining balance; not part of a meal plan' },
     },
-    // Fall 2026 per the Registrar: classes Aug 24, finals end Dec 15
-    semStart: '2026-08-24',
-    semEnd: '2026-12-15',
-    aliases: ['TU', 'Temple', 'Owls'],
-    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
-    breaks: [
-      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
-      { name: 'Fall Wellness Day', start: '2026-10-02', end: '2026-10-02' },
-      { name: 'Fall Break + Thanksgiving', start: '2026-11-23', end: '2026-11-29' },
+    // Terms with no-class days, from the official academic calendar. The app picks the
+    // term that contains today (or the next one). Dates stay editable in Setup.
+    terms: [
+      { name: 'Fall 2026', start: '2026-08-24', end: '2026-12-15',   // per the Registrar: classes Aug 24, finals end Dec 15
+        breaks: [
+          { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+          { name: 'Fall Wellness Day', start: '2026-10-02', end: '2026-10-02' },
+          { name: 'Fall Break + Thanksgiving', start: '2026-11-23', end: '2026-11-29' },
+        ] },
+      { name: 'Spring 2027', start: '2027-01-11', end: '2027-05-04',   // per the Registrar
+        breaks: [
+          { name: 'MLK Day', start: '2027-01-18', end: '2027-01-18' },
+          { name: 'Spring Break', start: '2027-03-01', end: '2027-03-07' },
+        ] },
     ],
     locations: [
       'Johnson & Hardwick Dining Hall', 'Esposito Dining Court (Morgan Hall)', 'Student Center Food Court',
@@ -143,6 +167,7 @@ window.SCHOOLS = {
     ],
   },
   penn: {
+    aliases: ['UPenn', 'Penn', 'Quakers'],
     name: 'University of Pennsylvania',
     buckets: {
       swipes: { label: 'Swipes', kind: 'count', unit: 'swipe', period: 'semester',
@@ -151,15 +176,19 @@ window.SCHOOLS = {
                 hint: 'Roll fall → spring; expire Commencement Day' },
       guest:  { label: 'Guest swipes', kind: 'count', unit: 'swipe', period: 'semester', optional: true, passive: true },
     },
-    // Fall 2026 per the Almanac three-year calendar: classes Aug 25, term ends Dec 17
-    semStart: '2026-08-25',
-    semEnd: '2026-12-17',
-    aliases: ['UPenn', 'Penn', 'Quakers'],
-    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
-    breaks: [
-      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
-      { name: 'Fall Term Break', start: '2026-10-01', end: '2026-10-04' },
-      { name: 'Thanksgiving', start: '2026-11-26', end: '2026-11-29' },
+    // Terms with no-class days, from the official academic calendar. The app picks the
+    // term that contains today (or the next one). Dates stay editable in Setup.
+    terms: [
+      { name: 'Fall 2026', start: '2026-08-25', end: '2026-12-17',   // per the Almanac three-year calendar: classes Aug 25, term ends Dec 17
+        breaks: [
+          { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+          { name: 'Fall Term Break', start: '2026-10-01', end: '2026-10-04' },
+          { name: 'Thanksgiving', start: '2026-11-26', end: '2026-11-29' },
+        ] },
+      { name: 'Spring 2027', start: '2027-01-20', end: '2027-05-17',   // per the Almanac three-year calendar
+        breaks: [
+          { name: 'Spring Term Break', start: '2027-03-06', end: '2027-03-14' },
+        ] },
     ],
     locations: [
       '1920 Commons', 'Hill House Dining', 'Lauder College House Dining', 'Falk Dining Commons (Hillel)',
@@ -168,6 +197,7 @@ window.SCHOOLS = {
     ],
   },
   drexel: {
+    aliases: ['Drexel', 'Dragons'],
     name: 'Drexel University',
     buckets: {
       meals: { label: 'Meals', kind: 'count', unit: 'meal', period: 'semester',
@@ -176,15 +206,23 @@ window.SCHOOLS = {
                hint: 'Roll to next term only if you buy another plan' },
       guest: { label: 'Guest meals', kind: 'count', unit: 'meal', period: 'semester', optional: true, passive: true },
     },
-    // Drexel is on quarters. Fall 2026 per the Provost's calendar: classes Sep 22, exams end Dec 12
-    semStart: '2026-09-22',
-    semEnd: '2026-12-12',
-    aliases: ['Drexel', 'Dragons'],
-    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
-    breaks: [
-      { name: "Indigenous Peoples' Day", start: '2026-10-12', end: '2026-10-12' },
-      { name: 'Election Day', start: '2026-11-03', end: '2026-11-03' },
-      { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+    // Terms with no-class days, from the official academic calendar. The app picks the
+    // term that contains today (or the next one). Dates stay editable in Setup.
+    terms: [
+      { name: 'Fall 2026', start: '2026-09-22', end: '2026-12-12',   // Drexel is on quarters. per the Provost's calendar: classes Sep 22, exams end Dec 12
+        breaks: [
+          { name: "Indigenous Peoples' Day", start: '2026-10-12', end: '2026-10-12' },
+          { name: 'Election Day', start: '2026-11-03', end: '2026-11-03' },
+          { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+        ] },
+      { name: 'Winter 2027', start: '2027-01-04', end: '2027-03-20',   // per the Provost's calendar
+        breaks: [
+          { name: 'MLK Day', start: '2027-01-18', end: '2027-01-18' },
+        ] },
+      { name: 'Spring 2027', start: '2027-03-29', end: '2027-06-12',   // exams end Jun 12 per the Provost's calendar; start date approximate
+        breaks: [
+          { name: 'Memorial Day', start: '2027-05-31', end: '2027-05-31' },
+        ] },
     ],
     locations: [
       'Urban Eatery', 'Handschumacher Dining Center', 'Northside Dining Terrace', 'Chick-fil-A (Northside)',
@@ -193,6 +231,7 @@ window.SCHOOLS = {
     ],
   },
   duq: {
+    aliases: ['DU', 'Duquesne', 'Dukes'],
     name: 'Duquesne University',
     buckets: {
       meals: { label: 'Meals', kind: 'count', unit: 'meal', period: 'semester',
@@ -201,15 +240,21 @@ window.SCHOOLS = {
       plus:  { label: 'PLUS Dollars', kind: 'money', period: 'semester', optional: true,
                hint: 'Bought separately; 10% bonus on load' },
     },
-    // Fall 2026 per the academic calendar: classes Aug 24, finals end Dec 17
-    semStart: '2026-08-24',
-    semEnd: '2026-12-17',
-    aliases: ['DU', 'Duquesne', 'Dukes'],
-    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
-    breaks: [
-      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
-      { name: 'Fall Class Break', start: '2026-10-19', end: '2026-10-20' },
-      { name: 'Thanksgiving', start: '2026-11-23', end: '2026-11-29' },
+    // Terms with no-class days, from the official academic calendar. The app picks the
+    // term that contains today (or the next one). Dates stay editable in Setup.
+    terms: [
+      { name: 'Fall 2026', start: '2026-08-24', end: '2026-12-17',   // per the academic calendar: classes Aug 24, finals end Dec 17
+        breaks: [
+          { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+          { name: 'Fall Class Break', start: '2026-10-19', end: '2026-10-20' },
+          { name: 'Thanksgiving', start: '2026-11-23', end: '2026-11-29' },
+        ] },
+      { name: 'Spring 2027', start: '2027-01-07', end: '2027-05-05',   // per the academic calendar
+        breaks: [
+          { name: 'MLK Day', start: '2027-01-18', end: '2027-01-18' },
+          { name: 'Spring Break', start: '2027-03-01', end: '2027-03-07' },
+          { name: 'Easter Break', start: '2027-03-25', end: '2027-03-29' },
+        ] },
     ],
     locations: [
       'Hogan Dining Center', 'Chick-fil-A', 'Cinco Cantina', 'The Incline', 'Campus Market (Towers)',
@@ -218,6 +263,7 @@ window.SCHOOLS = {
     ],
   },
   villanova: {
+    aliases: ['Nova', 'Villanova', 'Wildcats'],
     name: 'Villanova University',
     buckets: {
       meals:  { label: 'Meals', kind: 'count', unit: 'meal', period: 'week',
@@ -227,15 +273,21 @@ window.SCHOOLS = {
       nova:   { label: 'Nova Bucks', kind: 'money', period: 'semester', optional: true,
                 hint: 'Separate declining balance' },
     },
-    // Fall 2026 per the 26–27 catalog: classes Aug 24, finals end Dec 18
-    semStart: '2026-08-24',
-    semEnd: '2026-12-18',
-    aliases: ['Nova', 'Villanova', 'Wildcats'],
-    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
-    breaks: [
-      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
-      { name: 'Semester Recess', start: '2026-10-12', end: '2026-10-18' },
-      { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+    // Terms with no-class days, from the official academic calendar. The app picks the
+    // term that contains today (or the next one). Dates stay editable in Setup.
+    terms: [
+      { name: 'Fall 2026', start: '2026-08-24', end: '2026-12-18',   // per the 26–27 catalog: classes Aug 24, finals end Dec 18
+        breaks: [
+          { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+          { name: 'Semester Recess', start: '2026-10-12', end: '2026-10-18' },
+          { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+        ] },
+      { name: 'Spring 2027', start: '2027-01-11', end: '2027-05-07',   // per the 26–27 catalog; Easter recess dates approximate
+        breaks: [
+          { name: 'MLK Day', start: '2027-01-18', end: '2027-01-18' },
+          { name: 'Semester Recess', start: '2027-03-01', end: '2027-03-07' },
+          { name: 'Easter Recess (approx)', start: '2027-03-25', end: '2027-03-29' },
+        ] },
     ],
     locations: [
       'Dougherty Dining Hall', 'Donahue Dining Hall', "St. Mary's Dining Hall", 'The Pit (Dougherty)',
@@ -244,6 +296,7 @@ window.SCHOOLS = {
     ],
   },
   lehigh: {
+    aliases: ['Lehigh', 'Mountain Hawks'],
     name: 'Lehigh University',
     buckets: {
       swipes: { label: 'Swipes', kind: 'count', unit: 'swipe', period: 'semester',
@@ -251,15 +304,19 @@ window.SCHOOLS = {
       dd:     { label: 'Dining Dollars', kind: 'money', period: 'semester' },
       guest:  { label: 'Guest meals', kind: 'count', unit: 'meal', period: 'semester', optional: true, passive: true },
     },
-    // Fall 2026 per the 26–27 catalog: classes Aug 24, finals end Dec 16. Pacing break dates are approximate
-    semStart: '2026-08-24',
-    semEnd: '2026-12-16',
-    aliases: ['Lehigh', 'Mountain Hawks'],
-    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
-    breaks: [
-      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
-      { name: 'Pacing Break (approx)', start: '2026-10-12', end: '2026-10-13' },
-      { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+    // Terms with no-class days, from the official academic calendar. The app picks the
+    // term that contains today (or the next one). Dates stay editable in Setup.
+    terms: [
+      { name: 'Fall 2026', start: '2026-08-24', end: '2026-12-16',   // per the 26–27 catalog: classes Aug 24, finals end Dec 16. Pacing break dates are approximate
+        breaks: [
+          { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+          { name: 'Pacing Break (approx)', start: '2026-10-12', end: '2026-10-13' },
+          { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+        ] },
+      { name: 'Spring 2027', start: '2027-01-25', end: '2027-05-19',   // per the 26–27 catalog; spring break inferred from the part-of-term gap
+        breaks: [
+          { name: 'Spring Break (approx)', start: '2027-03-13', end: '2027-03-21' },
+        ] },
     ],
     locations: [
       'Rathbone Dining Hall', 'Brodhead House Dining', 'Clayton University Center Food Court', "The Hawk's Nest",
@@ -268,6 +325,7 @@ window.SCHOOLS = {
     ],
   },
   rutgers: {
+    aliases: ['RU', 'Rutgers', 'Scarlet Knights', 'New Brunswick'],
     name: 'Rutgers–New Brunswick',
     buckets: {
       meals:     { label: 'Meals', kind: 'count', unit: 'meal', period: 'semester',
@@ -275,14 +333,18 @@ window.SCHOOLS = {
       ruexpress: { label: 'RU Express', kind: 'money', period: 'semester', optional: true,
                    hint: 'Separate prepaid account' },
     },
-    // Fall 2026 per the University calendar: classes Sep 1, exams end Dec 22
-    semStart: '2026-09-01',
-    semEnd: '2026-12-22',
-    aliases: ['RU', 'Rutgers', 'Scarlet Knights', 'New Brunswick'],
-    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
-    breaks: [
-      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
-      { name: 'Thanksgiving', start: '2026-11-26', end: '2026-11-29' },
+    // Terms with no-class days, from the official academic calendar. The app picks the
+    // term that contains today (or the next one). Dates stay editable in Setup.
+    terms: [
+      { name: 'Fall 2026', start: '2026-09-01', end: '2026-12-22',   // per the University calendar: classes Sep 1, exams end Dec 22
+        breaks: [
+          { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+          { name: 'Thanksgiving', start: '2026-11-26', end: '2026-11-29' },
+        ] },
+      { name: 'Spring 2027', start: '2027-01-19', end: '2027-05-12',   // per the University calendar
+        breaks: [
+          { name: 'Spring Recess', start: '2027-03-13', end: '2027-03-21' },
+        ] },
     ],
     locations: [
       'Busch Dining Hall', 'Livingston Dining Commons', 'Neilson Dining Hall', 'The Atrium (College Ave)',
