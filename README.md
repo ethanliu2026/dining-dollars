@@ -75,6 +75,9 @@ On Home: how many blocks and how many dollars to use for the rest of today, spli
 ## Starting mid-semester
 Setup → "I'm starting mid-semester": pick the first day you're logging from and enter what you had left that day (from the GET / dining app). Everything used before that counts as spent, pacing and projections use the whole semester, and the chart draws a straight line from the semester start to that point, then follows your log.
 
+## Share my semester
+Insights → **Share my semester** draws a card (school, plan, blocks/dollars used, status, most-visited place, the advisor's verdict) on a canvas — nothing uploaded — and hands it to the phone's share sheet, or downloads it with the caption copied.
+
 ## Block values by place
 A block doesn't buy the same amount everywhere — at CMU one block might cover $15.50 at a dining hall and $9.75 at a café. Schools don't publish these, so the app **learns them**: a scanned receipt's tender line (`MEAL BLOCK −12.49`) records what the block covered there; the manual form has an optional "worth $" field; and Insights → "What a block is worth by place" lets you set or fix a value. With two or more places known it tells you where blocks go furthest and how much you've left on the table by using blocks where dollars would've been smarter. Where a value is known, "Where it goes" uses it instead of the plan's average cost per block.
 

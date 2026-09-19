@@ -347,3 +347,5 @@ ul.tips .src { font-size: 11px; color: var(--text-3); margin-left: 4px; }
 .today-table td:first-child { color: var(--text-2); white-space: nowrap; width: 1%; padding-right: 14px; }
 
 .mid-field label { color: var(--accent); }
+
+.share-preview { margin-top: 12px; width: 100%; max-width: 360px; border-radius: 12px; border: 1px solid var(--border); display: block; }

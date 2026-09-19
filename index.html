@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=6e1ddfb-b36805">
+<link rel="stylesheet" href="style.css?v=ba05ca2-78408e">
 </head>
 <body>
 <main>
@@ -246,6 +246,14 @@
         <p class="hint" id="placesHint"></p>
       </section>
 
+      <section class="card" id="shareCard">
+        <h2>Share</h2>
+        <p class="hint">A card with your semester so far — how much you've used, where you're headed, and what the advisor says. Made on your device; nothing is uploaded.</p>
+        <button type="button" class="primary" id="btnShare" style="width:auto;margin:0">Share my semester</button>
+        <p class="hint" id="shareHint"></p>
+        <div id="sharePreviewWrap" hidden><img id="sharePreview" alt="Your semester card" class="share-preview"></div>
+      </section>
+
       <section class="card" id="blockValues" hidden>
         <h2 id="blockValuesTitle">What a block is worth by place</h2>
         <p class="hint">Learned from receipts (the "MEAL BLOCK −$12.49" line) and anything you enter. Use blocks where they buy the most; pay with dollars where they buy the least.</p>
@@ -390,17 +398,18 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=6e1ddfb-b36805"></script>
-<script src="account-store.js?v=6e1ddfb-b36805"></script>
-<script src="plans.js?v=6e1ddfb-b36805"></script>
-<script src="schools.js?v=6e1ddfb-b36805"></script>
-<script src="app.js?v=6e1ddfb-b36805"></script>
-<script src="ocr.js?v=6e1ddfb-b36805"></script>
-<script src="receipt.js?v=6e1ddfb-b36805"></script>
-<script src="tips.js?v=6e1ddfb-b36805"></script>
-<script src="eat.js?v=6e1ddfb-b36805"></script>
-<script src="today.js?v=6e1ddfb-b36805"></script>
-<script src="advisor.js?v=6e1ddfb-b36805"></script>
-<script src="auth.js?v=6e1ddfb-b36805"></script>
+<script src="auth-config.js?v=ba05ca2-78408e"></script>
+<script src="account-store.js?v=ba05ca2-78408e"></script>
+<script src="plans.js?v=ba05ca2-78408e"></script>
+<script src="schools.js?v=ba05ca2-78408e"></script>
+<script src="app.js?v=ba05ca2-78408e"></script>
+<script src="ocr.js?v=ba05ca2-78408e"></script>
+<script src="receipt.js?v=ba05ca2-78408e"></script>
+<script src="tips.js?v=ba05ca2-78408e"></script>
+<script src="eat.js?v=ba05ca2-78408e"></script>
+<script src="today.js?v=ba05ca2-78408e"></script>
+<script src="advisor.js?v=ba05ca2-78408e"></script>
+<script src="share.js?v=ba05ca2-78408e"></script>
+<script src="auth.js?v=ba05ca2-78408e"></script>
 </body>
 </html>
