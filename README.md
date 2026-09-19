@@ -78,6 +78,9 @@ No, you can't pull orders from Grubhub — there's no consumer API, and scraping
 3. ~~Plan advisor + first-year picker~~ ✅
 4. More schools
 
+## Deploying (GitHub Pages, CMU AFS, anywhere static)
+Copy the folder as-is. Asset URLs in `index.html` carry a `?v=<git hash>` stamp so browsers never reuse a stale `app.js` after an upload — a pre-commit hook keeps it current (`sh scripts/install-hooks.sh` once per clone, or run `python3 scripts/stamp.py` by hand before uploading). `.htaccess` additionally asks Apache to revalidate; AFS needs `fs setacl -dir ~/www/<folder> -acl system:anyuser rl` on any new directory.
+
 ## Run locally
 No build step. Just open `index.html` in a browser, or serve the folder:
 

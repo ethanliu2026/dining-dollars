@@ -1,0 +1,7 @@
+# Ask browsers to revalidate JS/CSS/HTML on every load (files are small; the ?v= stamps
+# in index.html already make new uploads distinct). Harmless where .htaccess is ignored.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js|css|json)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
