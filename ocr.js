@@ -145,7 +145,10 @@ function parseReceipt(text) {
         // quantity only from the text part, never from inside a price like "12.49 x"
         const textPart = lines[i].replace(MONEY_LOOSE, ' ');
         const q = textPart.match(/(?:^|\s)(\d)\s*x(?:\s|$)|(?:^|\s)x\s*(\d)\b|qty\s*(\d)/i);
-        parts.push({ bucket: b.key, amount: q ? +(q[1] || q[2] || q[3]) : 1 });
+        const part = { bucket: b.key, amount: q ? +(q[1] || q[2] || q[3]) : 1 };
+        const worth = lastMoney(lines[i]);   // "MEAL BLOCK -12.49": what the block covered
+        if (worth > 0) part.value = worth;
+        parts.push(part);
       }
       usedLines.add(i);
       break;   // one line per bucket

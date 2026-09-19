@@ -305,3 +305,10 @@ input[type=range] { padding: 0; height: 28px; accent-color: var(--accent); backg
   header { margin-bottom: 12px; }
 }
 .grid > .stack[hidden] + .stack { grid-column: 1 / -1; max-width: 720px; }
+
+/* block values by place */
+.bv-table td { padding: 8px 6px; }
+.bv-table .sub { display: block; font-size: 12px; color: var(--text-3); font-weight: normal; }
+.bv-table td:first-child { padding-left: 0; }
+.bv-add { display: grid; grid-template-columns: 1fr 110px auto; gap: 6px; margin-top: 12px; align-items: center; }
+.bv-add .money input { padding-left: 24px; }

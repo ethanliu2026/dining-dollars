@@ -48,9 +48,9 @@ function normalizeState(s) {
   const dates = SCHOOLS[sch] || SCHOOLS.cmu;
   const base = { mode: 'log', school: sch, planId: CUSTOM, start: {}, current: {}, asOf: toISO(today()),
                  semStart: dates.semStart, semEnd: dates.semEnd, txns: [], custom: DEFAULT_CUSTOM(),
-                 eat: { weekends: true, breaks: false } };
+                 eat: { weekends: true, breaks: false }, blockValues: {} };
   const st = { ...base, ...(s || {}), asOf: s?.asOf || base.asOf,
-               custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) }, eat: { ...base.eat, ...(s?.eat || {}) } };
+               custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) }, eat: { ...base.eat, ...(s?.eat || {}) }, blockValues: { ...(s?.blockValues || {}) } };
   st.school = sch;
   st.txns = (Array.isArray(st.txns) ? st.txns : []).map(normalizeTx);
   return st;
@@ -105,6 +105,17 @@ function normalizeTx(t) {
   return { ...rest, parts: [{ bucket, amount }] };
 }
 const partFor = (t, key) => t.parts.find(pt => pt.bucket === key);
+
+// What one block/swipe buys at a location, in dollars: a manual entry wins, otherwise the
+// average of values seen on receipts there ("MEAL BLOCK -12.49"). null if unknown.
+function blockValueAt(location) {
+  const manual = +state.blockValues?.[location];
+  if (manual > 0) return { value: manual, source: 'manual', n: 0 };
+  const seen = [];
+  for (const t of state.txns) if (t.location === location) for (const pt of t.parts) if (pt.value > 0 && pt.amount > 0) seen.push(pt.value / pt.amount);
+  if (!seen.length) return null;
+  return { value: seen.reduce((a, b) => a + b, 0) / seen.length, source: 'receipts', n: seen.length };
+}
 
 function school() {
   if (state.school !== OTHER_SCHOOL) return SCHOOLS[state.school];
@@ -471,6 +482,7 @@ function styleAmount(selId, wrapId, inpId) {
 function updateAmountField() {
   const { b, money } = styleAmount('txBucket', 'txAmountWrap', 'txAmount');
   $('txAmountLabel').textContent = money ? 'Amount' : `How many ${b.unit}s`;
+  $('txWorthWrap').hidden = money;   // "worth $" only makes sense for blocks/swipes
   styleAmount('txBucket2', 'txAmount2Wrap', 'txAmount2');
 }
 $('txBucket').addEventListener('change', updateAmountField);
@@ -480,6 +492,8 @@ $('txForm').addEventListener('submit', e => {
   e.preventDefault();
   if (!$('txBucket').value) { alert('Pick a meal plan or enter a starting balance first.'); return; }
   const parts = [{ bucket: $('txBucket').value, amount: Math.round(parseFloat($('txAmount').value) * 100) / 100 }];
+  const worth = Math.round(parseFloat($('txWorth').value || 0) * 100) / 100;
+  if (!$('txWorthWrap').hidden && worth > 0) parts[0].value = worth;
   const amt2 = Math.round(parseFloat($('txAmount2').value || 0) * 100) / 100;
   if (!$('splitFields').hidden && amt2 > 0 && $('txBucket2').value !== parts[0].bucket) parts.push({ bucket: $('txBucket2').value, amount: amt2 });
   state.txns.push({
@@ -490,7 +504,7 @@ $('txForm').addEventListener('submit', e => {
     parts,
   });
   save(); render();
-  $('txAmount').value = ''; $('txAmount2').value = ''; $('txItem').value = ''; $('txLocationOther').value = '';
+  $('txAmount').value = ''; $('txAmount2').value = ''; $('txWorth').value = ''; $('txItem').value = ''; $('txLocationOther').value = '';
   updateAmountField();
   $('txAmount').focus();
 });
@@ -569,7 +583,7 @@ function analyze(r) {
   if (!txns.length) return null;
   const uv = unitValue(r);
   const byKey = Object.fromEntries(r.buckets.map(b => [b.key, b]));
-  const dollars = t => t.parts.reduce((s, pt) => s + (byKey[pt.bucket]?.kind === 'count' ? pt.amount * (uv?.value || 0) : pt.amount), 0);
+  const dollars = t => t.parts.reduce((s, pt) => s + (byKey[pt.bucket]?.kind === 'count' ? (pt.value > 0 ? pt.value : pt.amount * (uv?.value || 0)) : pt.amount), 0);
   const spent = txns.reduce((s, t) => s + dollars(t), 0);
 
   const byPlace = new Map();
@@ -618,6 +632,16 @@ function analyze(r) {
     else insights.push({ html: `A ${countB.unit} costs you <b>${fmt$(uv.value)}</b> on this plan; none of your ${esc(moneyB.label)} purchases beat that. Nice.` });
   }
 
+  // Block value by place: where do your blocks buy the most?
+  const blockPlaces = blockValueTable();
+  if (blockPlaces.length >= 2) {
+    const hi = blockPlaces[0], lo = blockPlaces[blockPlaces.length - 1];
+    if (hi.value - lo.value >= 1.5) {
+      const unitTxt = uv && !uv.estimated ? ` (a block costs you ${fmt$(uv.value)})` : '';
+      insights.push({ hot: lo.value < (uv?.value || 0) - 1, html: `A block buys <b>${fmt$(hi.value)}</b> of food at ${esc(hi.location)} but only <b>${fmt$(lo.value)}</b> at ${esc(lo.location)}${unitTxt}. ${lo.uses ? `Your ${lo.uses} block${lo.uses > 1 ? 's' : ''} at ${esc(lo.location)} left ~${fmt$((hi.value - lo.value) * lo.uses)} on the table — pay there with ${esc(moneyB?.label || 'dollars')} and save blocks for ${esc(hi.location)}.` : ''}` });
+    }
+  }
+
   const dowStats = byDow.map((d, i) => ({ i, avg: d.days.size ? d.total / d.days.size : 0, n: d.days.size })).filter(d => d.n >= 2);
   if (dowStats.length >= 3) {
     const worst = dowStats.reduce((m, d) => d.avg > m.avg ? d : m);
@@ -629,7 +653,17 @@ function analyze(r) {
   }
   insights.push({ html: `${txns.length} purchases, about ${(txns.length / elapsed * 7).toFixed(1)} per week.` });
 
-  return { places, insights, uv, hasCount: txns.some(t => t.parts.some(pt => byKey[pt.bucket]?.kind === 'count')) };
+  return { places, insights, uv, blockPlaces, hasCount: txns.some(t => t.parts.some(pt => byKey[pt.bucket]?.kind === 'count')) };
+}
+
+// Every place with a known block value, best first, with how many blocks you've used there.
+function blockValueTable() {
+  const defs = school().buckets;
+  const uses = new Map();
+  for (const t of state.txns) for (const pt of t.parts) if (defs[pt.bucket]?.kind === 'count') uses.set(t.location, (uses.get(t.location) || 0) + pt.amount);
+  const places = new Set([...Object.keys(state.blockValues || {}), ...uses.keys()]);
+  return [...places].map(loc => ({ location: loc, ...(blockValueAt(loc) || {}), uses: uses.get(loc) || 0 }))
+    .filter(r => r.value > 0).sort((a, b) => b.value - a.value);
 }
 
 // ---------- render ----------
@@ -655,11 +689,48 @@ function render() {
     $('insights').innerHTML = a.insights.map(i => `<li class="${i.hot ? 'hot' : ''}">${i.html}</li>`).join('');
     $('placesHint').textContent = a.hasCount && a.uv
       ? (a.uv.estimated ? `Blocks/meals counted at an estimated ${fmt$(a.uv.value)} each — pick your plan for the real number.`
-                        : `Blocks/meals counted at ${fmt$(a.uv.value)} each — what your plan actually charges per ${r.buckets.find(b => b.kind === 'count')?.unit || 'block'}.`)
+                        : `Blocks/meals counted at what they actually bought when the receipt says so, otherwise at ${fmt$(a.uv.value)} — what your plan charges per ${r.buckets.find(b => b.kind === 'count')?.unit || 'block'}.`)
       : '';
     drawPlaces(a);
+    renderBlockValues(a.blockPlaces);
   }
 }
+
+function renderBlockValues(rows) {
+  const box = $('blockValues');
+  const defs = school().buckets;
+  const countB = Object.values(defs).find(d => d.kind === 'count' && !d.passive);
+  if (!countB) { box.hidden = true; return; }
+  box.hidden = false;
+  const unit = countB.unit;
+  $('blockValuesTitle').textContent = `What a ${unit} is worth by place`;
+  if (!rows.length) {
+    $('blockValuesBody').innerHTML = `<p class="hint">Unknown so far. Scan a receipt that shows a ${unit} payment, or type a value when logging a ${unit} ("worth $"), or add one below.</p>`;
+  } else {
+    $('blockValuesBody').innerHTML = `<table class="bv-table"><tbody>${rows.map(r => `<tr>
+      <td>${esc(r.location)}</td>
+      <td class="num"><b>${fmt$(r.value)}</b><span class="sub">${r.source === 'manual' ? 'you set this' : `from ${r.n} receipt${r.n > 1 ? 's' : ''}`}</span></td>
+      <td class="num muted">${r.uses ? plural(r.uses, unit) : ''}</td>
+      <td class="act"><button class="link" data-bv-edit="${esc(r.location)}" aria-label="Edit">✎</button></td>
+    </tr>`).join('')}</tbody></table>`;
+    for (const b of box.querySelectorAll('[data-bv-edit]')) b.addEventListener('click', () => {
+      const cur = blockValueAt(b.dataset.bvEdit)?.value;
+      const v = prompt(`What does one ${unit} cover at ${b.dataset.bvEdit}? ($)`, cur ? cur.toFixed(2) : '');
+      if (v === null) return;
+      if (+v > 0) state.blockValues[b.dataset.bvEdit] = +v; else delete state.blockValues[b.dataset.bvEdit];
+      save(); render();
+    });
+  }
+}
+$('bvAdd').addEventListener('click', () => {
+  const loc = $('bvPlace').value, v = +$('bvValue').value;
+  if (!loc || loc === OTHER || !(v > 0)) return;
+  state.blockValues[loc] = v; $('bvValue').value = '';
+  save(); render();
+});
+// keep the "add a place" dropdown in step with the location list
+const _fillBvPlaces = () => { const sel = $('bvPlace'); const keep = sel.value; sel.replaceChildren(...[...$('txLocation').options].filter(o => o.value && o.value !== OTHER).map(o => new Option(o.text, o.value))); if ([...sel.options].some(o => o.value === keep)) sel.value = keep; };
+new MutationObserver(_fillBvPlaces).observe($('txLocation'), { childList: true });
 
 function describe(b, r) {
   if (b.period === 'unlimited') return `${b.label}: unlimited.`;
@@ -736,7 +807,7 @@ function renderTable() {
   tb.replaceChildren(...txns.map(t => {
     const paid = t.parts.map(pt => {
       const d = defs[pt.bucket];
-      return !d ? fmt$(pt.amount) : d.kind === 'money' ? `${fmt$(pt.amount)} <span class="sub">${esc(d.label)}</span>` : plural(pt.amount, d.unit);
+      return !d ? fmt$(pt.amount) : d.kind === 'money' ? `${fmt$(pt.amount)} <span class="sub">${esc(d.label)}</span>` : `${plural(pt.amount, d.unit)}${pt.value > 0 ? ` <span class="sub">worth ${fmt$(pt.value)}</span>` : ''}`;
     }).join(' <span class="plus">+</span> ');
     const tr = document.createElement('tr');
     tr.innerHTML = `<td class="muted">${fmtDate(parse(t.date))}</td><td>${esc(t.location)}</td><td class="muted">${esc(t.item)}</td><td class="num">${paid}</td><td class="act"><button class="link danger" aria-label="Delete">✕</button></td>`;
@@ -856,10 +927,13 @@ function sampleTxns(from, to) {
     for (let i = 0; i < meals; i++) {
       const useBlock = countB && (!moneyB || rnd() < 0.45);
       if (useBlock) {
-        const parts = [{ bucket: countB.key, amount: 1 }];
+        const hall = halls[Math.floor(rnd() * halls.length)];
+        // each place has its own block value (what the block covered on the receipt)
+        const worth = 10.5 + ((hall.charCodeAt(0) * 5) % 6) + Math.round(rnd() * 100) / 100;
+        const parts = [{ bucket: countB.key, amount: 1, value: Math.round(worth * 100) / 100 }];
         // sometimes a block plus a little money for a drink / extra side
         if (moneyB && rnd() < 0.35) parts.push({ bucket: moneyB.key, amount: Math.round((2 + rnd() * 4) * 100) / 100 });
-        out.push({ id: crypto.randomUUID(), date: toISO(d), location: halls[Math.floor(rnd() * halls.length)], item: ['Lunch', 'Dinner', 'Brunch'][Math.floor(rnd() * 3)] + (parts.length > 1 ? ' + drink' : ''), parts });
+        out.push({ id: crypto.randomUUID(), date: toISO(d), location: hall, item: ['Lunch', 'Dinner', 'Brunch'][Math.floor(rnd() * 3)] + (parts.length > 1 ? ' + drink' : ''), parts });
       } else if (moneyB) {
         const loc = rnd() < 0.55 ? favs[Math.floor(rnd() * favs.length)] : cafes[Math.floor(rnd() * cafes.length)];
         const [item, base] = menu[Math.floor(rnd() * menu.length)];

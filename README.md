@@ -69,6 +69,9 @@ Pick your group (first-year / returning resident / on-campus apartment / off-cam
 
 Scoring: **true cost** = plan price + what you'd pay out of pocket for anything it doesn't cover (dining-hall meals at ~$14, money 1:1). Lowest true cost wins; ties within 1% are called out; if the winner involves out-of-pocket spending, the cheapest plan that fully covers you is offered too. Unused swipes are valued at what the plan charges per swipe (`(price − dollars) ÷ swipes`) and shown as waste. Money-only schools (Penn State) convert meals to dollars via `hallMealCost` in `schools.js`.
 
+## Block values by place
+A block doesn't buy the same amount everywhere — at CMU one block might cover $15.50 at a dining hall and $9.75 at a café. Schools don't publish these, so the app **learns them**: a scanned receipt's tender line (`MEAL BLOCK −12.49`) records what the block covered there; the manual form has an optional "worth $" field; and Insights → "What a block is worth by place" lets you set or fix a value. With two or more places known it tells you where blocks go furthest and how much you've left on the table by using blocks where dollars would've been smarter. Where a value is known, "Where it goes" uses it instead of the plan's average cost per block.
+
 ## Importing orders
 No, you can't pull orders from Grubhub — there's no consumer API, and scraping a logged-in session breaks their terms and breaks constantly. What works: **paste the order-confirmation email** (or a GET-app receipt) into "Or paste an order confirmation" under Scan a receipt; it runs through the same parser as the OCR path.
 

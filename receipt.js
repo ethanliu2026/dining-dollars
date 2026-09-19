@@ -34,8 +34,9 @@ function receiptSchema(bucketKeys) {
           properties: {
             bucket: { type: 'string', enum: bucketKeys },
             amount: { type: 'number', description: 'Dollars for money buckets; number of blocks/swipes for count buckets' },
+            value: { type: ['number', 'null'], description: 'For a block/swipe: the dollar amount it covered, as printed on that tender line (e.g. "MEAL BLOCK -12.49" → 12.49). null for money buckets or if not printed.' },
           },
-          required: ['bucket', 'amount'], additionalProperties: false,
+          required: ['bucket', 'amount', 'value'], additionalProperties: false,
         },
       },
       notes: { type: 'string', description: 'Anything uncertain, e.g. "total partly cut off"' },
@@ -164,7 +165,7 @@ async function handleReceipt(file) {
     if (!r.is_receipt) { scanStatus("That doesn't look like a receipt. Try again with the whole receipt in frame.", 'error'); return; }
     if (owner !== window.trackerAccount?.generation || receiptState !== state) return;
     const defs = school().buckets;
-    const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100 }));
+    const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100, ...(defs[p.bucket].kind === 'count' && p.value > 0 ? { value: Math.round(p.value * 100) / 100 } : {}) }));
     if (!parts.length) { scanStatus(`Read "${r.location}" but couldn't find a meal-plan payment on it${r.notes ? ` (${r.notes})` : ''}. ${engine() === 'local' ? 'Try a sharper photo, or log it by hand below.' : 'Paid with card?'}`, 'error'); return; }
     const date = /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') && parse(r.date) <= today() ? r.date : toISO(today());
     const tx = { id: crypto.randomUUID(), date, location: pickLocation(r.location || 'Unknown', r.location_in_list), item: r.item_summary || (r.items || []).join(', '), parts };
@@ -186,7 +187,7 @@ async function handleReceipt(file) {
 
 function showScanResult(tx, r) {
   const defs = school().buckets;
-  const paid = tx.parts.map(p => defs[p.bucket].kind === 'money' ? `${fmt$(p.amount)} ${defs[p.bucket].label}` : plural(p.amount, defs[p.bucket].unit)).join(' + ');
+  const paid = tx.parts.map(p => defs[p.bucket].kind === 'money' ? `${fmt$(p.amount)} ${defs[p.bucket].label}` : `${plural(p.amount, defs[p.bucket].unit)}${p.value ? ` (worth ${fmt$(p.value)})` : ''}`).join(' + ');
   const uncertain = !r.location_in_list || (r.notes && r.notes.trim()) || engine() === 'local';
   $('scanResult').className = 'scan-result' + (uncertain ? ' warn' : '');
   $('scanTag').textContent = uncertain ? 'Logged — check this' : 'Logged';
@@ -240,7 +241,7 @@ $('pasteGo').addEventListener('click', () => {
   $('scanResult').hidden = true;
   const r = parseReceipt(text);
   const defs = school().buckets;
-  const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100 }));
+  const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100, ...(defs[p.bucket].kind === 'count' && p.value > 0 ? { value: Math.round(p.value * 100) / 100 } : {}) }));
   if (!parts.length) { scanStatus(`Couldn't find a meal-plan payment in that text${r.notes ? ` (${r.notes})` : ''}. Log it by hand below.`, 'error'); return; }
   const date = /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') && parse(r.date) <= today() ? r.date : toISO(today());
   const tx = { id: crypto.randomUUID(), date, location: pickLocation(r.location || 'Unknown', r.location_in_list), item: r.item_summary || '', parts };
