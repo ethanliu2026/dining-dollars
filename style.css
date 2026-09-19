@@ -312,3 +312,26 @@ input[type=range] { padding: 0; height: 28px; accent-color: var(--accent); backg
 .bv-table td:first-child { padding-left: 0; }
 .bv-add { display: grid; grid-template-columns: 1fr 110px auto; gap: 6px; margin-top: 12px; align-items: center; }
 .bv-add .money input { padding-left: 24px; }
+
+/* where to eat */
+.seg.three { grid-template-columns: repeat(4, 1fr); }
+#eatDecide { margin-top: 12px; }
+.pick { margin-top: 14px; padding: 16px 18px; border-radius: 12px; background: var(--good-bg); border: 1px solid var(--good); }
+.pick-label { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--good); font-weight: 600; }
+.pick-name { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; margin: 2px 0 2px; }
+.pick-area { font-size: 13px; color: var(--text-2); }
+.pick-why { margin: 10px 0 0; padding-left: 18px; font-size: 14px; }
+.pick-why li { margin: 2px 0; }
+.pick-why .flag { color: var(--warn); }
+.pick-why .tip { list-style: none; margin-left: -18px; }
+.pick-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.alts { margin-top: 10px; font-size: 14px; color: var(--text-2); }
+.alts .alt { padding: 0 2px; font-weight: 600; }
+#tipsBody h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); margin: 14px 0 6px; }
+#tipsBody h3:first-child { margin-top: 0; }
+ul.tips { margin: 0; padding-left: 18px; font-size: 14px; }
+ul.tips li { margin: 4px 0; }
+ul.tips .src { font-size: 11px; color: var(--text-3); margin-left: 4px; }
+.tip-add { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.tip-actions { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
+@media (max-width: 760px) { .tabs-nav button { font-size: 10px; } .pick-name { font-size: 22px; } }

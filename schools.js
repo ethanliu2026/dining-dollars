@@ -47,6 +47,18 @@ window.SCHOOLS = {
       const data = await res.json();
       return data.map(l => titleCase(l.name));
     },
+    // Richer live data for the "where to eat" decider: hours, ratings, today's specials.
+    async fetchLive() {
+      const res = await fetch('https://dining.apis.scottylabs.org/v2/locations');
+      if (!res.ok) throw new Error(res.status);
+      return (await res.json()).map(l => ({
+        name: titleCase(l.name), area: l.location || '', blurb: l.shortDescription || '',
+        times: (l.times || []).map(t => [t.start, t.end]),
+        rating: l.ratingsAvg || null, ratings: l.ratingsCount || 0,
+        specials: [...(l.todaysSpecials || []), ...(l.todaysSoups || [])].map(x => x.title || x.name || String(x)).filter(Boolean),
+        menu: l.menu || l.url || null, online: !!l.acceptsOnlineOrders,
+      }));
+    },
   },
   pitt: {
     name: 'University of Pittsburgh',

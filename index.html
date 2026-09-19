@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=a457ebc-ce3575">
+<link rel="stylesheet" href="style.css?v=76a7e1a-5d06b3">
 </head>
 <body>
 <main>
@@ -45,6 +45,7 @@
     <button role="tab" data-tab="home"><span class="ico">🏠</span>Home</button>
     <button role="tab" data-tab="setup"><span class="ico">⚙️</span>Setup</button>
     <button role="tab" data-tab="insights"><span class="ico">📊</span>Insights</button>
+    <button role="tab" data-tab="eat"><span class="ico">🍽️</span>Eat</button>
     <button role="tab" data-tab="advisor"><span class="ico">🎓</span>Advisor</button>
   </nav>
 
@@ -245,6 +246,39 @@
 
   </div>
 
+  <div class="tab stack narrow" data-tab="eat">
+    <section class="card" id="eatCard">
+      <h2>Where to eat?</h2>
+      <label>Pay with</label>
+      <div class="seg three" role="radiogroup" aria-label="Pay with">
+        <button type="button" data-pay="auto">Auto</button>
+        <button type="button" data-pay="blocks">Blocks</button>
+        <button type="button" data-pay="money">Dollars</button>
+        <button type="button" data-pay="either">Either</button>
+      </div>
+      <div class="checks" id="eatOpenWrap" hidden><label class="check"><input type="checkbox" id="eatOpenOnly"> Open right now</label></div>
+      <button type="button" class="primary" id="eatDecide">Decide for me</button>
+      <div id="eatResult"></div>
+    </section>
+
+    <section class="card" id="tipsCard">
+      <h2>Tips &amp; hidden menu</h2>
+      <div id="tipsBody"></div>
+      <details class="paste">
+        <summary>Add a tip</summary>
+        <div class="tip-add">
+          <select id="tipTag"><option value="block">What the block includes</option><option value="value">Best value</option><option value="hidden">Hidden menu</option><option value="rule">Plan rule</option></select>
+          <select id="tipPlace"></select>
+        </div>
+        <textarea id="tipText" rows="2" placeholder="e.g. The block at Tartan Express includes a drink"></textarea>
+        <div class="tip-actions">
+          <button type="button" class="primary" id="tipAdd" style="width:auto;margin:0">Save tip</button>
+          <button type="button" class="link" id="tipShare">Suggest for everyone ↗</button>
+        </div>
+      </details>
+    </section>
+  </div>
+
   <div class="tab narrow" data-tab="advisor">
       <section class="card" id="advisorCard" hidden>
         <h2>Plan advisor <span class="right">next semester</span></h2>
@@ -332,14 +366,16 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=a457ebc-ce3575"></script>
-<script src="account-store.js?v=a457ebc-ce3575"></script>
-<script src="plans.js?v=a457ebc-ce3575"></script>
-<script src="schools.js?v=a457ebc-ce3575"></script>
-<script src="app.js?v=a457ebc-ce3575"></script>
-<script src="ocr.js?v=a457ebc-ce3575"></script>
-<script src="receipt.js?v=a457ebc-ce3575"></script>
-<script src="advisor.js?v=a457ebc-ce3575"></script>
-<script src="auth.js?v=a457ebc-ce3575"></script>
+<script src="auth-config.js?v=76a7e1a-5d06b3"></script>
+<script src="account-store.js?v=76a7e1a-5d06b3"></script>
+<script src="plans.js?v=76a7e1a-5d06b3"></script>
+<script src="schools.js?v=76a7e1a-5d06b3"></script>
+<script src="app.js?v=76a7e1a-5d06b3"></script>
+<script src="ocr.js?v=76a7e1a-5d06b3"></script>
+<script src="receipt.js?v=76a7e1a-5d06b3"></script>
+<script src="tips.js?v=76a7e1a-5d06b3"></script>
+<script src="eat.js?v=76a7e1a-5d06b3"></script>
+<script src="advisor.js?v=76a7e1a-5d06b3"></script>
+<script src="auth.js?v=76a7e1a-5d06b3"></script>
 </body>
 </html>

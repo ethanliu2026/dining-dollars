@@ -11,7 +11,7 @@ SteelHacks 2026. Track meal blocks, FLEX, Dining Dollars — whatever your schoo
 **Live:** https://ethanliu2026.github.io/dining-dollars/
 
 ## What it does
-Four sections (tabs on desktop, bottom nav on phones): **Home** (verdict, balances, chart, scan & log), **Setup** (school, plan, dates), **Insights** (where it goes, purchases), **Advisor**.
+Five sections (tabs on desktop, bottom nav on phones): **Home** (verdict, balances, chart, scan & log), **Setup** (school, plan, dates), **Insights** (where it goes, purchases, block values), **Eat** (where-to-eat decider, tips), **Advisor**.
 
 - Pick your school and your **actual meal plan** → allotments and semester dates are filled in. Catalogs (all 2026–27, each linked to its official source): **CMU, Pitt, Penn State, Temple, Penn, Drexel, Duquesne, Villanova, Lehigh, Rutgers–NB**
 - Searchable school picker (type "pitt", "psu", "nova"…). School not listed? **Other** lets you name it, define what your plan is made of (swipes / blocks / dollars, per-semester / weekly / unlimited), list your places to eat, and enter your breaks
@@ -72,6 +72,11 @@ Scoring: **true cost** = plan price + what you'd pay out of pocket for anything 
 ## Block values by place
 A block doesn't buy the same amount everywhere — at CMU one block might cover $15.50 at a dining hall and $9.75 at a café. Schools don't publish these, so the app **learns them**: a scanned receipt's tender line (`MEAL BLOCK −12.49`) records what the block covered there; the manual form has an optional "worth $" field; and Insights → "What a block is worth by place" lets you set or fix a value. With two or more places known it tells you where blocks go furthest and how much you've left on the table by using blocks where dollars would've been smarter. Where a value is known, "Where it goes" uses it instead of the plan's average cost per block.
 
+## Eat: where-to-eat decider and tips
+**Decide for me** scores every place on: open right now (CMU has live hours, ratings and today's specials via ScottyLabs; other schools skip this), how you're paying (Auto picks blocks when you have spare blocks or dollars are running low), where a block buys the most (from the learned block values), variety (places you haven't logged lately), ratings, specials — plus some randomness so "Not feeling it" rotates. "I'm going — log it" prefills the purchase form.
+
+**Tips & hidden menu** (`tips.js`): per-school knowledge grouped as *what your block includes* (e.g. CMU: Tartan Express, Revolution Noodle and Stack'd blocks include a drink), *best value*, *hidden menu*, and *plan rules* (sourced from the dining agreements). Users can add their own (synced with the account) and "Suggest for everyone" opens a prefilled GitHub issue.
+
 ## Importing orders
 No, you can't pull orders from Grubhub — there's no consumer API, and scraping a logged-in session breaks their terms and breaks constantly. What works: **paste the order-confirmation email** (or a GET-app receipt) into "Or paste an order confirmation" under Scan a receipt; it runs through the same parser as the OCR path.
 
@@ -105,6 +110,7 @@ python3 -m http.server 8765
 | `receipt.js` | receipt scanning UI, engine choice, Claude vision path, Settings dialog |
 | `ocr.js` | on-device OCR path (Tesseract.js + receipt parser, also used for pasted orders) |
 | `advisor.js` | plan advisor: needs projection, eligibility, scoring, recommendation |
+| `eat.js` / `tips.js` | where-to-eat decider (live hours for CMU) and per-school tips |
 | `server/worker.js` | optional Cloudflare Worker proxy that holds the API key |
 | `schools.js` | per-school config: dates, **bucket definitions**, locations. **Add a school here.** |
 | `plans.json` / `plans.js` | meal plan catalog (see above) |
