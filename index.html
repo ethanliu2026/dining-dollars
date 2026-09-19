@@ -104,6 +104,11 @@
           </div>
         </div>
         <p class="hint" id="scanHint"></p>
+        <details class="paste">
+          <summary>Or paste an order confirmation (Grubhub email, GET app receipt…)</summary>
+          <textarea id="pasteText" rows="5" placeholder="Paste the email or receipt text here"></textarea>
+          <button type="button" class="primary" id="pasteGo" style="margin-top:8px">Log it</button>
+        </details>
       </section>
 
       <section class="card" id="logCard">
@@ -190,6 +195,26 @@
         </div>
         <div class="empty" id="emptyTx">Nothing logged yet.</div>
       </section>
+
+      <section class="card" id="advisorCard" hidden>
+        <h2>Plan advisor <span class="right">next semester</span></h2>
+        <div class="seg" role="radiogroup" aria-label="Advisor mode">
+          <button type="button" data-amode="usage">From my usage</button>
+          <button type="button" data-amode="answers">I'm new — help me pick</button>
+        </div>
+        <label for="advGroup">I am a…</label>
+        <select id="advGroup"></select>
+        <p class="hint" id="advEligNote"></p>
+        <p class="hint" id="advUsageNote"></p>
+        <div id="advAnswers" hidden>
+          <label for="advMealsWk">Dining-hall meals per week: <output id="advMealsWkOut"></output></label>
+          <input id="advMealsWk" type="range" min="0" max="21" step="1">
+          <label for="advMoneyWk">Cafés, snacks &amp; retail per week: <output id="advMoneyWkOut"></output></label>
+          <input id="advMoneyWk" type="range" min="0" max="150" step="5">
+          <p class="hint">Weekends and breaks follow the "I use my plan on…" setting above.</p>
+        </div>
+        <div id="advResults"></div>
+      </section>
     </div>
   </div>
 
@@ -219,5 +244,6 @@
 <script src="app.js"></script>
 <script src="ocr.js"></script>
 <script src="receipt.js"></script>
+<script src="advisor.js"></script>
 </body>
 </html>

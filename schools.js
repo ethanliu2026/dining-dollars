@@ -79,6 +79,9 @@ window.SCHOOLS = {
 
   psu: {
     name: 'Penn State (University Park)',
+    // No swipes here: dining-commons meals are paid from Dining Dollars at set prices
+    // ($3.20 breakfast / $4.90 lunch / $6.05 dinner on the Campus Meal Plan).
+    hallMealCost: 5,
     buckets: {
       dd:       { label: 'Dining Dollars', kind: 'money', period: 'semester',
                   hint: '65% off at dining commons; roll fall → spring' },

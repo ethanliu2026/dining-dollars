@@ -227,7 +227,24 @@ $('settings').querySelector('form').addEventListener('submit', () => {
   key ? localStorage.setItem(KEY_STORE, key) : localStorage.removeItem(KEY_STORE);
   proxy ? localStorage.setItem(PROXY_STORE, proxy) : localStorage.removeItem(PROXY_STORE);
   sdkClientPromise = null;
-  updateScanHint();
+  // Paste-an-order: same parser as the OCR path, no photo needed (Grubhub emails, GET receipts).
+$('pasteGo').addEventListener('click', () => {
+  const text = $('pasteText').value.trim();
+  if (!text) return;
+  $('scanResult').hidden = true;
+  const r = parseReceipt(text);
+  const defs = school().buckets;
+  const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100 }));
+  if (!parts.length) { scanStatus(`Couldn't find a meal-plan payment in that text${r.notes ? ` (${r.notes})` : ''}. Log it by hand below.`, 'error'); return; }
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') && parse(r.date) <= today() ? r.date : toISO(today());
+  const tx = { id: crypto.randomUUID(), date, location: pickLocation(r.location || 'Unknown', r.location_in_list), item: r.item_summary || '', parts };
+  state.txns.push(tx); save(); render();
+  lastScan = { txId: tx.id, dataUrl: null };
+  showScanResult(tx, { ...r, notes: r.notes });
+  scanStatus('');
+  $('pasteText').value = '';
+});
+updateScanHint();
 });
 function updateScanHint() {
   $('scanHint').innerHTML = engine() === 'claude'
@@ -244,4 +261,21 @@ $('scanCard').addEventListener('dragover', e => { e.preventDefault(); $('scanLab
 $('scanCard').addEventListener('dragleave', () => { $('scanLabel').style.borderColor = ''; });
 $('scanCard').addEventListener('drop', e => { e.preventDefault(); $('scanLabel').style.borderColor = ''; handleReceipt(e.dataTransfer.files[0]); });
 document.addEventListener('paste', e => { const f = [...(e.clipboardData?.files || [])].find(f => f.type.startsWith('image/')); if (f && state.mode === 'log') handleReceipt(f); });
+// Paste-an-order: same parser as the OCR path, no photo needed (Grubhub emails, GET receipts).
+$('pasteGo').addEventListener('click', () => {
+  const text = $('pasteText').value.trim();
+  if (!text) return;
+  $('scanResult').hidden = true;
+  const r = parseReceipt(text);
+  const defs = school().buckets;
+  const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100 }));
+  if (!parts.length) { scanStatus(`Couldn't find a meal-plan payment in that text${r.notes ? ` (${r.notes})` : ''}. Log it by hand below.`, 'error'); return; }
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') && parse(r.date) <= today() ? r.date : toISO(today());
+  const tx = { id: crypto.randomUUID(), date, location: pickLocation(r.location || 'Unknown', r.location_in_list), item: r.item_summary || '', parts };
+  state.txns.push(tx); save(); render();
+  lastScan = { txId: tx.id, dataUrl: null };
+  showScanResult(tx, { ...r, notes: r.notes });
+  scanStatus('');
+  $('pasteText').value = '';
+});
 updateScanHint();

@@ -58,10 +58,22 @@ wrangler secret put ANTHROPIC_API_KEY
 wrangler deploy
 ```
 
+## Plan advisor
+Bottom of the page. Two modes:
+- **From my usage** — projects your tracked (or quick-estimate) usage over the full semester's eating days, then scores every plan you're eligible for. Tells you to stay or switch, and by how much.
+- **I'm new — help me pick** — two sliders (dining-hall meals/week, retail $/week) for students with no history, e.g. incoming first-years.
+
+Pick your group (first-year / returning resident / on-campus apartment / off-campus) and only the plans that group may choose are shown — eligibility rules per school are in `plans.json` (`eligible` on each plan, `eligibility` note per school, from the official dining pages). Apartment/off-campus groups also get a "No meal plan" row.
+
+Scoring: **true cost** = plan price + what you'd pay out of pocket for anything it doesn't cover (dining-hall meals at ~$14, money 1:1). Lowest true cost wins; ties within 1% are called out; if the winner involves out-of-pocket spending, the cheapest plan that fully covers you is offered too. Unused swipes are valued at what the plan charges per swipe (`(price − dollars) ÷ swipes`) and shown as waste. Money-only schools (Penn State) convert meals to dollars via `hallMealCost` in `schools.js`.
+
+## Importing orders
+No, you can't pull orders from Grubhub — there's no consumer API, and scraping a logged-in session breaks their terms and breaks constantly. What works: **paste the order-confirmation email** (or a GET-app receipt) into "Or paste an order confirmation" under Scan a receipt; it runs through the same parser as the OCR path.
+
 ## Roadmap
 1. ~~Manual entry + analytics~~ ✅
 2. ~~Receipt photos~~ ✅
-3. **Import** — pull transactions from Grubhub / the campus dining portal
+3. ~~Plan advisor + first-year picker~~ ✅
 4. More schools
 
 ## Run locally
@@ -78,7 +90,8 @@ python3 -m http.server 8765
 | `style.css` | styles (light/dark via CSS vars) |
 | `app.js` | state, math, charts, insights |
 | `receipt.js` | receipt scanning UI, engine choice, Claude vision path, Settings dialog |
-| `ocr.js` | on-device OCR path (Tesseract.js + receipt parser) |
+| `ocr.js` | on-device OCR path (Tesseract.js + receipt parser, also used for pasted orders) |
+| `advisor.js` | plan advisor: needs projection, eligibility, scoring, recommendation |
 | `server/worker.js` | optional Cloudflare Worker proxy that holds the API key |
 | `schools.js` | per-school config: dates, **bucket definitions**, locations. **Add a school here.** |
 | `plans.json` / `plans.js` | meal plan catalog (see above) |

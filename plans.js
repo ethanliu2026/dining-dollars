@@ -12,7 +12,13 @@ window.PLANS = {
         "buckets": {
           "blocks": 292,
           "flex": 280
-        }
+        },
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "blue",
@@ -21,7 +27,13 @@ window.PLANS = {
         "buckets": {
           "blocks": 252,
           "flex": 540
-        }
+        },
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "red",
@@ -30,7 +42,13 @@ window.PLANS = {
         "buckets": {
           "blocks": 205,
           "flex": 880
-        }
+        },
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "yellow",
@@ -39,7 +57,12 @@ window.PLANS = {
         "buckets": {
           "blocks": 125,
           "flex": 195
-        }
+        },
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "tartan",
@@ -49,7 +72,12 @@ window.PLANS = {
           "blocks": 170,
           "flex": 915
         },
-        "who": "Community plan"
+        "who": "Community plan",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "scottys",
@@ -59,7 +87,12 @@ window.PLANS = {
           "blocks": 85,
           "flex": 655
         },
-        "who": "Community plan"
+        "who": "Community plan",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "whitfields",
@@ -69,7 +102,12 @@ window.PLANS = {
           "blocks": 54,
           "flex": 500
         },
-        "who": "Community plan"
+        "who": "Community plan",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "piper",
@@ -79,9 +117,15 @@ window.PLANS = {
           "blocks": 32,
           "flex": 350
         },
-        "who": "Community plan"
+        "who": "Community plan",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       }
-    ]
+    ],
+    "eligibility": "First-years: Green, Blue (default) or Red; Yellow only for The Residence on Fifth / Clyde House. Community plans are for upperclass students."
   },
   "pitt": {
     "source": "https://dineoncampus.com/pitt/20262027-meal-memberships",
@@ -100,7 +144,13 @@ window.PLANS = {
           "dd": 500
         },
         "who": "First-year / upperclass resident",
-        "note": "Plus one Meal Exchange per day"
+        "note": "Plus one Meal Exchange per day",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "fa300",
@@ -115,7 +165,13 @@ window.PLANS = {
           "dd": 300
         },
         "who": "First-year / upperclass resident",
-        "note": "Plus one Meal Exchange per day"
+        "note": "Plus one Meal Exchange per day",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "fa150",
@@ -130,7 +186,13 @@ window.PLANS = {
           "dd": 150
         },
         "who": "First-year / upperclass resident",
-        "note": "Plus one Meal Exchange per day"
+        "note": "Plus one Meal Exchange per day",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "weekly14",
@@ -145,7 +207,13 @@ window.PLANS = {
           "dd": 500
         },
         "who": "Resident",
-        "note": "Meals reset Sunday 11:59 pm"
+        "note": "Meals reset Sunday 11:59 pm",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block145",
@@ -157,7 +225,12 @@ window.PLANS = {
           "dd": 400
         },
         "who": "Upperclass resident / commuter",
-        "note": "Up to 5 meals per day"
+        "note": "Up to 5 meals per day",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block90",
@@ -168,7 +241,12 @@ window.PLANS = {
           "dd": 325
         },
         "who": "Upperclass resident / commuter",
-        "note": "Up to 5 meals per day"
+        "note": "Up to 5 meals per day",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block50",
@@ -179,7 +257,11 @@ window.PLANS = {
           "dd": 200
         },
         "who": "Commuter / grad",
-        "note": "Up to 5 meals per day"
+        "note": "Up to 5 meals per day",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "allday75",
@@ -190,7 +272,11 @@ window.PLANS = {
           "dd": 150
         },
         "who": "Commuter / grad",
-        "note": "Each meal = one all-day dining hall pass"
+        "note": "Each meal = one all-day dining hall pass",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "allday40",
@@ -201,7 +287,11 @@ window.PLANS = {
           "dd": 150
         },
         "who": "Commuter / grad",
-        "note": "Each meal = one all-day dining hall pass"
+        "note": "Each meal = one all-day dining hall pass",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "dd500",
@@ -210,7 +300,11 @@ window.PLANS = {
         "buckets": {
           "dd": 500
         },
-        "who": "Commuter / grad"
+        "who": "Commuter / grad",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "dd350",
@@ -219,9 +313,14 @@ window.PLANS = {
         "buckets": {
           "dd": 350
         },
-        "who": "Commuter / grad"
+        "who": "Commuter / grad",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       }
-    ]
+    ],
+    "eligibility": "Residence-hall first-years take a Full-Access or Weekly 14 plan; apartment residents are assigned Block 100-style plans but can pick any; commuters can choose any."
   },
   "psu": {
     "source": "https://liveon.psu.edu/university-park/meal-plans",
@@ -236,7 +335,12 @@ window.PLANS = {
           "dd": 987
         },
         "who": "On-campus resident",
-        "note": "$987 spendable + $1,750 base cost"
+        "note": "$987 spendable + $1,750 base cost",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment"
+        ]
       },
       {
         "id": "campus2",
@@ -246,7 +350,12 @@ window.PLANS = {
           "dd": 1238
         },
         "who": "On-campus resident",
-        "note": "$1,238 spendable + $1,750 base cost"
+        "note": "$1,238 spendable + $1,750 base cost",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment"
+        ]
       },
       {
         "id": "campus3",
@@ -256,7 +365,12 @@ window.PLANS = {
           "dd": 1468
         },
         "who": "On-campus resident",
-        "note": "$1,468 spendable + $1,750 base cost"
+        "note": "$1,468 spendable + $1,750 base cost",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment"
+        ]
       },
       {
         "id": "commuter1",
@@ -266,7 +380,11 @@ window.PLANS = {
           "dd": 250
         },
         "who": "Off-campus",
-        "note": "10% off prepared food"
+        "note": "10% off prepared food",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "commuter2",
@@ -275,7 +393,11 @@ window.PLANS = {
         "buckets": {
           "dd": 500
         },
-        "who": "Off-campus"
+        "who": "Off-campus",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "commuter3",
@@ -284,9 +406,14 @@ window.PLANS = {
         "buckets": {
           "dd": 1000
         },
-        "who": "Off-campus"
+        "who": "Off-campus",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       }
-    ]
+    ],
+    "eligibility": "Campus Meal Plan is required with an on-campus housing contract (apartments with kitchens may opt out). Commuter plans are for off-campus students."
   },
   "temple": {
     "source": "https://temple.mydininghub.com/en/meal-plans/meal-plan-options",
@@ -303,7 +430,13 @@ window.PLANS = {
           },
           "guest": 5
         },
-        "note": "Up to 21 retail meals/week"
+        "note": "Up to 21 retail meals/week",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "weekly15",
@@ -315,7 +448,13 @@ window.PLANS = {
             "period": "week"
           },
           "guest": 5
-        }
+        },
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "weekly12",
@@ -328,7 +467,13 @@ window.PLANS = {
           },
           "guest": 5
         },
-        "who": "First-year default"
+        "who": "First-year default",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "weekly10",
@@ -341,7 +486,12 @@ window.PLANS = {
           },
           "guest": 3
         },
-        "who": "Returning / off-campus"
+        "who": "Returning / off-campus",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "weekly5",
@@ -353,7 +503,12 @@ window.PLANS = {
             "period": "week"
           }
         },
-        "who": "Returning / off-campus"
+        "who": "Returning / off-campus",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block100",
@@ -362,7 +517,12 @@ window.PLANS = {
         "buckets": {
           "meals": 100
         },
-        "who": "Returning / off-campus"
+        "who": "Returning / off-campus",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block50",
@@ -371,9 +531,15 @@ window.PLANS = {
         "buckets": {
           "meals": 50
         },
-        "who": "Returning / off-campus"
+        "who": "Returning / off-campus",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       }
-    ]
+    ],
+    "eligibility": "First-year and transfer residents need at least Weekly 12. Everyone else can choose any plan."
   },
   "penn": {
     "source": "https://dining.business-services.upenn.edu/dining-plans/transfer-exchange-upperclass",
@@ -389,7 +555,13 @@ window.PLANS = {
           "dd": 125,
           "guest": 10
         },
-        "who": "First / second-year"
+        "who": "First / second-year",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "fy187",
@@ -400,7 +572,13 @@ window.PLANS = {
           "dd": 400,
           "guest": 10
         },
-        "who": "First / second-year"
+        "who": "First / second-year",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "sy156",
@@ -411,7 +589,12 @@ window.PLANS = {
           "dd": 300,
           "guest": 10
         },
-        "who": "Second-year"
+        "who": "Second-year",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "uc108",
@@ -421,7 +604,11 @@ window.PLANS = {
           "swipes": 108,
           "dd": 600
         },
-        "who": "Upperclass"
+        "who": "Upperclass",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "uc78",
@@ -431,7 +618,11 @@ window.PLANS = {
           "swipes": 78,
           "dd": 175
         },
-        "who": "Upperclass"
+        "who": "Upperclass",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "uc47",
@@ -441,7 +632,11 @@ window.PLANS = {
           "swipes": 47,
           "dd": 525
         },
-        "who": "Upperclass"
+        "who": "Upperclass",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "ddonly",
@@ -450,9 +645,14 @@ window.PLANS = {
         "buckets": {
           "dd": 1600
         },
-        "who": "Upperclass / grad"
+        "who": "Upperclass / grad",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       }
-    ]
+    ],
+    "eligibility": "First-years choose 296 or 187; second-years may also take 156; juniors and seniors can choose anything or opt out."
   },
   "drexel": {
     "source": "https://drexel.mydininghub.com/en/dining-plans/dining-plan-options",
@@ -471,7 +671,13 @@ window.PLANS = {
           "dd": 250,
           "guest": 2
         },
-        "who": "First-year / upperclass"
+        "who": "First-year / upperclass",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "aa225",
@@ -485,7 +691,13 @@ window.PLANS = {
           "dd": 225,
           "guest": 2
         },
-        "who": "First-year / upperclass"
+        "who": "First-year / upperclass",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "aa400",
@@ -499,7 +711,13 @@ window.PLANS = {
           "dd": 400,
           "guest": 2
         },
-        "who": "First-year / upperclass"
+        "who": "First-year / upperclass",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block25",
@@ -509,7 +727,12 @@ window.PLANS = {
           "meals": 25,
           "dd": 200
         },
-        "who": "Upperclass / grad"
+        "who": "Upperclass / grad",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block50",
@@ -519,7 +742,12 @@ window.PLANS = {
           "meals": 50,
           "dd": 350
         },
-        "who": "Upperclass / grad"
+        "who": "Upperclass / grad",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block80",
@@ -529,7 +757,12 @@ window.PLANS = {
           "meals": 80,
           "dd": 500
         },
-        "who": "Upperclass / grad"
+        "who": "Upperclass / grad",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "dd150",
@@ -538,7 +771,12 @@ window.PLANS = {
         "buckets": {
           "dd": 150
         },
-        "who": "Upperclass / grad"
+        "who": "Upperclass / grad",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "dd250",
@@ -547,7 +785,12 @@ window.PLANS = {
         "buckets": {
           "dd": 250
         },
-        "who": "Upperclass / grad"
+        "who": "Upperclass / grad",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "dd500",
@@ -556,7 +799,12 @@ window.PLANS = {
         "buckets": {
           "dd": 500
         },
-        "who": "Upperclass / grad"
+        "who": "Upperclass / grad",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "dd800",
@@ -565,9 +813,15 @@ window.PLANS = {
         "buckets": {
           "dd": 800
         },
-        "who": "Upperclass / grad"
+        "who": "Upperclass / grad",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       }
-    ]
+    ],
+    "eligibility": "First-years choose Weekly 14 or an All Access plan; upperclass and grad students can choose any."
   },
   "duq": {
     "source": "https://duquesnedining.nutrislice.com/meal-plans",
@@ -581,7 +835,13 @@ window.PLANS = {
         "buckets": {
           "meals": 275,
           "flex": 200
-        }
+        },
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "gold",
@@ -590,7 +850,13 @@ window.PLANS = {
         "buckets": {
           "meals": 225,
           "flex": 275
-        }
+        },
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "silver",
@@ -599,7 +865,13 @@ window.PLANS = {
         "buckets": {
           "meals": 200,
           "flex": 375
-        }
+        },
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "bronze",
@@ -608,7 +880,13 @@ window.PLANS = {
         "buckets": {
           "meals": 175,
           "flex": 400
-        }
+        },
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "super",
@@ -618,9 +896,16 @@ window.PLANS = {
           "meals": 175,
           "flex": 700
         },
-        "note": "+$225/semester"
+        "note": "+$225/semester",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       }
-    ]
+    ],
+    "eligibility": "All residence-hall students choose one of the four plans (or Super); no first-year restriction."
   },
   "villanova": {
     "source": "https://www.villanova.edu/university/dining/meal-plans.html",
@@ -639,7 +924,13 @@ window.PLANS = {
           "guest": 10
         },
         "who": "First-year",
-        "note": "14 Meal Plan Express/week"
+        "note": "14 Meal Plan Express/week",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "meal21",
@@ -653,7 +944,13 @@ window.PLANS = {
           "points": 135,
           "guest": 10
         },
-        "who": "First-year / resident"
+        "who": "First-year / resident",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "meal14",
@@ -667,7 +964,12 @@ window.PLANS = {
           "points": 150,
           "guest": 10
         },
-        "who": "Second-year+"
+        "who": "Second-year+",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "meal10",
@@ -681,7 +983,12 @@ window.PLANS = {
           "points": 420,
           "guest": 25
         },
-        "who": "Second-year+"
+        "who": "Second-year+",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block100",
@@ -692,7 +999,11 @@ window.PLANS = {
           "points": 500,
           "guest": 25
         },
-        "who": "Apartments / suites"
+        "who": "Apartments / suites",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "commuter",
@@ -707,9 +1018,13 @@ window.PLANS = {
           "guest": 12
         },
         "who": "Commuter",
-        "note": "Breakfast or lunch only"
+        "note": "Breakfast or lunch only",
+        "eligible": [
+          "commuter"
+        ]
       }
-    ]
+    ],
+    "eligibility": "First-years: Any Time 7 or 21 Meal Plan. Second-years add 14 and 10. Apartments/suites (third year+) may take the 100 Block or opt out. Commuter Plan is for off-campus students."
   },
   "lehigh": {
     "source": "https://lehigh.sodexomyway.com/en-us/meal-plan/meal-plan-options",
@@ -728,7 +1043,13 @@ window.PLANS = {
           "guest": 5
         },
         "who": "First-year",
-        "note": "10 Meal Exchanges/week"
+        "note": "10 Meal Exchanges/week",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block240",
@@ -739,7 +1060,13 @@ window.PLANS = {
           "dd": 525,
           "guest": 3
         },
-        "who": "First-year"
+        "who": "First-year",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block220",
@@ -749,7 +1076,13 @@ window.PLANS = {
           "swipes": 220,
           "dd": 650
         },
-        "who": "First-year"
+        "who": "First-year",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block180",
@@ -758,7 +1091,12 @@ window.PLANS = {
         "buckets": {
           "swipes": 180,
           "dd": 900
-        }
+        },
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block160",
@@ -767,7 +1105,12 @@ window.PLANS = {
         "buckets": {
           "swipes": 160,
           "dd": 1185
-        }
+        },
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block80",
@@ -776,7 +1119,12 @@ window.PLANS = {
         "buckets": {
           "swipes": 80,
           "dd": 650
-        }
+        },
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "block40",
@@ -785,7 +1133,12 @@ window.PLANS = {
         "buckets": {
           "swipes": 40,
           "dd": 750
-        }
+        },
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "ddplan",
@@ -793,9 +1146,15 @@ window.PLANS = {
         "cost": 1000,
         "buckets": {
           "dd": 1050
-        }
+        },
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       }
-    ]
+    ],
+    "eligibility": "First-years choose All Access 7, 240 Block or 220 Block. Others can choose any plan."
   },
   "rutgers": {
     "source": "https://food.rutgers.edu/meal-plans",
@@ -812,7 +1171,13 @@ window.PLANS = {
             "period": "unlimited"
           }
         },
-        "note": "Plus up to 3 retail/takeout meals per day"
+        "note": "Plus up to 3 retail/takeout meals per day",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "plan255",
@@ -820,7 +1185,13 @@ window.PLANS = {
         "cost": 3779,
         "buckets": {
           "meals": 255
-        }
+        },
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "plan210",
@@ -829,7 +1200,13 @@ window.PLANS = {
         "buckets": {
           "meals": 210
         },
-        "who": "First-year minimum"
+        "who": "First-year minimum",
+        "eligible": [
+          "firstYear",
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "plan150",
@@ -838,7 +1215,12 @@ window.PLANS = {
         "buckets": {
           "meals": 150
         },
-        "who": "Upperclass minimum"
+        "who": "Upperclass minimum",
+        "eligible": [
+          "resident",
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "plan100",
@@ -847,7 +1229,11 @@ window.PLANS = {
         "buckets": {
           "meals": 100
         },
-        "who": "Apartments / commuter"
+        "who": "Apartments / commuter",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "plan75",
@@ -856,7 +1242,11 @@ window.PLANS = {
         "buckets": {
           "meals": 75
         },
-        "who": "Apartments / commuter"
+        "who": "Apartments / commuter",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       },
       {
         "id": "plan50",
@@ -865,8 +1255,13 @@ window.PLANS = {
         "buckets": {
           "meals": 50
         },
-        "who": "Apartments / commuter"
+        "who": "Apartments / commuter",
+        "eligible": [
+          "apartment",
+          "commuter"
+        ]
       }
-    ]
+    ],
+    "eligibility": "Residence-hall first-years need at least the 210 Plan; upperclass residents at least 150. Apartments and commuters can choose any, including 100/75/50."
   }
 };

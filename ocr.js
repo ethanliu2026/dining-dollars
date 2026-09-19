@@ -158,7 +158,7 @@ function parseReceipt(text) {
     if (usedLines.has(i) || NOISE.test(l) || /total/i.test(l)) return;
     const price = lastMoney(l);
     if (price == null || price <= 0 || price > 200) return;
-    const name = l.replace(MONEY, '').replace(/[-$@x\d.\s]+$/, '').replace(/^\W+/, '').trim();
+    const name = l.replace(MONEY, '').replace(/[-$@x\d.\s]+$/, '').replace(/^\W+/, '').replace(/^\d+\s*x\s*/i, '').trim();   // "1x Bowl" → "Bowl"
     if (name.length >= 3 && !/^\d/.test(name)) items.push(name.replace(/\s+/g, ' '));
   });
 
