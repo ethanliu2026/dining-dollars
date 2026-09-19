@@ -48,9 +48,10 @@ function normalizeState(s) {
   const t0 = termFor(SCHOOLS[sch] || SCHOOLS.cmu) || { start: '2026-08-31', end: '2026-12-13' };
   const base = { mode: 'log', school: sch, planId: CUSTOM, start: {}, current: {}, asOf: toISO(today()),
                  semStart: t0.start, semEnd: t0.end, txns: [], custom: DEFAULT_CUSTOM(),
-                 eat: { weekends: true, breaks: false }, blockValues: {} };
+                 eat: { weekends: true, breaks: false }, blockValues: {},
+                 trackFrom: null, trackBalance: {} };   // mid-semester start: balance on the day you began logging
   const st = { ...base, ...(s || {}), asOf: s?.asOf || base.asOf,
-               custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) }, eat: { ...base.eat, ...(s?.eat || {}) }, blockValues: { ...(s?.blockValues || {}) } };
+               custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) }, eat: { ...base.eat, ...(s?.eat || {}) }, blockValues: { ...(s?.blockValues || {}) }, trackBalance: { ...(s?.trackBalance || {}) } };
   st.school = sch;
   st.txns = (Array.isArray(st.txns) ? st.txns : []).map(normalizeTx);
   return st;
@@ -283,6 +284,12 @@ $('plan').addEventListener('change', e => {
 for (const id of ['asOf', 'semStart', 'semEnd']) {
   $(id).addEventListener('input', e => { state[id] = e.target.value; save(); render(); });
 }
+$('midOn').addEventListener('change', e => {
+  state.trackFrom = e.target.checked ? ($('midFrom').value || toISO(today())) : null;
+  if (!e.target.checked) state.trackBalance = {};
+  save(); renderStartFields(); render();
+});
+$('midFrom').addEventListener('input', e => { if (state.trackFrom) { state.trackFrom = e.target.value; save(); render(); } });
 $('eatWeekends').addEventListener('change', e => { state.eat.weekends = e.target.checked; save(); render(); });
 $('eatBreaks').addEventListener('change', e => { state.eat.breaks = e.target.checked; save(); render(); });
 $('eatWeekends').checked = state.eat.weekends;
@@ -338,6 +345,10 @@ function renderStartFields() {
   const quick = state.mode === 'quick';
   const wrap = $('startFields');
   wrap.replaceChildren();
+  $('midWrap').hidden = quick;
+  $('midOn').checked = !!state.trackFrom;
+  $('midFrom').value = state.trackFrom || toISO(today());
+  $('midDate').hidden = !state.trackFrom;
   const p = plan();
   for (const [key, def] of Object.entries(school().buckets)) {
     const pb = p?.buckets?.[key];
@@ -364,6 +375,12 @@ function renderStartFields() {
     };
     grid.appendChild(mk('start', quick ? `${def.label} at start` : def.label));
     if (quick) grid.appendChild(mk('current', period === 'week' ? `${def.label} left this week` : `${def.label} now`));
+    else if (period !== 'week') {
+      // mid-semester start: what was left on the day you began logging
+      const cell = mk('trackBalance', `${def.label} when you started logging`);
+      cell.className = 'mid-field'; cell.hidden = !state.trackFrom;
+      grid.appendChild(cell);
+    }
     if (def.hint) { const h = document.createElement('p'); h.className = 'hint'; h.textContent = def.hint; h.style.gridColumn = '1 / -1'; grid.appendChild(h); }
     wrap.appendChild(grid);
   }
@@ -598,7 +615,10 @@ function compute() {
     if (!(b.start > 0)) return { ...r, status: 'muted', noData: true };
     if (quick && !(+state.current[b.key] >= 0) ) return { ...r, status: 'muted', noData: true };
     if (quick && state.current[b.key] === undefined) return { ...r, status: 'muted', noData: true };
-    const spent = quick ? b.start - (+state.current[b.key]) : r.txns.reduce((s, t) => s + t.amount, 0);
+    // Started mid-semester? Whatever was gone before the first log counts as spent too.
+    const priorBal = !quick && state.trackFrom && state.trackBalance[b.key] !== undefined ? +state.trackBalance[b.key] : null;
+    const prior = priorBal !== null ? Math.max(0, b.start - priorBal) : 0;
+    const spent = quick ? b.start - (+state.current[b.key]) : prior + r.txns.reduce((s, t) => s + t.amount, 0);
     const balance = b.start - spent;
     const pace = spent / elapsed;
     const safe = daysLeft > 0 ? Math.max(0, balance) / daysLeft : 0;
@@ -607,7 +627,7 @@ function compute() {
     const tol = b.kind === 'money' ? Math.max(25, b.start * 0.03) : Math.max(2, b.start * 0.05);
     const status = balance <= 0 ? 'bad' : daysLeft === 0 ? (balance > tol ? 'warn' : 'good')
       : endBal < -tol ? 'bad' : endBal > tol ? 'warn' : 'good';
-    return { ...r, spent, balance, pace, safe, endBal, runOutDate, tol, status };
+    return { ...r, spent, balance, pace, safe, endBal, runOutDate, tol, status, prior, priorBal, trackFrom: prior ? parse(state.trackFrom) : null };
   });
 
   if (!buckets.some(b => !b.noData && b.period !== 'unlimited')) return null;
@@ -871,6 +891,7 @@ function drawBalance(r, b) {
   const pt = (d, y) => ({ x: d.getTime(), y });
   const actual = [pt(r.semStart, b.start)];
   let bal = b.start, lastDate = null;
+  if (b.trackFrom && b.trackFrom > r.semStart) { bal = b.priorBal; actual.push(pt(b.trackFrom, bal)); lastDate = toISO(b.trackFrom); }
   for (const t of b.txns) {
     bal -= t.amount;
     if (t.date === lastDate) actual[actual.length - 1].y = bal;

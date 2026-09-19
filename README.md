@@ -41,7 +41,7 @@ CMU publishes plans as a [PDF agreement](https://www.cmu.edu/dining/your-dining-
 ## Receipt scanning
 "Scan a receipt" → take a photo (or drop / paste an image on desktop). The purchase is logged immediately — location matched to the dropdown, items listed, and **each tender line mapped to a bucket** (a CMU receipt's `MEAL BLOCK` + `FLEX` lines become `1 block + $2.75 FLEX`). A card shows what was read with **Undo** / **Edit**.
 
-Two engines; the best available is used automatically:
+Two engines; the best available is used automatically. (`CLAUDE_ENABLED` at the top of `receipt.js` turns the Claude path off entirely for a no-LLM build.)
 
 | | On-device OCR (default) | Claude vision (optional) |
 |---|---|---|
@@ -71,6 +71,9 @@ Scoring: **true cost** = plan price + what you'd pay out of pocket for anything 
 
 ## Today
 On Home: how many blocks and how many dollars to use for the rest of today, split across the meal periods left (breakfast / lunch / dinner / late night), minus what's already logged today. Spare blocks round up ("use 3 today"), short ones round down; money follows the safe daily rate (nudged up when you're under pace). Blocks are pointed at the best-value place known. Respects per-day caps (CMU 4 blocks, Pitt 5 meals).
+
+## Starting mid-semester
+Setup → "I'm starting mid-semester": pick the first day you're logging from and enter what you had left that day (from the GET / dining app). Everything used before that counts as spent, pacing and projections use the whole semester, and the chart draws a straight line from the semester start to that point, then follows your log.
 
 ## Block values by place
 A block doesn't buy the same amount everywhere — at CMU one block might cover $15.50 at a dining hall and $9.75 at a café. Schools don't publish these, so the app **learns them**: a scanned receipt's tender line (`MEAL BLOCK −12.49`) records what the block covered there; the manual form has an optional "worth $" field; and Insights → "What a block is worth by place" lets you set or fix a value. With two or more places known it tells you where blocks go furthest and how much you've left on the table by using blocks where dollars would've been smarter. Where a value is known, "Where it goes" uses it instead of the plan's average cost per block.

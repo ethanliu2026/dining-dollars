@@ -6,6 +6,10 @@
 //   2. An API key stored in this browser → Claude vision via the official SDK (CDN-loaded).
 //   3. Nothing configured → on-device OCR (ocr.js, Tesseract.js). Free, private, less accurate.
 
+// Set to false to ship with no language model at all (SteelHacks "No Wrapper" track):
+// receipts are then read only by the on-device OCR, and the Claude settings are hidden.
+const CLAUDE_ENABLED = true;
+
 const KEY_STORE = 'ddt.apiKey';
 const PROXY_STORE = 'ddt.proxyUrl';
 // Team proxy (server/worker.js) so users never need a key. Set this to your deployed
@@ -140,7 +144,7 @@ function pickLocation(name, inList) {
     || name.trim();
 }
 
-const engine = () => (localStorage.getItem(KEY_STORE) || proxyUrl()) ? 'claude' : 'local';
+const engine = () => CLAUDE_ENABLED && (localStorage.getItem(KEY_STORE) || proxyUrl()) ? 'claude' : 'local';
 window.addEventListener('tracker-account-changed', () => { lastScan = null; });
 
 async function handleReceipt(file) {
@@ -228,6 +232,7 @@ function openSettings() {
   $('settings').showModal();
 }
 $('btnSettings').addEventListener('click', openSettings);
+$('btnSettings').hidden = !CLAUDE_ENABLED;
 $('settingsCancel').addEventListener('click', () => $('settings').close());
 $('settings').querySelector('form').addEventListener('submit', () => {
   const key = $('apiKey').value.trim(), proxy = $('proxyUrl').value.trim();

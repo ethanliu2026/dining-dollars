@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=2619cdc-2bb102">
+<link rel="stylesheet" href="style.css?v=6e1ddfb-b36805">
 </head>
 <body>
 <main>
@@ -193,6 +193,14 @@
         <select id="plan"></select>
         <p class="hint" id="planHint"></p>
 
+        <div id="midWrap" hidden>
+          <label class="check" style="margin-top:12px"><input type="checkbox" id="midOn"> I'm starting mid-semester</label>
+          <div id="midDate" hidden>
+            <label for="midFrom">First day I'm logging from</label>
+            <input id="midFrom" type="date">
+            <p class="hint">Enter what you had left on that day below (from the GET / dining app). Everything used before it counts as spent; purchases you log from then on are tracked.</p>
+          </div>
+        </div>
         <div id="startFields"></div>
         <div id="quickFields" hidden>
           <label for="asOf">As of</label>
@@ -382,17 +390,17 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=2619cdc-2bb102"></script>
-<script src="account-store.js?v=2619cdc-2bb102"></script>
-<script src="plans.js?v=2619cdc-2bb102"></script>
-<script src="schools.js?v=2619cdc-2bb102"></script>
-<script src="app.js?v=2619cdc-2bb102"></script>
-<script src="ocr.js?v=2619cdc-2bb102"></script>
-<script src="receipt.js?v=2619cdc-2bb102"></script>
-<script src="tips.js?v=2619cdc-2bb102"></script>
-<script src="eat.js?v=2619cdc-2bb102"></script>
-<script src="today.js?v=2619cdc-2bb102"></script>
-<script src="advisor.js?v=2619cdc-2bb102"></script>
-<script src="auth.js?v=2619cdc-2bb102"></script>
+<script src="auth-config.js?v=6e1ddfb-b36805"></script>
+<script src="account-store.js?v=6e1ddfb-b36805"></script>
+<script src="plans.js?v=6e1ddfb-b36805"></script>
+<script src="schools.js?v=6e1ddfb-b36805"></script>
+<script src="app.js?v=6e1ddfb-b36805"></script>
+<script src="ocr.js?v=6e1ddfb-b36805"></script>
+<script src="receipt.js?v=6e1ddfb-b36805"></script>
+<script src="tips.js?v=6e1ddfb-b36805"></script>
+<script src="eat.js?v=6e1ddfb-b36805"></script>
+<script src="today.js?v=6e1ddfb-b36805"></script>
+<script src="advisor.js?v=6e1ddfb-b36805"></script>
+<script src="auth.js?v=6e1ddfb-b36805"></script>
 </body>
 </html>

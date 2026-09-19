@@ -345,3 +345,5 @@ ul.tips .src { font-size: 11px; color: var(--text-3); margin-left: 4px; }
 .today .muted { color: var(--text-3); font-weight: normal; font-size: 13px; }
 .today-table td { padding: 6px 8px 6px 0; vertical-align: top; }
 .today-table td:first-child { color: var(--text-2); white-space: nowrap; width: 1%; padding-right: 14px; }
+
+.mid-field label { color: var(--accent); }
