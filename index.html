@@ -36,6 +36,19 @@
         <label for="school">School</label>
         <select id="school"></select>
 
+        <div id="customSchool" hidden>
+          <label for="customName">School name</label>
+          <input id="customName" placeholder="e.g. West Chester University">
+
+          <label>What your plan is made of</label>
+          <p class="hint" style="margin:0 0 6px">One row per thing you can pay with — swipes, blocks, dining dollars, points…</p>
+          <div id="bucketRows"></div>
+          <button type="button" class="link" id="addBucket">+ Add another</button>
+
+          <label for="customLocations">Places to eat <span style="color:var(--text-3)">(one per line)</span></label>
+          <textarea id="customLocations" rows="4" placeholder="Main Dining Hall&#10;Starbucks (Library)&#10;Chick-fil-A"></textarea>
+        </div>
+
         <label for="plan">Meal plan</label>
         <select id="plan"></select>
         <p class="hint" id="planHint"></p>

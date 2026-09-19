@@ -1,17 +1,18 @@
 # Meal Plan Tracker
 
 The Team:
-Zhala Ismayilzada (ismayilzadazhala@gmail.com)
-Ethan Liu (ethanyliu@cmu.edu)
-Andrew Wang (andiewyf@hotmail.com)
-John Park (yohanpark2833@gmail.com)
+- Zhala Ismayilzada (ismayilzadazhala@gmail.com)
+- Ethan Liu (ethanyliu@cmu.edu)
+- Andrew Wang (andiewyf@hotmail.com)
+- John Park (yohanpark2833@gmail.com)
 
 SteelHacks 2026. Track meal blocks, FLEX, Dining Dollars — whatever your school's plan is made of. Log what you use, see where it goes, and find out whether you'll run out before the semester ends or leave it on the table.
 
 **Live:** https://ethanliu2026.github.io/dining-dollars/
 
 ## What it does
-- Pick your school and your **actual meal plan** (CMU: Green/Blue/Red/Yellow + community plans; Pitt: Full-Access, Weekly 14, Block 145/90/50, …) → allotments and semester dates are filled in
+- Pick your school and your **actual meal plan** → allotments and semester dates are filled in. Catalogs (all 2026–27, each linked to its official source): **CMU, Pitt, Penn State, Temple, Penn, Drexel, Duquesne, Villanova, Lehigh, Rutgers–NB**
+- School not listed? **Other** lets you name it, define what your plan is made of (swipes / blocks / dollars, per-semester / weekly / unlimited), and list your places to eat
 - Every plan is a set of **buckets**: meal blocks/swipes (count) and FLEX/Dining Dollars (money), each per-semester, weekly (Pitt Weekly 14), or unlimited (Pitt Full-Access)
 - Two modes: **Track purchases** (log each meal and which bucket paid for it) or **Quick estimate** (just start + current per bucket)
 - Per-bucket verdict: run out / on pace / wasting, safe daily pace, projected end
@@ -21,13 +22,18 @@ SteelHacks 2026. Track meal blocks, FLEX, Dining Dollars — whatever your schoo
 - Export / import JSON, sample data for demos. Everything stays in localStorage.
 
 ## Meal plan data
-`plans.json` is the catalog (source of truth); `plans.js` is generated from it so the page works from `file://`.
+`plans.json` is the catalog (source of truth); `plans.js` is generated from it so the page works from `file://`. Each school's entry records its `source` URL and a `verified` date. Semester dates in `schools.js` are Fall 2026 defaults — most are marked approximate; users can edit them under "Semester dates".
 
 ```bash
 python3 scripts/update_plans.py        # re-fetch CMU's official PDF and regenerate
 python3 scripts/update_plans.py --no-fetch   # just regenerate plans.js after editing plans.json
 ```
-CMU publishes plans as a [PDF agreement](https://www.cmu.edu/dining/your-dining-plan/26-27-uc-meal-plan-agreementfinal.pdf) which the script parses (needs `brew install poppler`). Pitt's [Dine On Campus page](https://dineoncampus.com/pitt/20262027-meal-memberships) blocks scripts, so its entry is hand-maintained — paste the page text into `scripts/pitt.txt` and re-run to parse it.
+CMU publishes plans as a [PDF agreement](https://www.cmu.edu/dining/your-dining-plan/26-27-uc-meal-plan-agreementfinal.pdf) which the script parses (needs `brew install poppler`). Pitt's [Dine On Campus page](https://dineoncampus.com/pitt/20262027-meal-memberships) blocks scripts, so its entry is hand-maintained — paste the page text into `scripts/pitt.txt` and re-run to parse it. The other eight schools were transcribed by hand from their dining sites (linked in `plans.json`).
+
+### Adding a school
+1. `schools.js` — add an entry: name, `buckets` (what the plan is made of), Fall dates, `locations`
+2. `plans.json` — add its plans (`buckets` values are per-semester numbers, or `{amount, period}` for weekly/unlimited)
+3. `python3 scripts/update_plans.py --no-fetch`
 
 ## Roadmap
 1. ~~Manual entry + analytics~~ ✅

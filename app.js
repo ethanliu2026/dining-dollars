@@ -5,6 +5,17 @@ const $ = id => document.getElementById(id);
 const DAY = 86400000;
 const STORE = 'ddt.v3';
 const CUSTOM = 'custom';
+const OTHER_SCHOOL = 'other';   // "my school isn't listed" — built from state.custom
+
+// Starting point for a school we don't know: one swipe bucket, one money bucket.
+const DEFAULT_CUSTOM = () => ({
+  name: '',
+  buckets: [
+    { key: 'swipes', label: 'Meal swipes', kind: 'count', period: 'semester', unit: 'swipe' },
+    { key: 'dollars', label: 'Dining dollars', kind: 'money', period: 'semester' },
+  ],
+  locations: [],
+});
 
 // ---------- helpers ----------
 const fmt$ = n => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -28,10 +39,11 @@ let state = load();
 function load() {
   let s = JSON.parse(localStorage.getItem(STORE) || 'null');
   if (!s) s = migrateV2();
-  const sch = SCHOOLS[s?.school] ? s.school : 'cmu';
+  const sch = SCHOOLS[s?.school] || s?.school === OTHER_SCHOOL ? s.school : 'cmu';
+  const dates = SCHOOLS[sch] || SCHOOLS.cmu;
   const base = { mode: 'log', school: sch, planId: CUSTOM, start: {}, current: {}, asOf: toISO(today()),
-                 semStart: SCHOOLS[sch].semStart, semEnd: SCHOOLS[sch].semEnd, txns: [] };
-  return { ...base, ...(s || {}), asOf: s?.asOf || base.asOf };
+                 semStart: dates.semStart, semEnd: dates.semEnd, txns: [], custom: DEFAULT_CUSTOM() };
+  return { ...base, ...(s || {}), asOf: s?.asOf || base.asOf, custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) } };
 }
 // Old single-balance data → put it in the school's money bucket.
 function migrateV2() {
@@ -47,7 +59,16 @@ function migrateV2() {
 }
 function save() { localStorage.setItem(STORE, JSON.stringify(state)); }
 
-const school = () => SCHOOLS[state.school];
+function school() {
+  if (state.school !== OTHER_SCHOOL) return SCHOOLS[state.school];
+  const c = state.custom;
+  return {
+    name: c.name || 'My school',
+    buckets: Object.fromEntries(c.buckets.map(b => [b.key, { label: b.label || 'Untitled', kind: b.kind, period: b.period, unit: b.unit || 'swipe' }])),
+    semStart: state.semStart, semEnd: state.semEnd,
+    locations: c.locations,
+  };
+}
 const plan = () => (PLANS[state.school]?.plans || []).find(p => p.id === state.planId) || null;
 
 // Buckets that matter right now, with their resolved period and starting amount.
@@ -67,7 +88,8 @@ function activeBuckets() {
 }
 
 // ---------- setup form ----------
-for (const [id, s] of Object.entries(SCHOOLS)) $('school').add(new Option(s.name, id));
+for (const [id, s] of Object.entries(SCHOOLS).sort((a, b) => a[1].name.localeCompare(b[1].name))) $('school').add(new Option(s.name, id));
+$('school').add(new Option("Other — my school isn't listed", OTHER_SCHOOL));
 $('school').value = state.school;
 $('semStart').value = state.semStart;
 $('semEnd').value = state.semEnd;
@@ -110,18 +132,21 @@ function fillPlans() {
   const p = plan();
   $('planHint').innerHTML = p
     ? `${p.who ? esc(p.who) + ' · ' : ''}${fmt$(p.cost)}/semester${p.note ? ' · ' + esc(p.note) : ''}`
-    : (cat ? `Plans from <a href="${cat.source}" target="_blank" rel="noopener">official ${school().name} dining info</a>, verified ${cat.verified}.` : '');
+    : (cat ? `Plans from <a href="${cat.source}" target="_blank" rel="noopener">official ${esc(school().name)} dining info</a>, verified ${cat.verified}.`
+           : 'No catalog for this school yet — type your starting amounts below.');
 }
 
 $('school').addEventListener('change', e => {
   if (state.txns.length && !confirm('Switching schools clears your logged purchases. Continue?')) { e.target.value = state.school; return; }
   state.school = e.target.value;
   state.txns = [];
-  const sch = school();
-  state.semStart = $('semStart').value = sch.semStart;
-  state.semEnd = $('semEnd').value = sch.semEnd;
+  if (state.school !== OTHER_SCHOOL) {
+    const sch = school();
+    state.semStart = $('semStart').value = sch.semStart;
+    state.semEnd = $('semEnd').value = sch.semEnd;
+  }
   state.planId = CUSTOM; state.start = {}; state.current = {};
-  save(); fillPlans(); renderStartFields(); loadLocations(); fillBuckets(); render();
+  save(); refreshSchool();
 });
 $('plan').addEventListener('change', e => {
   state.planId = e.target.value;
@@ -171,6 +196,63 @@ function renderStartFields() {
     wrap.appendChild(grid);
   }
 }
+
+function refreshSchool() {
+  $('customSchool').hidden = state.school !== OTHER_SCHOOL;
+  if (state.school === OTHER_SCHOOL) renderCustomEditor();
+  fillPlans(); renderStartFields(); loadLocations(); fillBuckets(); render();
+}
+
+// ---------- custom school builder ----------
+function renderCustomEditor() {
+  const c = state.custom;
+  $('customName').value = c.name;
+  $('customLocations').value = c.locations.join('\n');
+  const rows = $('bucketRows');
+  rows.replaceChildren(...c.buckets.map((b, i) => {
+    const row = document.createElement('div'); row.className = 'brow';
+    row.innerHTML = `
+      <input data-f="label" placeholder="Name (e.g. Meal swipes)" value="${esc(b.label)}">
+      <button type="button" class="link danger del" aria-label="Remove">✕</button>
+      <div class="opts">
+        <select data-f="kind" title="Count = swipes/blocks, Money = dollars"><option value="count">Count</option><option value="money">Money</option></select>
+        <select data-f="period" title="When it resets"><option value="semester">Semester</option><option value="week">Weekly</option><option value="unlimited">Unlimited</option></select>
+        <input data-f="unit" placeholder="unit" title="Singular unit, e.g. swipe" value="${esc(b.unit || '')}">
+      </div>`;
+    row.querySelector('[data-f=kind]').value = b.kind;
+    row.querySelector('[data-f=period]').value = b.period;
+    row.querySelector('[data-f=unit]').hidden = b.kind !== 'count';
+    for (const el of row.querySelectorAll('[data-f]')) {
+      el.addEventListener('input', () => {
+        b[el.dataset.f] = el.value;
+        if (el.dataset.f === 'kind') row.querySelector('[data-f=unit]').hidden = b.kind !== 'count';
+        if (el.dataset.f === 'label' && !b.locked) b.key = slugKey(b.label, c.buckets.filter(x => x !== b));
+        save(); fillPlans(); renderStartFields(); fillBuckets(); render();
+      });
+    }
+    row.querySelector('.del').addEventListener('click', () => {
+      c.buckets.splice(i, 1);
+      state.txns = state.txns.filter(t => t.bucket !== b.key);
+      save(); renderCustomEditor(); renderStartFields(); fillBuckets(); render();
+    });
+    return row;
+  }));
+}
+function slugKey(label, others) {
+  let base = (label || 'bucket').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'bucket', k = base, n = 2;
+  while (others.some(o => o.key === k)) k = `${base}_${n++}`;
+  return k;
+}
+$('addBucket').addEventListener('click', () => {
+  state.custom.buckets.push({ key: slugKey('bucket', state.custom.buckets), label: '', kind: 'count', period: 'semester', unit: 'swipe' });
+  save(); renderCustomEditor();
+  $('bucketRows').lastElementChild.querySelector('input').focus();
+});
+$('customName').addEventListener('input', e => { state.custom.name = e.target.value; save(); fillPlans(); });
+$('customLocations').addEventListener('input', e => {
+  state.custom.locations = e.target.value.split('\n').map(l => l.trim()).filter(Boolean);
+  save(); loadLocations();
+});
 
 // ---------- locations ----------
 const OTHER = '__other__';
@@ -258,6 +340,11 @@ function compute() {
   const buckets = activeBuckets().map(b => {
     const r = { ...b, txns: txns.filter(t => t.bucket === b.key) };
     if (b.period === 'unlimited') return { ...r, status: 'muted' };
+    if (b.passive) {   // e.g. guest swipes: just count them, no pacing
+      if (!(b.start > 0)) return { ...r, status: 'muted', noData: true };
+      const used = quick ? b.start - (+state.current[b.key] || 0) : r.txns.reduce((s, t) => s + t.amount, 0);
+      return { ...r, spent: used, balance: b.start - used, status: 'muted' };
+    }
     if (b.period === 'week') {
       // Week runs Monday → Sunday (Pitt resets Sunday 11:59 pm).
       const dow = (asOf.getDay() + 6) % 7;
@@ -290,7 +377,7 @@ function compute() {
 // What a block/swipe really costs on this plan: (plan price − money buckets) / count allotment.
 function unitValue(r) {
   const p = plan();
-  const counts = r.buckets.filter(b => b.kind === 'count' && b.period !== 'unlimited' && b.start > 0);
+  const counts = r.buckets.filter(b => b.kind === 'count' && b.period !== 'unlimited' && !b.passive && b.start > 0);
   if (!counts.length) return null;
   const fallback = 12;
   if (!p) return { value: fallback, estimated: true };
@@ -336,7 +423,7 @@ function analyze(r) {
 
   // Per-bucket "over budget → cut X" advice.
   for (const b of r.buckets) {
-    if (b.period !== 'semester' || b.noData || !(b.pace > b.safe) || r.daysLeft === 0) continue;
+    if (b.period !== 'semester' || b.noData || b.passive || !(b.pace > b.safe) || r.daysLeft === 0) continue;
     const over = b.pace - b.safe;
     const topB = [...b.txns.reduce((m, t) => m.set(t.location, (m.get(t.location) || 0) + t.amount), new Map())].sort((a, c) => c[1] - a[1])[0];
     if (!topB) continue;
@@ -348,7 +435,7 @@ function analyze(r) {
 
   // Blocks vs. money: were any money purchases pricier than a block?
   const moneyB = r.buckets.find(b => b.kind === 'money' && b.period === 'semester' && !b.noData);
-  const countB = r.buckets.find(b => b.kind === 'count' && b.period !== 'unlimited' && !b.noData);
+  const countB = r.buckets.find(b => b.kind === 'count' && b.period !== 'unlimited' && !b.noData && !b.passive);
   if (uv && !uv.estimated && moneyB && countB) {
     const pricey = moneyB.txns.filter(t => t.amount > uv.value);
     if (pricey.length) insights.push({ html: `A ${countB.unit} costs you <b>${fmt$(uv.value)}</b> on this plan. ${pricey.length} of your ${esc(moneyB.label)} purchases cost more than that — ${countB.status === 'warn' ? `and you have ${countB.unit}s to spare.` : `consider using ${countB.unit}s for those.`}` });
@@ -399,6 +486,7 @@ function render() {
 function describe(b, r) {
   if (b.period === 'unlimited') return `${b.label}: unlimited.`;
   if (b.noData) return `${b.label}: enter a balance to track.`;
+  if (b.passive) return `${b.label}: ${fmtN(b.balance, 0)} of ${fmtN(b.start, 0)} left.`;
   if (b.period === 'week') {
     return b.balance <= 0 ? `${b.label}: none left this week (resets Sunday night).`
       : `${b.label}: ${plural(b.balance, b.unit)} left this week — ${fmtN(b.safe, 1)}/day for the next ${b.daysLeftWk} day${b.daysLeftWk > 1 ? 's' : ''}.`;
@@ -411,7 +499,7 @@ function describe(b, r) {
 }
 
 function renderVerdict(r) {
-  const tracked = r.buckets.filter(b => !b.noData && b.period === 'semester');
+  const tracked = r.buckets.filter(b => !b.noData && b.period === 'semester' && !b.passive);
   const worst = ['bad', 'warn', 'good'].map(s => tracked.find(b => b.status === s)).find(Boolean);
   const v = $('verdict');
   v.className = 'verdict ' + (worst?.status || 'good');
@@ -435,6 +523,7 @@ function renderSummary(r) {
     let cells;
     if (b.period === 'unlimited') cells = `<td class="num muted">∞</td><td class="num muted">—</td><td class="num muted">—</td><td class="num muted">—</td>`;
     else if (b.noData) cells = `<td class="num muted" colspan="4">enter a balance</td>`;
+    else if (b.passive) cells = `<td class="num">${fmtQ(b, b.balance, 0)}${pct}</td><td class="num muted" colspan="3">not paced</td>`;
     else if (b.period === 'week') cells = `<td class="num">${fmtQ(b, b.balance, 0)}${pct}</td><td class="num">${fmtN(b.used, 0)} used<span class="sub">this week</span></td><td class="num">${fmtN(b.safe, 1)}/day</td><td class="num muted">resets Sun</td>`;
     else cells = `<td class="num">${fmtQ(b, b.balance)}${pct}</td><td class="num ${b.pace > b.safe ? 'warn' : ''}">${fmtRate(b, b.pace)}</td><td class="num">${fmtRate(b, b.safe)}</td><td class="num ${b.status}">${b.endBal < 0 ? `−${fmtQ(b, -b.endBal, 0)}<span class="sub">short</span>` : `${fmtQ(b, b.endBal, 0)}<span class="sub">left over</span>`}</td>`;
     tr.innerHTML = `<td>${esc(b.label)}</td>${cells}`;
@@ -443,7 +532,7 @@ function renderSummary(r) {
 }
 
 function renderChartTabs(r) {
-  const plottable = r.buckets.filter(b => b.period === 'semester' && !b.noData);
+  const plottable = r.buckets.filter(b => b.period === 'semester' && !b.noData && !b.passive);
   if (!plottable.some(b => b.key === chartKey)) chartKey = plottable[0]?.key || null;
   if (!chartKey) { chartBalance?.destroy(); chartBalance = null; $('emptyBalance').hidden = false; return; }
   if (plottable.length > 1) {
@@ -548,11 +637,19 @@ function drawPlaces(a) {
 $('btnSample').addEventListener('click', () => {
   if (state.txns.length && !confirm('Replace your current purchases with sample data?')) return;
   if (state.mode !== 'log') setMode('log');
-  if (!plan()) {
-    state.planId = state.school === 'pitt' ? 'block145' : 'red';
+  if (!plan() && PLANS[state.school]) {
+    const cat = PLANS[state.school].plans;
+    state.planId = ({ pitt: 'block145', cmu: 'red' })[state.school] || cat.find(p => Object.values(p.buckets).some(v => typeof v === 'number' && v > 20))?.id || cat[0].id;
     const p = plan(); state.start = {};
     for (const [k, v] of Object.entries(p.buckets)) state.start[k] = typeof v === 'object' ? v.amount : v;
+  } else if (!plan()) {
+    // Custom school with no catalog: seed the first count bucket and the first money bucket.
+    const bs = activeBuckets().filter(b => b.period !== 'unlimited');
+    const c = bs.find(b => b.kind === 'count'), m = bs.find(b => b.kind === 'money');
+    if (c && !(state.start[c.key] > 0)) state.start[c.key] = c.period === 'week' ? 14 : 120;
+    if (m && !(state.start[m.key] > 0)) state.start[m.key] = 500;
   }
+  if (parse(state.semStart) > today()) { alert(`${school().name}'s term hasn't started yet (${fmtDate(parse(state.semStart))}), so there's nothing to sample. Change the semester dates to try it.`); return; }
   state.txns = sampleTxns(parse(state.semStart), today());
   save(); fillPlans(); renderStartFields(); fillBuckets(); render();
 });
@@ -561,18 +658,20 @@ function sampleTxns(from, to) {
   let seed = 42; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const locs = school().locations;
   const bs = activeBuckets().filter(b => b.period !== 'unlimited');
-  const countB = bs.find(b => b.kind === 'count');   // first count bucket = the main one (blocks / meals)
+  const countB = bs.find(b => b.kind === 'count' && !b.passive);   // first real count bucket = the main one (blocks / meals)
   const moneyB = bs.find(b => b.kind === 'money');
   const menu = [['Coffee', 4.25], ['Breakfast sandwich', 6.75], ['Sushi roll', 9.5], ['Noodle soup', 12], ['Burger & fries', 13.25],
     ['Salad', 10.5], ['Smoothie', 7.5], ['Pizza slice', 4.5], ['Tacos', 9.75], ['Curry plate', 12.5], ['Iced latte', 5.5], ['Snacks', 6], ['Bowl', 11.5]];
-  const halls = locs.filter(l => /schatz|nourish|exchange|eatery|perch|tepper eatery|stack'd underground/i.test(l)).slice(0, 3);
+  // All-you-care-to-eat spots take swipes; everything else takes money.
+  let halls = locs.filter(l => /dining|commons|hall|eatery|perch|nourish|schatz|exchange|stack'd underground|hogan|rathbone|brodhead|atrium/i.test(l)).slice(0, 3);
+  if (!halls.length) halls = locs.slice(0, 2);
   const cafes = locs.filter(l => !halls.includes(l));
   const favs = [cafes[0], cafes[3], cafes[5]].filter(Boolean);
   const out = [];
   for (let d = new Date(from); d <= to; d = new Date(d.getTime() + DAY)) {
     const meals = d.getDay() === 5 ? 3 : rnd() < 0.2 ? 1 : 2;
     for (let i = 0; i < meals; i++) {
-      const useBlock = countB && halls.length && rnd() < 0.45;
+      const useBlock = countB && (!moneyB || rnd() < 0.45);
       if (useBlock) {
         out.push({ id: crypto.randomUUID(), date: toISO(d), location: halls[Math.floor(rnd() * halls.length)], item: ['Lunch', 'Dinner', 'Brunch'][Math.floor(rnd() * 3)], bucket: countB.key, amount: 1 });
       } else if (moneyB) {
@@ -603,7 +702,9 @@ $('fileImport').addEventListener('change', async e => {
 
 // ---------- go ----------
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
-$('footer').innerHTML = 'Data stays in your browser. ' + Object.entries(PLANS).map(([k, c]) => `${SCHOOLS[k].name} plans from <a href="${c.source}" target="_blank" rel="noopener">official source</a> (verified ${c.verified})`).join(' · ') + '.';
+$('footer').innerHTML = `Data stays in your browser. Meal plan catalogs for ${Object.keys(PLANS).length} schools, each linked to its official source in the plan picker. Semester dates are defaults — check them in “Semester dates”.`;
+$('customSchool').hidden = state.school !== OTHER_SCHOOL;
+if (state.school === OTHER_SCHOOL) renderCustomEditor();
 fillPlans();
 loadLocations();
 fillBuckets();
