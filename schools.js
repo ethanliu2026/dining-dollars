@@ -16,9 +16,17 @@ window.SCHOOLS = {
       dinex:  { label: 'DineXtra', kind: 'money', period: 'semester', optional: true,
                 hint: 'Bought separately; not part of a plan' },
     },
-    // Fall 2026: first day of classes → last day of finals (26–27 academic calendar)
+    // Fall 2026 from the 26–27 academic calendar: first day of classes → last day of finals
     semStart: '2026-08-31',
     semEnd: '2026-12-13',
+    aliases: ['CMU', 'Carnegie Mellon University', 'Tartans'],
+    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
+    breaks: [
+      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+      { name: 'Fall Break', start: '2026-10-12', end: '2026-10-16' },
+      { name: 'Democracy Day', start: '2026-11-03', end: '2026-11-03' },
+      { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+    ],
     locations: [
       'Au Bon Pain at Skibo Café', 'Baroque Toast', 'Capital Grains', 'Ciao Bella',
       'Crisp and Crust', 'De Fer Coffee & Tea @ Resnik', 'E.A.T. (Evenings at Tepper)',
@@ -50,9 +58,16 @@ window.SCHOOLS = {
       dd:        { label: 'Dining Dollars', kind: 'money', period: 'semester',
                    hint: '10% off at non-national-brand spots' },
     },
-    // Fall 2026 approx (classes Aug 24, finals end Dec 12) — verify against the Pitt calendar
+    // Fall 2026 per the Registrar's 26–27 calendar: classes Aug 24, term ends Dec 12
     semStart: '2026-08-24',
     semEnd: '2026-12-12',
+    aliases: ['Pitt', 'UPitt', 'University of Pittsburgh', 'Panthers'],
+    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
+    breaks: [
+      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+      { name: 'Fall Break', start: '2026-10-09', end: '2026-10-11' },
+      { name: 'Thanksgiving', start: '2026-11-22', end: '2026-11-29' },
+    ],
     locations: [
       'The Eatery (Towers)', 'The Perch (Sutherland)', 'Forbes Street Market', 'Cathedral Café',
       'Einstein Bros. Bagels (Posvar)', 'Einstein Bros. Bagels (Benedum)', 'Starbucks (Cathedral)',
@@ -70,9 +85,15 @@ window.SCHOOLS = {
       lioncash: { label: 'LionCash', kind: 'money', period: 'semester', optional: true,
                   hint: 'Separate prepaid account; never expires' },
     },
-    // Fall 2026 approx (classes Aug 24, finals end Dec 18) — verify against the PSU calendar
+    // Fall 2026 per the Registrar: classes Aug 24, finals end Dec 18
     semStart: '2026-08-24',
     semEnd: '2026-12-18',
+    aliases: ['PSU', 'Penn State', 'Nittany Lions', 'State College'],
+    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
+    breaks: [
+      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+      { name: 'Thanksgiving', start: '2026-11-22', end: '2026-11-28' },
+    ],
     locations: [
       'Pollock Commons', 'Redifer Commons (South)', 'Findlay Commons (East)', 'Waring Commons (West)',
       'North Food District (Warnock)', 'HUB – Burger King', 'HUB – Slim Chickens', "HUB – McAlister's Deli",
@@ -90,9 +111,16 @@ window.SCHOOLS = {
       diamond: { label: 'Diamond Dollars', kind: 'money', period: 'semester', optional: true,
                  hint: 'Separate declining balance; not part of a meal plan' },
     },
-    // Fall 2026 approx (classes Aug 24, finals end Dec 17) — verify against the Temple calendar
+    // Fall 2026 per the Registrar: classes Aug 24, finals end Dec 15
     semStart: '2026-08-24',
-    semEnd: '2026-12-17',
+    semEnd: '2026-12-15',
+    aliases: ['TU', 'Temple', 'Owls'],
+    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
+    breaks: [
+      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+      { name: 'Fall Wellness Day', start: '2026-10-02', end: '2026-10-02' },
+      { name: 'Fall Break + Thanksgiving', start: '2026-11-23', end: '2026-11-29' },
+    ],
     locations: [
       'Johnson & Hardwick Dining Hall', 'Esposito Dining Court (Morgan Hall)', 'Student Center Food Court',
       'Chick-fil-A (Student Center)', 'Starbucks (Student Center)', 'Saxbys (Charles Library)',
@@ -108,9 +136,16 @@ window.SCHOOLS = {
                 hint: 'Roll fall → spring; expire Commencement Day' },
       guest:  { label: 'Guest swipes', kind: 'count', unit: 'swipe', period: 'semester', optional: true, passive: true },
     },
-    // Fall 2026: Aug 25 (first day, per Penn Dining) – Dec 22 approx (end of finals)
+    // Fall 2026 per the Almanac three-year calendar: classes Aug 25, term ends Dec 17
     semStart: '2026-08-25',
-    semEnd: '2026-12-22',
+    semEnd: '2026-12-17',
+    aliases: ['UPenn', 'Penn', 'Quakers'],
+    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
+    breaks: [
+      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+      { name: 'Fall Term Break', start: '2026-10-01', end: '2026-10-04' },
+      { name: 'Thanksgiving', start: '2026-11-26', end: '2026-11-29' },
+    ],
     locations: [
       '1920 Commons', 'Hill House Dining', 'Lauder College House Dining', 'Falk Dining Commons (Hillel)',
       'Quaker Kitchen', 'Houston Market', 'Accenture Café', "Joe's Café (Wharton)", 'Gourmet Grocer',
@@ -126,9 +161,16 @@ window.SCHOOLS = {
                hint: 'Roll to next term only if you buy another plan' },
       guest: { label: 'Guest meals', kind: 'count', unit: 'meal', period: 'semester', optional: true, passive: true },
     },
-    // Drexel is on quarters. Fall 2026 term approx Sep 21 – Dec 12 — verify against the Drexel calendar
-    semStart: '2026-09-21',
+    // Drexel is on quarters. Fall 2026 per the Provost's calendar: classes Sep 22, exams end Dec 12
+    semStart: '2026-09-22',
     semEnd: '2026-12-12',
+    aliases: ['Drexel', 'Dragons'],
+    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
+    breaks: [
+      { name: "Indigenous Peoples' Day", start: '2026-10-12', end: '2026-10-12' },
+      { name: 'Election Day', start: '2026-11-03', end: '2026-11-03' },
+      { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+    ],
     locations: [
       'Urban Eatery', 'Handschumacher Dining Center', 'Northside Dining Terrace', 'Chick-fil-A (Northside)',
       'Currito', 'Subway', 'Starbucks (LeBow)', 'Saxbys', 'Perelman Center for Jewish Life', "Sabrina's Café",
@@ -144,9 +186,16 @@ window.SCHOOLS = {
       plus:  { label: 'PLUS Dollars', kind: 'money', period: 'semester', optional: true,
                hint: 'Bought separately; 10% bonus on load' },
     },
-    // Fall 2026 approx (classes Aug 24, finals end Dec 12) — verify against the Duquesne calendar
+    // Fall 2026 per the academic calendar: classes Aug 24, finals end Dec 17
     semStart: '2026-08-24',
-    semEnd: '2026-12-12',
+    semEnd: '2026-12-17',
+    aliases: ['DU', 'Duquesne', 'Dukes'],
+    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
+    breaks: [
+      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+      { name: 'Fall Class Break', start: '2026-10-19', end: '2026-10-20' },
+      { name: 'Thanksgiving', start: '2026-11-23', end: '2026-11-29' },
+    ],
     locations: [
       'Hogan Dining Center', 'Chick-fil-A', 'Cinco Cantina', 'The Incline', 'Campus Market (Towers)',
       'Campus Market Express (Fisher)', 'Coffee Tree Roasters (Law School)', 'Business Leader Bistro (Rockwell)',
@@ -163,9 +212,16 @@ window.SCHOOLS = {
       nova:   { label: 'Nova Bucks', kind: 'money', period: 'semester', optional: true,
                 hint: 'Separate declining balance' },
     },
-    // Fall 2026 approx (classes Aug 24, finals end Dec 18) — verify against the Villanova calendar
+    // Fall 2026 per the 26–27 catalog: classes Aug 24, finals end Dec 18
     semStart: '2026-08-24',
     semEnd: '2026-12-18',
+    aliases: ['Nova', 'Villanova', 'Wildcats'],
+    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
+    breaks: [
+      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+      { name: 'Semester Recess', start: '2026-10-12', end: '2026-10-18' },
+      { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+    ],
     locations: [
       'Dougherty Dining Hall', 'Donahue Dining Hall', "St. Mary's Dining Hall", 'The Pit (Dougherty)',
       'Belle Air Terrace (Connelly)', 'Second Storey Market', 'Café Nova', 'Holy Grounds', 'The Exchange (Commons)',
@@ -180,9 +236,16 @@ window.SCHOOLS = {
       dd:     { label: 'Dining Dollars', kind: 'money', period: 'semester' },
       guest:  { label: 'Guest meals', kind: 'count', unit: 'meal', period: 'semester', optional: true, passive: true },
     },
-    // Fall 2026 approx (classes Aug 24, finals end Dec 18) — verify against the Lehigh calendar
+    // Fall 2026 per the 26–27 catalog: classes Aug 24, finals end Dec 16. Pacing break dates are approximate
     semStart: '2026-08-24',
-    semEnd: '2026-12-18',
+    semEnd: '2026-12-16',
+    aliases: ['Lehigh', 'Mountain Hawks'],
+    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
+    breaks: [
+      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+      { name: 'Pacing Break (approx)', start: '2026-10-12', end: '2026-10-13' },
+      { name: 'Thanksgiving', start: '2026-11-25', end: '2026-11-29' },
+    ],
     locations: [
       'Rathbone Dining Hall', 'Brodhead House Dining', 'Clayton University Center Food Court', "The Hawk's Nest",
       "Lucy's Café (Linderman)", 'Global Café (Williams)', 'The Grind at FML', 'Iacocca Café',
@@ -197,9 +260,15 @@ window.SCHOOLS = {
       ruexpress: { label: 'RU Express', kind: 'money', period: 'semester', optional: true,
                    hint: 'Separate prepaid account' },
     },
-    // Fall 2026 approx (classes Sep 1, finals end Dec 23) — verify against the Rutgers calendar
+    // Fall 2026 per the University calendar: classes Sep 1, exams end Dec 22
     semStart: '2026-09-01',
-    semEnd: '2026-12-23',
+    semEnd: '2026-12-22',
+    aliases: ['RU', 'Rutgers', 'Scarlet Knights', 'New Brunswick'],
+    // Days with no classes (Fall 2026). Users choose whether they still eat on campus then.
+    breaks: [
+      { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
+      { name: 'Thanksgiving', start: '2026-11-26', end: '2026-11-29' },
+    ],
     locations: [
       'Busch Dining Hall', 'Livingston Dining Commons', 'Neilson Dining Hall', 'The Atrium (College Ave)',
       "Kilmer's Market", "Henry's Diner (Livingston)", "Woody's Café (Busch)", 'Sbarro (Busch Student Center)',

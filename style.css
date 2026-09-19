@@ -70,6 +70,8 @@ input, select {
 select { text-overflow: ellipsis; }
 input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row > * { min-width: 0; }
+input[type=date] { min-width: 0; -webkit-appearance: none; appearance: none; }
 .money { position: relative; }
 .money span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-3); }
 .money input { padding-left: 26px; }
@@ -179,3 +181,19 @@ textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-c
   table { font-size: 13px; }
   td, th { padding: 6px 5px; }
 }
+
+/* searchable school picker */
+.combo { position: relative; }
+#schoolList { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 4px; list-style: none;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.18); max-height: 280px; overflow: auto; }
+#schoolList li { padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+#schoolList li .alias { color: var(--text-3); font-size: 12px; margin-left: 6px; }
+#schoolList li:hover, #schoolList li[aria-selected="true"] { background: var(--bg); }
+#schoolList li.none { color: var(--text-3); cursor: default; }
+#schoolList li.other { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 10px; color: var(--text-2); }
+
+/* eating-days controls */
+.checks { display: flex; gap: 16px; flex-wrap: wrap; }
+label.check { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 14px; color: var(--text); cursor: pointer; }
+label.check input { width: auto; margin: 0; accent-color: var(--accent); }
+#eatSummary { margin-top: 10px; }

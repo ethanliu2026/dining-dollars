@@ -15,6 +15,7 @@ const DEFAULT_CUSTOM = () => ({
     { key: 'dollars', label: 'Dining dollars', kind: 'money', period: 'semester' },
   ],
   locations: [],
+  breaks: [],
 });
 
 // ---------- helpers ----------
@@ -32,7 +33,7 @@ const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 
 // Format a quantity in a bucket's own units.
 const fmtQ = (b, n, d = 1) => b.kind === 'money' ? fmt$(n) : plural(Number(n.toFixed(d)), b.unit);
-const fmtRate = (b, n) => b.kind === 'money' ? `${fmt$(n)}/day` : `${fmtN(n, 1)}/day`;
+const fmtRate = (b, n) => b.kind === 'money' ? `${fmt$(n)}/day` : `${fmtN(n, 1)}/day`;   // per eating day
 
 // ---------- state ----------
 let state = load();
@@ -42,8 +43,10 @@ function load() {
   const sch = SCHOOLS[s?.school] || s?.school === OTHER_SCHOOL ? s.school : 'cmu';
   const dates = SCHOOLS[sch] || SCHOOLS.cmu;
   const base = { mode: 'log', school: sch, planId: CUSTOM, start: {}, current: {}, asOf: toISO(today()),
-                 semStart: dates.semStart, semEnd: dates.semEnd, txns: [], custom: DEFAULT_CUSTOM() };
-  return { ...base, ...(s || {}), asOf: s?.asOf || base.asOf, custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) } };
+                 semStart: dates.semStart, semEnd: dates.semEnd, txns: [], custom: DEFAULT_CUSTOM(),
+                 eat: { weekends: true, breaks: false } };
+  return { ...base, ...(s || {}), asOf: s?.asOf || base.asOf,
+           custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) }, eat: { ...base.eat, ...(s?.eat || {}) } };
 }
 // Old single-balance data → put it in the school's money bucket.
 function migrateV2() {
@@ -66,7 +69,7 @@ function school() {
     name: c.name || 'My school',
     buckets: Object.fromEntries(c.buckets.map(b => [b.key, { label: b.label || 'Untitled', kind: b.kind, period: b.period, unit: b.unit || 'swipe' }])),
     semStart: state.semStart, semEnd: state.semEnd,
-    locations: c.locations,
+    locations: c.locations, breaks: c.breaks || [], aliases: [],
   };
 }
 const plan = () => (PLANS[state.school]?.plans || []).find(p => p.id === state.planId) || null;
@@ -88,9 +91,65 @@ function activeBuckets() {
 }
 
 // ---------- setup form ----------
-for (const [id, s] of Object.entries(SCHOOLS).sort((a, b) => a[1].name.localeCompare(b[1].name))) $('school').add(new Option(s.name, id));
-$('school').add(new Option("Other — my school isn't listed", OTHER_SCHOOL));
-$('school').value = state.school;
+// Searchable school picker: type to filter by name or alias, click/Enter to choose.
+const SCHOOL_OPTIONS = Object.entries(SCHOOLS)
+  .sort((a, b) => a[1].name.localeCompare(b[1].name))
+  .map(([id, s]) => ({ id, name: s.name, aliases: s.aliases || [] }));
+let listIndex = -1;
+function schoolLabel(id) { return id === OTHER_SCHOOL ? (state.custom.name || 'My school') : SCHOOLS[id].name; }
+function renderSchoolList(q) {
+  const needle = q.trim().toLowerCase();
+  const hits = SCHOOL_OPTIONS.filter(o => !needle || o.name.toLowerCase().includes(needle) || o.aliases.some(a => a.toLowerCase().includes(needle)));
+  const ul = $('schoolList');
+  ul.replaceChildren(
+    ...(hits.length ? hits.map(o => {
+      const li = document.createElement('li'); li.setAttribute('role', 'option'); li.dataset.id = o.id;
+      const alias = needle && !o.name.toLowerCase().includes(needle) ? o.aliases.find(a => a.toLowerCase().includes(needle)) : (o.aliases[0] || '');
+      li.innerHTML = `${esc(o.name)}${alias ? `<span class="alias">${esc(alias)}</span>` : ''}`;
+      return li;
+    }) : [Object.assign(document.createElement('li'), { className: 'none', textContent: `No match for “${q.trim()}”` })]),
+    Object.assign(document.createElement('li'), { className: 'other', textContent: "Other — my school isn't listed", role: 'option' }),
+  );
+  ul.lastElementChild.dataset.id = OTHER_SCHOOL;
+  listIndex = -1;
+  openList(true);
+}
+function openList(open) { $('schoolList').hidden = !open; $('schoolSearch').setAttribute('aria-expanded', open); }
+function highlight(i) {
+  const items = [...$('schoolList').querySelectorAll('li[data-id]')];
+  if (!items.length) return;
+  listIndex = (i + items.length) % items.length;
+  items.forEach((li, k) => li.setAttribute('aria-selected', k === listIndex));
+  items[listIndex].scrollIntoView({ block: 'nearest' });
+}
+$('schoolSearch').addEventListener('focus', e => { e.target.select(); renderSchoolList(''); });
+$('schoolSearch').addEventListener('input', e => renderSchoolList(e.target.value));
+$('schoolSearch').addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { e.preventDefault(); if ($('schoolList').hidden) renderSchoolList(e.target.value); highlight(listIndex + 1); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); highlight(listIndex - 1); }
+  else if (e.key === 'Enter' || e.key === 'Return') { e.preventDefault(); const items = $('schoolList').querySelectorAll('li[data-id]'); const pick = items[listIndex] || items[0]; if (pick) chooseSchool(pick.dataset.id); }
+  else if (e.key === 'Escape') { openList(false); e.target.value = schoolLabel(state.school); }
+});
+$('schoolSearch').addEventListener('blur', () => setTimeout(() => { openList(false); $('schoolSearch').value = schoolLabel(state.school); }, 150));
+for (const ev of ['mousedown', 'click']) $('schoolList').addEventListener(ev, e => {
+  const li = e.target.closest('li[data-id]');
+  if (li) { e.preventDefault(); if (!$('schoolList').hidden) chooseSchool(li.dataset.id); }
+});
+function chooseSchool(id) {
+  openList(false); $('schoolSearch').blur();
+  if (id === state.school) { $('schoolSearch').value = schoolLabel(id); return; }
+  if (state.txns.length && !confirm('Switching schools clears your logged purchases. Continue?')) { $('schoolSearch').value = schoolLabel(state.school); return; }
+  state.school = id;
+  state.txns = [];
+  if (id !== OTHER_SCHOOL) {
+    const sch = school();
+    state.semStart = $('semStart').value = sch.semStart;
+    state.semEnd = $('semEnd').value = sch.semEnd;
+  }
+  state.planId = CUSTOM; state.start = {}; state.current = {};
+  save(); $('schoolSearch').value = schoolLabel(id); refreshSchool();
+}
+$('schoolSearch').value = schoolLabel(state.school);
 $('semStart').value = state.semStart;
 $('semEnd').value = state.semEnd;
 $('asOf').value = state.asOf;
@@ -136,18 +195,6 @@ function fillPlans() {
            : 'No catalog for this school yet — type your starting amounts below.');
 }
 
-$('school').addEventListener('change', e => {
-  if (state.txns.length && !confirm('Switching schools clears your logged purchases. Continue?')) { e.target.value = state.school; return; }
-  state.school = e.target.value;
-  state.txns = [];
-  if (state.school !== OTHER_SCHOOL) {
-    const sch = school();
-    state.semStart = $('semStart').value = sch.semStart;
-    state.semEnd = $('semEnd').value = sch.semEnd;
-  }
-  state.planId = CUSTOM; state.start = {}; state.current = {};
-  save(); refreshSchool();
-});
 $('plan').addEventListener('change', e => {
   state.planId = e.target.value;
   const p = plan();
@@ -159,6 +206,51 @@ $('plan').addEventListener('change', e => {
 });
 for (const id of ['asOf', 'semStart', 'semEnd']) {
   $(id).addEventListener('input', e => { state[id] = e.target.value; save(); render(); });
+}
+$('eatWeekends').addEventListener('change', e => { state.eat.weekends = e.target.checked; save(); render(); });
+$('eatBreaks').addEventListener('change', e => { state.eat.breaks = e.target.checked; save(); render(); });
+$('eatWeekends').checked = state.eat.weekends;
+$('eatBreaks').checked = state.eat.breaks;
+
+// ---------- eating days ----------
+// A "day" for pacing purposes is a day you actually use the plan: weekends and breaks are
+// optional. All rates (pace, safe pace) are per eating day.
+const WEEKEND = d => d.getDay() === 0 || d.getDay() === 6;
+function breaksFor() {
+  return (school().breaks || []).map(b => ({ ...b, s: parse(b.start), e: parse(b.end || b.start) })).filter(b => !isNaN(b.s) && !isNaN(b.e));
+}
+function inBreak(d, breaks) { return breaks.find(b => d >= b.s && d <= b.e) || null; }
+function isEatDay(d, breaks) {
+  if (!state.eat.weekends && WEEKEND(d)) return false;
+  if (!state.eat.breaks && inBreak(d, breaks)) return false;
+  return true;
+}
+// Count eating days in [from, to] inclusive.
+function countEatDays(from, to, breaks) {
+  let n = 0;
+  for (let d = new Date(from); d <= to; d = new Date(d.getTime() + DAY)) if (isEatDay(d, breaks)) n++;
+  return n;
+}
+// The calendar date on which `balance` runs out at `pace` per eating day, starting the day after `from`.
+function runOutOn(from, balance, pace, breaks, limit) {
+  if (!(pace > 0)) return null;
+  let bal = balance;
+  for (let d = new Date(from.getTime() + DAY); d <= limit; d = new Date(d.getTime() + DAY)) {
+    if (isEatDay(d, breaks)) { bal -= pace; if (bal <= 0) return d; }
+  }
+  return null;
+}
+function renderEatSummary(r) {
+  const breaks = breaksFor();
+  const skipped = state.eat.breaks ? [] : breaks.filter(b => b.e >= (r?.asOf || today()) && b.s <= (r ? r.semEnd : parse(state.semEnd)));
+  $('breaksHint').textContent = breaks.length
+    ? `${school().name} breaks: ` + breaks.map(b => `${b.name} (${fmtDate(b.s)}${b.e > b.s ? '–' + fmtDate(b.e) : ''})`).join(', ')
+    : (state.school === OTHER_SCHOOL ? 'Add your breaks above to skip them.' : 'No breaks on file.');
+  if (!r) { $('eatSummary').textContent = ''; return; }
+  const parts = [];
+  if (!state.eat.weekends) parts.push('weekends');
+  if (skipped.length) parts.push(skipped.map(b => b.name).join(', '));
+  $('eatSummary').textContent = `${r.daysLeft} eating days left of ${r.calDaysLeft} calendar days` + (parts.length ? ` — skipping ${parts.join(' and ')}.` : '.');
 }
 
 // One input per bucket for the starting amount; in quick mode a second column for "now".
@@ -208,6 +300,7 @@ function renderCustomEditor() {
   const c = state.custom;
   $('customName').value = c.name;
   $('customLocations').value = c.locations.join('\n');
+  $('customBreaks').value = (c.breaks || []).map(b => b.end && b.end !== b.start ? `${b.name}, ${b.start}, ${b.end}` : `${b.name}, ${b.start}`).join('\n');
   const rows = $('bucketRows');
   rows.replaceChildren(...c.buckets.map((b, i) => {
     const row = document.createElement('div'); row.className = 'brow';
@@ -248,10 +341,18 @@ $('addBucket').addEventListener('click', () => {
   save(); renderCustomEditor();
   $('bucketRows').lastElementChild.querySelector('input').focus();
 });
-$('customName').addEventListener('input', e => { state.custom.name = e.target.value; save(); fillPlans(); });
+$('customName').addEventListener('input', e => { state.custom.name = e.target.value; save(); fillPlans(); $('schoolSearch').value = schoolLabel(state.school); });
 $('customLocations').addEventListener('input', e => {
   state.custom.locations = e.target.value.split('\n').map(l => l.trim()).filter(Boolean);
   save(); loadLocations();
+});
+// "Name, 2026-10-12, 2026-10-16" or "Name, 2026-09-07" per line
+$('customBreaks').addEventListener('input', e => {
+  state.custom.breaks = e.target.value.split('\n').map(l => {
+    const [name, start, end] = l.split(',').map(x => x.trim());
+    return name && /^\d{4}-\d{2}-\d{2}$/.test(start || '') ? { name, start, end: /^\d{4}-\d{2}-\d{2}$/.test(end || '') ? end : start } : null;
+  }).filter(Boolean);
+  save(); render();
 });
 
 // ---------- locations ----------
@@ -333,8 +434,11 @@ function compute() {
   if (totalDays <= 0) return null;
   const quick = state.mode === 'quick';
   const asOf = quick && state.asOf ? parse(state.asOf) : today();
-  const elapsed = Math.max(1, daysBetween(semStart, asOf));
-  const daysLeft = Math.max(0, daysBetween(asOf, semEnd));
+  const breaks = breaksFor();
+  // elapsed = eating days so far (semester start through yesterday); daysLeft = eating days after today
+  const elapsed = Math.max(1, countEatDays(semStart, new Date(asOf.getTime() - DAY), breaks));
+  const calDaysLeft = Math.max(0, daysBetween(asOf, semEnd));
+  const daysLeft = asOf < semEnd ? countEatDays(new Date(asOf.getTime() + DAY), semEnd, breaks) : 0;
   const txns = quick ? [] : [...state.txns].sort((a, b) => a.date.localeCompare(b.date));
 
   const buckets = activeBuckets().map(b => {
@@ -351,7 +455,8 @@ function compute() {
       const weekStart = new Date(asOf.getTime() - dow * DAY);
       const thisWeek = r.txns.filter(t => parse(t.date) >= weekStart && parse(t.date) <= asOf);
       const used = quick ? b.start - (+state.current[b.key] || 0) : thisWeek.reduce((s, t) => s + t.amount, 0);
-      const left = b.start - used, daysLeftWk = 7 - dow;
+      const weekEnd = new Date(weekStart.getTime() + 6 * DAY);
+      const left = b.start - used, daysLeftWk = Math.max(1, countEatDays(asOf, weekEnd, breaks));
       const status = left <= 0 ? 'bad' : left > daysLeftWk * 3 ? 'warn' : 'good';
       return { ...r, used, balance: left, daysLeftWk, safe: left / daysLeftWk, weekStart, status };
     }
@@ -363,7 +468,7 @@ function compute() {
     const pace = spent / elapsed;
     const safe = daysLeft > 0 ? Math.max(0, balance) / daysLeft : 0;
     const endBal = balance - pace * daysLeft;
-    const runOutDate = pace > 0 && balance > 0 ? new Date(asOf.getTime() + (balance / pace) * DAY) : (balance <= 0 ? asOf : null);
+    const runOutDate = balance <= 0 ? asOf : runOutOn(asOf, balance, pace, breaks, semEnd);
     const tol = b.kind === 'money' ? Math.max(25, b.start * 0.03) : Math.max(2, b.start * 0.05);
     const status = balance <= 0 ? 'bad' : daysLeft === 0 ? (balance > tol ? 'warn' : 'good')
       : endBal < -tol ? 'bad' : endBal > tol ? 'warn' : 'good';
@@ -371,7 +476,7 @@ function compute() {
   });
 
   if (!buckets.some(b => !b.noData && b.period !== 'unlimited')) return null;
-  return { quick, semStart, semEnd, asOf, totalDays, elapsed, daysLeft, txns, buckets };
+  return { quick, semStart, semEnd, asOf, totalDays, elapsed, daysLeft, calDaysLeft, txns, buckets };
 }
 
 // What a block/swipe really costs on this plan: (plan price − money buckets) / count allotment.
@@ -462,6 +567,7 @@ let chartBalance, chartPlaces, chartKey = null;
 function render() {
   const r = compute();
   renderTable();
+  renderEatSummary(r);
 
   $('verdict').hidden = !r; $('summaryCard').hidden = !r; $('emptyBalance').hidden = !!r;
   $('chartTabs').replaceChildren();

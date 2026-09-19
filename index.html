@@ -33,8 +33,11 @@
         </div>
         <p class="hint" id="modeHint"></p>
 
-        <label for="school">School</label>
-        <select id="school"></select>
+        <label for="schoolSearch">School</label>
+        <div class="combo">
+          <input id="schoolSearch" placeholder="Search your school…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="schoolList" aria-autocomplete="list">
+          <ul id="schoolList" role="listbox" hidden></ul>
+        </div>
 
         <div id="customSchool" hidden>
           <label for="customName">School name</label>
@@ -47,6 +50,9 @@
 
           <label for="customLocations">Places to eat <span style="color:var(--text-3)">(one per line)</span></label>
           <textarea id="customLocations" rows="4" placeholder="Main Dining Hall&#10;Starbucks (Library)&#10;Chick-fil-A"></textarea>
+
+          <label for="customBreaks">Breaks &amp; holidays <span style="color:var(--text-3)">(one per line: name, start, end)</span></label>
+          <textarea id="customBreaks" rows="3" placeholder="Labor Day, 2026-09-07&#10;Fall Break, 2026-10-12, 2026-10-16&#10;Thanksgiving, 2026-11-25, 2026-11-29"></textarea>
         </div>
 
         <label for="plan">Meal plan</label>
@@ -59,13 +65,20 @@
           <input id="asOf" type="date">
         </div>
 
-        <details>
-          <summary>Semester dates</summary>
+        <details id="calendarDetails">
+          <summary>Semester dates &amp; when you eat on campus</summary>
           <div class="row">
             <div><label for="semStart">First day</label><input id="semStart" type="date"></div>
             <div><label for="semEnd">Last day</label><input id="semEnd" type="date"></div>
           </div>
+          <label>I use my plan on…</label>
+          <div class="checks">
+            <label class="check"><input type="checkbox" id="eatWeekends"> Weekends</label>
+            <label class="check"><input type="checkbox" id="eatBreaks"> Breaks &amp; holidays</label>
+          </div>
+          <p class="hint" id="breaksHint"></p>
         </details>
+        <p class="hint" id="eatSummary"></p>
       </section>
 
       <section class="card" id="logCard">

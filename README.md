@@ -12,7 +12,8 @@ SteelHacks 2026. Track meal blocks, FLEX, Dining Dollars — whatever your schoo
 
 ## What it does
 - Pick your school and your **actual meal plan** → allotments and semester dates are filled in. Catalogs (all 2026–27, each linked to its official source): **CMU, Pitt, Penn State, Temple, Penn, Drexel, Duquesne, Villanova, Lehigh, Rutgers–NB**
-- School not listed? **Other** lets you name it, define what your plan is made of (swipes / blocks / dollars, per-semester / weekly / unlimited), and list your places to eat
+- Searchable school picker (type "pitt", "psu", "nova"…). School not listed? **Other** lets you name it, define what your plan is made of (swipes / blocks / dollars, per-semester / weekly / unlimited), list your places to eat, and enter your breaks
+- **Eating days, not calendar days**: choose whether you use the plan on weekends and on breaks/holidays. Every school's Fall 2026 breaks (Labor Day, fall break, Thanksgiving…) come from its official academic calendar, so "safe pace" is per day you'll actually be on campus
 - Every plan is a set of **buckets**: meal blocks/swipes (count) and FLEX/Dining Dollars (money), each per-semester, weekly (Pitt Weekly 14), or unlimited (Pitt Full-Access)
 - Two modes: **Track purchases** (log each meal and which bucket paid for it) or **Quick estimate** (just start + current per bucket)
 - Per-bucket verdict: run out / on pace / wasting, safe daily pace, projected end
@@ -22,7 +23,7 @@ SteelHacks 2026. Track meal blocks, FLEX, Dining Dollars — whatever your schoo
 - Export / import JSON, sample data for demos. Everything stays in localStorage.
 
 ## Meal plan data
-`plans.json` is the catalog (source of truth); `plans.js` is generated from it so the page works from `file://`. Each school's entry records its `source` URL and a `verified` date. Semester dates in `schools.js` are Fall 2026 defaults — most are marked approximate; users can edit them under "Semester dates".
+`plans.json` is the catalog (source of truth); `plans.js` is generated from it so the page works from `file://`. Each school's entry records its `source` URL and a `verified` date. Semester dates and breaks in `schools.js` were taken from each school's official Fall 2026 academic calendar (Lehigh's pacing-break dates are approximate); users can still edit dates under "Semester dates".
 
 ```bash
 python3 scripts/update_plans.py        # re-fetch CMU's official PDF and regenerate
@@ -31,7 +32,7 @@ python3 scripts/update_plans.py --no-fetch   # just regenerate plans.js after ed
 CMU publishes plans as a [PDF agreement](https://www.cmu.edu/dining/your-dining-plan/26-27-uc-meal-plan-agreementfinal.pdf) which the script parses (needs `brew install poppler`). Pitt's [Dine On Campus page](https://dineoncampus.com/pitt/20262027-meal-memberships) blocks scripts, so its entry is hand-maintained — paste the page text into `scripts/pitt.txt` and re-run to parse it. The other eight schools were transcribed by hand from their dining sites (linked in `plans.json`).
 
 ### Adding a school
-1. `schools.js` — add an entry: name, `buckets` (what the plan is made of), Fall dates, `locations`
+1. `schools.js` — add an entry: name, `aliases`, `buckets` (what the plan is made of), Fall dates, `breaks`, `locations`
 2. `plans.json` — add its plans (`buckets` values are per-semester numbers, or `{amount, period}` for weekly/unlimited)
 3. `python3 scripts/update_plans.py --no-fetch`
 
