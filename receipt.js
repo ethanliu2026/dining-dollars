@@ -8,6 +8,10 @@
 
 const KEY_STORE = 'ddt.apiKey';
 const PROXY_STORE = 'ddt.proxyUrl';
+// Team proxy (server/worker.js) so users never need a key. Set this to your deployed
+// Worker URL, e.g. 'https://meal-plan-receipts.<you>.workers.dev'. Settings can override it.
+const DEFAULT_PROXY = '';
+const proxyUrl = () => localStorage.getItem(PROXY_STORE) || DEFAULT_PROXY;
 const MODEL = 'claude-opus-5';
 const SDK_URL = 'https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk/+esm';
 
@@ -85,8 +89,8 @@ async function claudeClient(apiKey) {
 }
 
 async function readReceipt({ data, mediaType }) {
-  const proxy = localStorage.getItem(PROXY_STORE);
   const apiKey = localStorage.getItem(KEY_STORE);
+  const proxy = apiKey && localStorage.getItem(PROXY_STORE) === null ? '' : proxyUrl();   // a user-entered key wins over the default proxy
   const bucketKeys = activeBuckets().filter(b => b.period !== 'unlimited').map(b => b.key);
   const schema = receiptSchema(bucketKeys);
   const prompt = receiptPrompt();
@@ -138,7 +142,7 @@ function pickLocation(name, inList) {
 async function handleReceipt(file) {
   if (!file) return;
   if (!activeBuckets().some(b => b.period !== 'unlimited')) { scanStatus('Pick your meal plan first so I know what buckets to charge.', 'error'); return; }
-  if (!localStorage.getItem(KEY_STORE) && !localStorage.getItem(PROXY_STORE)) { openSettings(); return; }
+  if (!localStorage.getItem(KEY_STORE) && !proxyUrl()) { openSettings(); return; }
 
   $('scanLabel').classList.add('busy');
   $('scanResult').hidden = true;
@@ -203,7 +207,8 @@ function editScan() {
 // ---------- settings ----------
 function openSettings() {
   $('apiKey').value = localStorage.getItem(KEY_STORE) || '';
-  $('proxyUrl').value = localStorage.getItem(PROXY_STORE) || '';
+  $('proxyUrl').value = localStorage.getItem(PROXY_STORE) ?? '';
+  $('proxyUrl').placeholder = DEFAULT_PROXY || 'https://your-worker.workers.dev';
   $('settings').showModal();
 }
 $('btnSettings').addEventListener('click', openSettings);
@@ -216,7 +221,7 @@ $('settings').querySelector('form').addEventListener('submit', () => {
   updateScanHint();
 });
 function updateScanHint() {
-  const has = localStorage.getItem(KEY_STORE) || localStorage.getItem(PROXY_STORE);
+  const has = localStorage.getItem(KEY_STORE) || proxyUrl();
   $('scanHint').innerHTML = has ? 'Works best with the whole receipt in frame, flat, in good light.' : 'Needs an API key or proxy — <a href="#" id="scanSetup">set it up</a>.';
   $('scanSetup')?.addEventListener('click', e => { e.preventDefault(); openSettings(); });
 }

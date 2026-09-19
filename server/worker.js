@@ -27,6 +27,8 @@ export default {
     const { image, media_type, prompt, schema } = body;
     if (!image || !media_type || !prompt || !schema) return new Response('missing fields', { status: 400, headers: cors });
     if (image.length > 8_000_000) return new Response('image too large', { status: 413, headers: cors });
+    // Cheap abuse brake: refuse anything that isn't a browser on an allowed origin.
+    if (!ALLOWED_ORIGINS.includes(origin)) return new Response('forbidden', { status: 403, headers: cors });
 
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

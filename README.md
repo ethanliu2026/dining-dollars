@@ -39,9 +39,16 @@ CMU publishes plans as a [PDF agreement](https://www.cmu.edu/dining/your-dining-
 ## Receipt scanning
 "Scan a receipt" → take a photo (or drop / paste an image on desktop). Claude reads it and the purchase is logged immediately — location matched to the dropdown, items summarized, and **each tender line mapped to a bucket** (a CMU receipt's `MEAL BLOCK` + `FLEX` lines become `1 block + $2.75 FLEX`). A green card shows what was read with **Undo** / **Edit**; it turns amber when the location wasn't a known one or Claude flagged something uncertain.
 
-Two ways to reach Claude (Settings):
-- **API key** — pasted into the app, stored only in that browser's localStorage. Fine for a demo; the app calls the API directly via the official `@anthropic-ai/sdk` (loaded from a CDN on first scan).
-- **Proxy URL** — deploy [`server/worker.js`](server/worker.js) to Cloudflare Workers (`wrangler secret put ANTHROPIC_API_KEY`, `wrangler deploy`) and paste its URL. The key never leaves the server.
+Users don't need a key. The app calls a tiny proxy ([`server/worker.js`](server/worker.js), Cloudflare Workers, free tier) that holds the team's Anthropic key and forwards the photo. Deploy once:
+
+```bash
+cd server && npm i -g wrangler && wrangler login
+wrangler secret put ANTHROPIC_API_KEY      # paste the key
+wrangler deploy                            # prints https://meal-plan-receipts.<you>.workers.dev
+```
+then put that URL in `DEFAULT_PROXY` at the top of `receipt.js`. The worker only accepts requests from the site's origin and caps image size.
+
+Developer overrides in **Settings**: your own API key (stored only in that browser; the app then calls the API directly via the official `@anthropic-ai/sdk`, loaded from a CDN on first scan) or a different proxy URL.
 
 Model: `claude-opus-5` with structured outputs (JSON schema whose `bucket` enum is the current plan's buckets), `effort: medium`. Photos are downscaled to ≤1600px client-side before upload.
 
