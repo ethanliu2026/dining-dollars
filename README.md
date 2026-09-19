@@ -20,7 +20,7 @@ SteelHacks 2026. Log every meal, see where your Dining Dollars go, and find out 
 4. More schools
 
 ## Run locally
-No build step. Open `index.html`, or serve the folder (ES modules need http for the CMU API fetch):
+No build step. Just open `index.html` in a browser, or serve the folder:
 
 ```bash
 python3 -m http.server 8765

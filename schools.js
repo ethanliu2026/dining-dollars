@@ -1,7 +1,7 @@
 // School-specific config. Add a school here and it shows up in the picker.
 // Each entry: semester dates, the name of the currency, and a list of dining
 // locations for autocomplete. `fetchLocations` (optional) pulls a live list.
-export const SCHOOLS = {
+window.SCHOOLS = {
   cmu: {
     name: 'Carnegie Mellon',
     currency: 'Dining Dollars',

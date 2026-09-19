@@ -1,4 +1,5 @@
-import { SCHOOLS } from './schools.js';
+// Plain script (not a module) so the page works when opened directly from a file.
+const SCHOOLS = window.SCHOOLS;
 
 const $ = id => document.getElementById(id);
 const DAY = 86400000;
