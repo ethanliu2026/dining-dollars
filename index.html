@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dining Dollars Tracker</title>
+<meta name="description" content="Project whether your CMU Dining Dollars will run out or go to waste, and what you can safely spend per day.">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f4f4f2;
+    --surface: #fcfcfb;
+    --border: #e2e1dc;
+    --text: #0b0b0b;
+    --text-2: #52514e;
+    --text-3: #8a8985;
+    --accent: #2a78d6;      /* series 1: actual + projected */
+    --ideal: #1baf7a;       /* series 3: ideal pace */
+    --good: #008300;
+    --warn: #b86e00;
+    --bad: #c8322f;
+    --good-bg: #e6f4e6;
+    --warn-bg: #fff2df;
+    --bad-bg: #fbe7e6;
+    --grid: #e8e7e2;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #121211; --surface: #1a1a19; --border: #2c2c2a;
+      --text: #ffffff; --text-2: #c3c2b7; --text-3: #8a8985;
+      --accent: #3987e5; --ideal: #199e70;
+      --good: #4cc04c; --warn: #f0a63a; --bad: #f06b69;
+      --good-bg: #163016; --warn-bg: #3a2a10; --bad-bg: #3d1a19;
+      --grid: #2a2a28;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --border: #2c2c2a;
+    --text: #ffffff; --text-2: #c3c2b7; --text-3: #8a8985;
+    --accent: #3987e5; --ideal: #199e70;
+    --good: #4cc04c; --warn: #f0a63a; --bad: #f06b69;
+    --good-bg: #163016; --warn-bg: #3a2a10; --bad-bg: #3d1a19;
+    --grid: #2a2a28;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--text-2); margin: 0 0 24px; }
+
+  .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 720px) { .grid { grid-template-columns: 320px 1fr; } }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+  }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin: 0 0 12px; }
+
+  label { display: block; font-size: 13px; color: var(--text-2); margin: 12px 0 4px; }
+  label:first-of-type { margin-top: 0; }
+  input {
+    width: 100%; padding: 10px 12px; font: inherit; color: var(--text);
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .money { position: relative; }
+  .money span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-3); }
+  .money input { padding-left: 26px; }
+  details { margin-top: 14px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--text-2); }
+
+  .verdict {
+    border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px;
+    border: 1px solid transparent;
+  }
+  .verdict.good { background: var(--good-bg); border-color: var(--good); }
+  .verdict.warn { background: var(--warn-bg); border-color: var(--warn); }
+  .verdict.bad  { background: var(--bad-bg);  border-color: var(--bad); }
+  .verdict .headline { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+  .verdict .detail { margin: 0; color: var(--text-2); font-size: 14px; }
+
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+  @media (min-width: 720px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+  .stat .k { font-size: 12px; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; }
+  .stat .v { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .stat .v.hero { color: var(--accent); }
+  .stat .s { font-size: 12px; color: var(--text-2); }
+
+  .chart-wrap { position: relative; height: 320px; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--text-2); margin-bottom: 10px; }
+  .legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--accent); vertical-align: middle; margin-right: 6px; }
+  .legend i.dash { border-top-style: dashed; }
+  .legend i.ideal { border-top-color: var(--ideal); }
+
+  .empty { color: var(--text-3); text-align: center; padding: 40px 0; }
+  footer { margin-top: 24px; font-size: 12px; color: var(--text-3); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Dining Dollars Tracker</h1>
+  <p class="sub">Will you run out, or leave money on the table? Enter three numbers and find out.</p>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Your balance</h2>
+      <label for="start">Starting balance</label>
+      <div class="money"><span>$</span><input id="start" type="number" min="0" step="0.01" placeholder="1800"></div>
+
+      <label for="current">Current balance</label>
+      <div class="money"><span>$</span><input id="current" type="number" min="0" step="0.01" placeholder="1240.50"></div>
+
+      <label for="today">As of date</label>
+      <input id="today" type="date">
+
+      <details>
+        <summary>Semester dates</summary>
+        <div class="row">
+          <div>
+            <label for="semStart">First day</label>
+            <input id="semStart" type="date">
+          </div>
+          <div>
+            <label for="semEnd">Last day</label>
+            <input id="semEnd" type="date">
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <div id="verdict" class="verdict good" hidden>
+        <p class="headline" id="vHead"></p>
+        <p class="detail" id="vDetail"></p>
+      </div>
+
+      <div class="stats" id="stats" hidden>
+        <div class="stat"><div class="k">Safe daily spend</div><div class="v hero" id="safe"></div><div class="s">to land at $0 on the last day</div></div>
+        <div class="stat"><div class="k">Your current pace</div><div class="v" id="pace"></div><div class="s" id="paceSub"></div></div>
+        <div class="stat"><div class="k">Projected end balance</div><div class="v" id="endBal"></div><div class="s" id="endSub"></div></div>
+        <div class="stat"><div class="k">Days left</div><div class="v" id="daysLeft"></div><div class="s" id="daysSub"></div></div>
+      </div>
+
+      <div class="card">
+        <h2>Balance over the semester</h2>
+        <div class="legend">
+          <span><i></i>Actual</span>
+          <span><i class="dash"></i>Projected at current pace</span>
+          <span><i class="ideal"></i>Ideal pace</span>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart" role="img" aria-label="Line chart of dining dollar balance over the semester"></canvas>
+          <div class="empty" id="empty">Enter your balances to see the projection.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>Defaults are CMU Fall 2026 (Aug 31 – Dec 13). Data stays in your browser.</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const els = {
+    start: $('start'), current: $('current'), today: $('today'),
+    semStart: $('semStart'), semEnd: $('semEnd'),
+  };
+  const DAY = 86400000;
+  const fmt$ = n => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtDate = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  const toISO = d => d.toISOString().slice(0, 10);
+  const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  // --- defaults + persistence ---
+  const saved = JSON.parse(localStorage.getItem('ddt') || '{}');
+  els.start.value = saved.start ?? '';
+  els.current.value = saved.current ?? '';
+  els.today.value = toISO(new Date());
+  els.semStart.value = saved.semStart ?? '2026-08-31';
+  els.semEnd.value = saved.semEnd ?? '2026-12-13';
+
+  let chart;
+
+  function compute() {
+    const start = parseFloat(els.start.value);
+    const current = parseFloat(els.current.value);
+    if (!(start > 0) || isNaN(current) || !els.today.value || !els.semStart.value || !els.semEnd.value) return null;
+
+    const today = parse(els.today.value);
+    const semStart = parse(els.semStart.value);
+    const semEnd = parse(els.semEnd.value);
+    const totalDays = Math.round((semEnd - semStart) / DAY);
+    const elapsed = Math.max(1, Math.round((today - semStart) / DAY));
+    const daysLeft = Math.max(0, Math.round((semEnd - today) / DAY));
+    if (totalDays <= 0) return null;
+
+    const spent = start - current;
+    const pace = spent / elapsed;                 // $/day so far
+    const safe = daysLeft > 0 ? current / daysLeft : 0;
+    const endBal = current - pace * daysLeft;     // <0 means you run out
+    const runOutDate = pace > 0 ? new Date(today.getTime() + (current / pace) * DAY) : null;
+
+    return { start, current, today, semStart, semEnd, totalDays, elapsed, daysLeft, spent, pace, safe, endBal, runOutDate };
+  }
+
+  function render() {
+    const r = compute();
+    localStorage.setItem('ddt', JSON.stringify({
+      start: els.start.value, current: els.current.value,
+      semStart: els.semStart.value, semEnd: els.semEnd.value,
+    }));
+
+    $('verdict').hidden = !r; $('stats').hidden = !r; $('empty').hidden = !!r;
+    if (!r) { chart?.destroy(); chart = null; return; }
+
+    // verdict
+    const v = $('verdict');
+    const leftover = r.endBal;
+    const tol = Math.max(25, r.start * 0.03);
+    if (r.daysLeft === 0) {
+      v.className = 'verdict ' + (r.current > tol ? 'warn' : 'good');
+      $('vHead').textContent = r.current > tol ? `Semester's over with ${fmt$(r.current)} left.` : 'Semester\'s over — nicely done.';
+      $('vDetail').textContent = '';
+    } else if (leftover < -tol) {
+      v.className = 'verdict bad';
+      $('vHead').textContent = `You'll run out around ${fmtDate(r.runOutDate)}.`;
+      $('vDetail').textContent = `That's ${Math.round((r.semEnd - r.runOutDate) / DAY)} days before the semester ends. Drop to ${fmt$(r.safe)}/day to make it.`;
+    } else if (leftover > tol) {
+      v.className = 'verdict warn';
+      $('vHead').textContent = `You're on track to waste ${fmt$(leftover)}.`;
+      $('vDetail').textContent = `You can afford ${fmt$(r.safe - r.pace)}/day more than you're spending now. Treat yourself.`;
+    } else {
+      v.className = 'verdict good';
+      $('vHead').textContent = 'You\'re right on pace.';
+      $('vDetail').textContent = `Keep it near ${fmt$(r.safe)}/day and you'll finish close to $0.`;
+    }
+
+    // stats
+    $('safe').textContent = fmt$(r.safe) + '/day';
+    $('pace').textContent = fmt$(r.pace) + '/day';
+    $('paceSub').textContent = `${fmt$(r.spent)} spent over ${r.elapsed} days`;
+    $('endBal').textContent = fmt$(Math.max(0, r.endBal));
+    $('endSub').textContent = r.endBal < 0 ? `${fmt$(-r.endBal)} short at current pace` : 'left on the last day';
+    $('daysLeft').textContent = r.daysLeft;
+    $('daysSub').textContent = `of ${r.totalDays} · ends ${fmtDate(r.semEnd)}`;
+
+    drawChart(r);
+  }
+
+  function drawChart(r) {
+    const pt = (d, y) => ({ x: d.getTime(), y });
+    const actual = [pt(r.semStart, r.start), pt(r.today, r.current)];
+    const projected = [pt(r.today, r.current), pt(r.semEnd, Math.max(0, r.endBal))];
+    if (r.endBal < 0 && r.runOutDate) projected[1] = pt(r.runOutDate, 0);
+    const ideal = [pt(r.semStart, r.start), pt(r.semEnd, 0)];
+
+    const accent = css('--accent'), idealC = css('--ideal'), grid = css('--grid'), ink = css('--text-2');
+    const data = {
+      datasets: [
+        { label: 'Actual', data: actual, borderColor: accent, backgroundColor: accent, borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 6 },
+        { label: 'Projected', data: projected, borderColor: accent, backgroundColor: accent, borderWidth: 2, borderDash: [6, 5], pointRadius: [0, 4], pointHoverRadius: 6 },
+        { label: 'Ideal pace', data: ideal, borderColor: idealC, backgroundColor: idealC, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5 },
+      ],
+    };
+    const opts = {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 250 },
+      interaction: { mode: 'nearest', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: items => fmtDate(new Date(items[0].parsed.x)),
+            label: it => ` ${it.dataset.label}: ${fmt$(it.parsed.y)}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          type: 'linear', min: r.semStart.getTime(), max: r.semEnd.getTime(),
+          ticks: { color: ink, maxTicksLimit: 6, callback: v => fmtDate(new Date(v)) },
+          grid: { color: grid }, border: { color: grid },
+        },
+        y: {
+          min: 0, ticks: { color: ink, callback: v => '$' + v }, grid: { color: grid }, border: { color: grid },
+        },
+      },
+    };
+    if (chart) { chart.data = data; chart.options = opts; chart.update(); }
+    else chart = new Chart($('chart'), { type: 'line', data, options: opts });
+  }
+
+  Object.values(els).forEach(el => el.addEventListener('input', render));
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+  render();
+})();
+</script>
+</body>
+</html>
