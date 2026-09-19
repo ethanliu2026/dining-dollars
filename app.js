@@ -45,7 +45,7 @@ function load() {
 }
 function normalizeState(s) {
   const sch = SCHOOLS[s?.school] || s?.school === OTHER_SCHOOL ? s.school : 'cmu';
-  const t0 = termFor(SCHOOLS[sch] || SCHOOLS.cmu) || { start: '2026-08-31', end: '2026-12-13' };
+  const t0 = termFor(SCHOOLS[sch] || SCHOOLS.cmu) || { start: '2026-08-24', end: '2026-12-13' };
   const base = { mode: 'log', school: sch, planId: CUSTOM, start: {}, current: {}, asOf: toISO(today()),
                  semStart: t0.start, semEnd: t0.end, txns: [], custom: DEFAULT_CUSTOM(),
                  eat: { weekends: true, breaks: false }, blockValues: {},
@@ -1049,6 +1049,16 @@ $('fileImport').addEventListener('change', async e => {
   e.target.value = '';
 });
 
+// ---------- theme ----------
+const THEME_STORE = 'ddt.theme';
+function applyTheme(t) {
+  if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+  for (const b of document.querySelectorAll('[data-theme-pick]')) b.setAttribute('aria-checked', b.dataset.themePick === (t || 'auto'));
+  try { t && t !== 'auto' ? localStorage.setItem(THEME_STORE, t) : localStorage.removeItem(THEME_STORE); } catch {}
+}
+for (const b of document.querySelectorAll('[data-theme-pick]')) b.addEventListener('click', () => { applyTheme(b.dataset.themePick); render(); });
+try { applyTheme(localStorage.getItem(THEME_STORE) || 'auto'); } catch { applyTheme('auto'); }
+
 // ---------- section tabs ----------
 const TAB_STORE = 'ddt.tab';
 function showTab(name, push = true) {
@@ -1061,6 +1071,7 @@ function showTab(name, push = true) {
   if (push) window.scrollTo({ top: 0 });
 }
 for (const b of document.querySelectorAll('.tabs-nav button')) b.addEventListener('click', () => showTab(b.dataset.tab));
+$('btnSettings').addEventListener('click', () => showTab('setup'));
 document.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if (g) showTab(g.dataset.goto); });
 
 // ---------- go ----------

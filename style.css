@@ -295,7 +295,9 @@ input[type=range] { padding: 0; height: 28px; accent-color: var(--accent); backg
 .tabs-nav button[aria-selected="true"] { background: var(--accent); color: #fff; }
 .tabs-nav .ico { font-size: 15px; }
 .tab[hidden] { display: none !important; }
-.tab.narrow { max-width: 560px; }
+.tab.wide { max-width: none; }
+.tab.grid.wide { grid-template-columns: 1fr; }
+@media (min-width: 900px) { .tab.grid.wide { grid-template-columns: 1fr 1fr; align-items: start; } }
 .tab.stack { display: grid; gap: 16px; }
 @media (max-width: 760px) {
   body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
@@ -355,3 +357,17 @@ ul.tips .src { font-size: 11px; color: var(--text-3); margin-left: 4px; }
 .data-row .hint { margin: 2px 0 0; }
 .data-row button { white-space: nowrap; }
 .data-btns { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+
+/* scan inside the log card */
+#scanCard .scan-btn { margin-top: 2px; }
+.or { display: flex; align-items: center; gap: 10px; margin: 14px 0 4px; color: var(--text-3); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+.or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* collapsible tips */
+#tipsDetails summary { list-style: none; cursor: pointer; }
+#tipsDetails summary::-webkit-details-marker { display: none; }
+#tipsDetails summary h2 { margin: 0; }
+#tipsDetails[open] summary h2 { margin-bottom: 12px; }
+#tipsDetails[open] summary .right { display: none; }
+#tipsDetails .paste { margin-top: 14px; }
+/* settings view */
+#lookCard .seg { margin-top: 2px; }

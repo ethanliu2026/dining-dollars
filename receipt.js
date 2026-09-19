@@ -224,40 +224,23 @@ function editScan() {
   $('logCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ---------- settings ----------
-function openSettings() {
+// ---------- settings (in the Settings view) ----------
+function openSettings() { showTab('setup'); $('scanSettings').scrollIntoView({ block: 'center' }); $('apiKey').focus(); }
+function loadSettingsFields() {
   $('apiKey').value = localStorage.getItem(KEY_STORE) || '';
   $('proxyUrl').value = localStorage.getItem(PROXY_STORE) ?? '';
   $('proxyUrl').placeholder = DEFAULT_PROXY || 'https://your-worker.workers.dev';
-  $('settings').showModal();
 }
-$('btnSettings').addEventListener('click', openSettings);
-$('btnSettings').hidden = !CLAUDE_ENABLED;
-$('settingsCancel').addEventListener('click', () => $('settings').close());
-$('settings').querySelector('form').addEventListener('submit', () => {
+$('settingsSave').addEventListener('click', () => {
   const key = $('apiKey').value.trim(), proxy = $('proxyUrl').value.trim();
   key ? localStorage.setItem(KEY_STORE, key) : localStorage.removeItem(KEY_STORE);
   proxy ? localStorage.setItem(PROXY_STORE, proxy) : localStorage.removeItem(PROXY_STORE);
   sdkClientPromise = null;
-  // Paste-an-order: same parser as the OCR path, no photo needed (Grubhub emails, GET receipts).
-$('pasteGo').addEventListener('click', () => {
-  const text = $('pasteText').value.trim();
-  if (!text) return;
-  $('scanResult').hidden = true;
-  const r = parseReceipt(text);
-  const defs = school().buckets;
-  const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100, ...(defs[p.bucket].kind === 'count' && p.value > 0 ? { value: Math.round(p.value * 100) / 100 } : {}) }));
-  if (!parts.length) { scanStatus(`Couldn't find a meal-plan payment in that text${r.notes ? ` (${r.notes})` : ''}. Log it by hand below.`, 'error'); return; }
-  const date = /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') && parse(r.date) <= today() ? r.date : toISO(today());
-  const tx = { id: crypto.randomUUID(), date, location: pickLocation(r.location || 'Unknown', r.location_in_list), item: r.item_summary || '', parts };
-  state.txns.push(tx); save(); render();
-  lastScan = { txId: tx.id, dataUrl: null };
-  showScanResult(tx, { ...r, notes: r.notes });
-  scanStatus('');
-  $('pasteText').value = '';
+  updateScanHint();
+  $('settingsSave').textContent = 'Saved'; setTimeout(() => { $('settingsSave').textContent = 'Save'; }, 1200);
 });
-updateScanHint();
-});
+$('scanSettings').hidden = !CLAUDE_ENABLED;
+loadSettingsFields();
 function updateScanHint() {
   $('scanHint').innerHTML = engine() === 'claude'
     ? 'Read by Claude. Works best with the whole receipt in frame, flat, in good light.'

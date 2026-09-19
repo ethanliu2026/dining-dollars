@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=4b0ae89-7c32ed">
+<link rel="stylesheet" href="style.css?v=8bb1931-09677f">
 </head>
 <body>
 <main>
@@ -17,7 +17,7 @@
     <div class="toolbar" id="dataTools">
       <button class="link" id="btnSample">Load sample data</button>
       <button class="link" id="btnShareTop">Share</button>
-      <button class="link" id="btnSettings">Settings</button>
+      <button class="link" id="btnSettings">⚙︎ Settings</button>
     </div>
   </header>
 
@@ -41,16 +41,17 @@
   <div id="trackerContent">
   <nav class="tabs-nav" role="tablist" aria-label="Sections">
     <button role="tab" data-tab="home"><span class="ico">🏠</span>Home</button>
-    <button role="tab" data-tab="setup"><span class="ico">⚙️</span>Setup</button>
-    <button role="tab" data-tab="insights"><span class="ico">📊</span>Insights</button>
+    <button role="tab" data-tab="insights"><span class="ico">📒</span>Log</button>
     <button role="tab" data-tab="eat"><span class="ico">🍽️</span>Eat</button>
-    <button role="tab" data-tab="advisor"><span class="ico">🎓</span>Advisor</button>
+    <button role="tab" data-tab="advisor"><span class="ico">🎓</span>Plans</button>
   </nav>
 
   <div class="tab grid" data-tab="home">
     <div class="stack" id="homeLeft">
-      <section class="card" id="scanCard">
-        <h2>Scan a receipt</h2>
+
+      <section class="card" id="logCard">
+        <h2>Log a purchase</h2>
+        <div id="scanCard">
         <label class="scan-btn" id="scanLabel">
           <input id="receiptFile" type="file" accept="image/*" capture="environment" hidden>
           <span class="ico">📷</span>
@@ -75,10 +76,8 @@
           <textarea id="pasteText" rows="5" placeholder="Paste the email or receipt text here"></textarea>
           <button type="button" class="primary" id="pasteGo" style="margin-top:8px">Log it</button>
         </details>
-      </section>
-
-      <section class="card" id="logCard">
-        <h2>Log a purchase</h2>
+        </div>
+        <div class="or"><span>or enter it by hand</span></div>
         <form id="txForm" autocomplete="off">
           <label for="txBucket">Paid with</label>
           <select id="txBucket"></select>
@@ -156,7 +155,8 @@
     </div>
   </div>
 
-  <div class="tab narrow stack" data-tab="setup">
+  <div class="tab grid wide" data-tab="setup">
+    <div class="stack">
       <section class="card">
         <h2>Setup</h2>
         <div class="seg" role="radiogroup" aria-label="Mode">
@@ -231,6 +231,29 @@
         </details>
       </section>
 
+    </div>
+    <div class="stack">
+      <section class="card" id="lookCard">
+        <h2>Appearance</h2>
+        <label>Theme</label>
+        <div class="seg three" role="radiogroup" aria-label="Theme">
+          <button type="button" data-theme-pick="auto">Auto</button>
+          <button type="button" data-theme-pick="light">Light</button>
+          <button type="button" data-theme-pick="dark">Dark</button>
+        </div>
+      </section>
+
+      <section class="card" id="scanSettings">
+        <h2>Receipt scanning</h2>
+        <p class="hint">By default receipts are read <b>on your device</b> with open-source OCR — free, private, nothing to set up, but it misreads sometimes. For much better accuracy you can have Claude read them instead: paste an Anthropic API key (stored only in this browser) or a proxy URL.</p>
+        <label for="apiKey">Anthropic API key</label>
+        <input id="apiKey" type="password" placeholder="sk-ant-…" autocomplete="off">
+        <label for="proxyUrl">Proxy URL <span style="color:var(--text-3)">(optional, replaces the key)</span></label>
+        <input id="proxyUrl" type="url" placeholder="https://your-worker.workers.dev">
+        <p class="hint">A ready-made Cloudflare Worker is in <code>server/worker.js</code>.</p>
+        <button type="button" id="settingsSave" style="margin-top:8px">Save</button>
+      </section>
+
       <section class="card" id="dataCard">
         <h2>Your data</h2>
         <div class="data-row">
@@ -243,6 +266,8 @@
         </div>
         <input id="fileImport" type="file" accept="application/json" hidden>
       </section>
+      <button type="button" class="primary" data-goto="home">Done</button>
+    </div>
   </div>
 
   <div class="tab stack" data-tab="insights">
@@ -288,7 +313,7 @@
 
   </div>
 
-  <div class="tab stack narrow" data-tab="eat">
+  <div class="tab grid wide" data-tab="eat">
     <section class="card" id="eatCard">
       <h2>Where to eat?</h2>
       <label>Pay with</label>
@@ -304,7 +329,8 @@
     </section>
 
     <section class="card" id="tipsCard">
-      <h2>Tips &amp; hidden menu</h2>
+      <details id="tipsDetails">
+        <summary><h2>Tips &amp; hidden menu <span class="right">tap to show</span></h2></summary>
       <div id="tipsBody"></div>
       <details class="paste">
         <summary>Add a tip</summary>
@@ -318,12 +344,13 @@
           <button type="button" class="link" id="tipShare">Suggest for everyone ↗</button>
         </div>
       </details>
+      </details>
     </section>
   </div>
 
-  <div class="tab narrow" data-tab="advisor">
+  <div class="tab wide" data-tab="advisor">
       <section class="card" id="advisorCard" hidden>
-        <h2>Plan advisor <span class="right">next semester</span></h2>
+        <h2>Which plan fits me? <span class="right">next semester</span></h2>
         <div class="seg" role="radiogroup" aria-label="Advisor mode">
           <button type="button" data-amode="usage">From my usage</button>
           <button type="button" data-amode="answers">I'm new — help me pick</button>
@@ -349,21 +376,6 @@
 
 </main>
 
-<dialog id="settings">
-  <form method="dialog" class="settings-form">
-    <h2>Receipt scanning</h2>
-    <p class="hint">By default receipts are read <b>on your device</b> with open-source OCR — free, private, nothing to set up, but it misreads sometimes. For much better accuracy you can have Claude read them instead: paste an Anthropic API key (stored only in this browser) or a proxy URL.</p>
-    <label for="apiKey">Anthropic API key</label>
-    <input id="apiKey" type="password" placeholder="sk-ant-…" autocomplete="off">
-    <label for="proxyUrl">Proxy URL <span style="color:var(--text-3)">(optional, replaces the key)</span></label>
-    <input id="proxyUrl" type="url" placeholder="https://your-worker.workers.dev">
-    <p class="hint">A ready-made Cloudflare Worker is in <code>server/worker.js</code>.</p>
-    <div class="settings-actions">
-      <button type="button" class="link" id="settingsCancel">Cancel</button>
-      <button type="submit" class="primary" style="width:auto;margin:0" id="settingsSave">Save</button>
-    </div>
-  </form>
-</dialog>
 
 <dialog id="accountDialog" aria-labelledby="authTitle" aria-describedby="authIntro">
   <div class="account-form">
@@ -408,18 +420,18 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=4b0ae89-7c32ed"></script>
-<script src="account-store.js?v=4b0ae89-7c32ed"></script>
-<script src="plans.js?v=4b0ae89-7c32ed"></script>
-<script src="schools.js?v=4b0ae89-7c32ed"></script>
-<script src="app.js?v=4b0ae89-7c32ed"></script>
-<script src="ocr.js?v=4b0ae89-7c32ed"></script>
-<script src="receipt.js?v=4b0ae89-7c32ed"></script>
-<script src="tips.js?v=4b0ae89-7c32ed"></script>
-<script src="eat.js?v=4b0ae89-7c32ed"></script>
-<script src="today.js?v=4b0ae89-7c32ed"></script>
-<script src="advisor.js?v=4b0ae89-7c32ed"></script>
-<script src="share.js?v=4b0ae89-7c32ed"></script>
-<script src="auth.js?v=4b0ae89-7c32ed"></script>
+<script src="auth-config.js?v=8bb1931-09677f"></script>
+<script src="account-store.js?v=8bb1931-09677f"></script>
+<script src="plans.js?v=8bb1931-09677f"></script>
+<script src="schools.js?v=8bb1931-09677f"></script>
+<script src="app.js?v=8bb1931-09677f"></script>
+<script src="ocr.js?v=8bb1931-09677f"></script>
+<script src="receipt.js?v=8bb1931-09677f"></script>
+<script src="tips.js?v=8bb1931-09677f"></script>
+<script src="eat.js?v=8bb1931-09677f"></script>
+<script src="today.js?v=8bb1931-09677f"></script>
+<script src="advisor.js?v=8bb1931-09677f"></script>
+<script src="share.js?v=8bb1931-09677f"></script>
+<script src="auth.js?v=8bb1931-09677f"></script>
 </body>
 </html>

@@ -20,7 +20,7 @@ window.SCHOOLS = {
     // Terms with no-class days, from the official academic calendar. The app picks the
     // term that contains today (or the next one). Dates stay editable in Setup.
     terms: [
-      { name: 'Fall 2026', start: '2026-08-31', end: '2026-12-13',   // from the 26–27 academic calendar: first day of classes → last day of finals
+      { name: 'Fall 2026', start: '2026-08-24', end: '2026-12-13',   // from the 26–27 academic calendar: first day of classes (Aug 24) → last day of finals
         breaks: [
           { name: 'Labor Day', start: '2026-09-07', end: '2026-09-07' },
           { name: 'Fall Break', start: '2026-10-12', end: '2026-10-16' },

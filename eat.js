@@ -60,6 +60,7 @@ function decide() {
     let score = 0;
     if (open === false) { if (st.openOnly && LIVE) return null; score -= 5; flags.push(`closed${nextOpen(l) ? ` · opens ${fmtTime(nextOpen(l))}` : ''}`); }
     if (open) why.push(`Open until ${fmtTime(open.until)}`);
+    else if (open === null && LIVE) flags.push('hours not listed — check before you go');
     const bv = blockValueAt(name);
     const blocksOk = takesBlocks(name);
     if (pay === 'blocks') {
@@ -73,7 +74,7 @@ function decide() {
     if (since === null) { score += 1.5; why.push("Somewhere you haven't logged yet"); }
     else if (since >= 7) { score += 1; why.push(`Haven't been in ${since} days`); }
     else if (since <= 1) score -= 2;
-    if (l?.rating) { score += (l.rating - 3) * 0.8; if (l.rating >= 4) why.push(`Rated ${l.rating.toFixed(1)} ★ by ${l.ratings} students`); }
+    if (l?.rating && l.ratings >= 5) { score += (l.rating - 3) * 0.8; if (l.rating >= 4) why.push(`Rated ${l.rating.toFixed(1)} ★ by ${l.ratings} students`); }
     if (l?.specials?.length) { score += 1; why.push(`Today: ${l.specials.slice(0, 2).join(', ')}`); }
     score += Math.random() * 2;   // a little serendipity
     return { name, score, why, flags, l, bv };
