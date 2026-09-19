@@ -548,7 +548,7 @@ function styleAmount(selId, wrapId, inpId) {
 }
 function updateAmountField() {
   const { b, money } = styleAmount('txBucket', 'txAmountWrap', 'txAmount');
-  $('txAmountLabel').textContent = money ? 'Amount' : `How many ${b.unit}s`;
+  $('txAmountLabel').textContent = money ? 'Amount' : `${b.unit[0].toUpperCase() + b.unit.slice(1)}s`;
   $('txWorthWrap').hidden = money;   // "worth $" only makes sense for blocks/swipes
   styleAmount('txBucket2', 'txAmount2Wrap', 'txAmount2');
 }

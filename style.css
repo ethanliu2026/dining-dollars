@@ -379,3 +379,16 @@ ul.tips .src { font-size: 11px; color: var(--text-3); margin-left: 4px; }
 .scan-row .paste { margin: 0; flex: 1; min-width: 160px; }
 .scan-row .paste summary { padding: 9px 4px; font-size: 14px; color: var(--text-2); }
 .scan-row .paste textarea { margin-top: 6px; }
+
+/* compact purchase form */
+form.compact label { margin: 8px 0 3px; font-size: 12px; }
+form.compact input, form.compact select { padding: 8px 10px; }
+form.compact .money span { left: 10px; }
+form.compact .money input { padding-left: 22px; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.frow > div { min-width: 0; }
+.frow .money input { padding-left: 22px; }
+.factions { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.factions .primary { width: auto; margin: 0; flex: 1; }
+.factions .link { padding: 6px 4px; white-space: nowrap; }
+#logCard h2 { margin-bottom: 8px; }

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=4d9beed-a50c79">
+<link rel="stylesheet" href="style.css?v=7884926-e20604">
 </head>
 <body>
 <main>
@@ -79,19 +79,16 @@
           <p class="hint" id="scanHint" hidden></p>
         </div>
         <div class="or"><span>or enter it by hand</span></div>
-        <form id="txForm" autocomplete="off">
-          <label for="txBucket">Paid with</label>
-          <select id="txBucket"></select>
-
-          <label for="txAmount" id="txAmountLabel">Amount</label>
-          <div class="money" id="txAmountWrap"><span>$</span><input id="txAmount" type="number" min="0.01" step="0.01" placeholder="12.50" required></div>
-
+        <form id="txForm" autocomplete="off" class="compact">
+          <div class="frow">
+            <div><label for="txBucket">Paid with</label><select id="txBucket"></select></div>
+            <div><label for="txAmount" id="txAmountLabel">Amount</label>
+              <div class="money" id="txAmountWrap"><span>$</span><input id="txAmount" type="number" min="0.01" step="0.01" placeholder="12.50" required></div></div>
+          </div>
           <div id="txWorthWrap" hidden>
-            <label for="txWorth">Worth <span style="color:var(--text-3)">(optional — what the block covered, from the receipt)</span></label>
+            <label for="txWorth">Worth <span style="color:var(--text-3)">(optional — what the block covered)</span></label>
             <div class="money"><span>$</span><input id="txWorth" type="number" min="0" step="0.01" placeholder="12.49"></div>
           </div>
-
-          <button type="button" class="link" id="btnSplit">+ Also paid with…</button>
           <div id="splitFields" hidden>
             <label for="txBucket2">Plus</label>
             <div class="split">
@@ -99,20 +96,21 @@
               <div class="money" id="txAmount2Wrap"><span>$</span><input id="txAmount2" type="number" min="0" step="0.01" placeholder="3.50"></div>
               <button type="button" class="link danger" id="btnUnsplit" aria-label="Remove">✕</button>
             </div>
-            <p class="hint">e.g. a block for the meal plus FLEX for the extras</p>
           </div>
 
           <label for="txLocation">Where</label>
           <select id="txLocation" required></select>
           <input id="txLocationOther" placeholder="Name of the place" hidden>
 
-          <label for="txItem">What <span style="color:var(--text-3)">(optional)</span></label>
-          <input id="txItem" placeholder="Chicken burrito bowl">
+          <div class="frow">
+            <div><label for="txItem">What <span style="color:var(--text-3)">(optional)</span></label><input id="txItem" placeholder="Chicken bowl"></div>
+            <div><label for="txDate">When</label><input id="txDate" type="date" required></div>
+          </div>
 
-          <label for="txDate">When</label>
-          <input id="txDate" type="date" required>
-
-          <button type="submit" class="primary">Add purchase</button>
+          <div class="factions">
+            <button type="submit" class="primary">Add purchase</button>
+            <button type="button" class="link" id="btnSplit">+ Also paid with…</button>
+          </div>
         </form>
       </section>
 
@@ -421,18 +419,18 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=4d9beed-a50c79"></script>
-<script src="account-store.js?v=4d9beed-a50c79"></script>
-<script src="plans.js?v=4d9beed-a50c79"></script>
-<script src="schools.js?v=4d9beed-a50c79"></script>
-<script src="app.js?v=4d9beed-a50c79"></script>
-<script src="ocr.js?v=4d9beed-a50c79"></script>
-<script src="receipt.js?v=4d9beed-a50c79"></script>
-<script src="tips.js?v=4d9beed-a50c79"></script>
-<script src="eat.js?v=4d9beed-a50c79"></script>
-<script src="today.js?v=4d9beed-a50c79"></script>
-<script src="advisor.js?v=4d9beed-a50c79"></script>
-<script src="share.js?v=4d9beed-a50c79"></script>
-<script src="auth.js?v=4d9beed-a50c79"></script>
+<script src="auth-config.js?v=7884926-e20604"></script>
+<script src="account-store.js?v=7884926-e20604"></script>
+<script src="plans.js?v=7884926-e20604"></script>
+<script src="schools.js?v=7884926-e20604"></script>
+<script src="app.js?v=7884926-e20604"></script>
+<script src="ocr.js?v=7884926-e20604"></script>
+<script src="receipt.js?v=7884926-e20604"></script>
+<script src="tips.js?v=7884926-e20604"></script>
+<script src="eat.js?v=7884926-e20604"></script>
+<script src="today.js?v=7884926-e20604"></script>
+<script src="advisor.js?v=7884926-e20604"></script>
+<script src="share.js?v=7884926-e20604"></script>
+<script src="auth.js?v=7884926-e20604"></script>
 </body>
 </html>
