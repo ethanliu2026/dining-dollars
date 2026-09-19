@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=9ab0297-8019ae">
+<link rel="stylesheet" href="style.css?v=2619cdc-2bb102">
 </head>
 <body>
 <main>
@@ -124,6 +124,13 @@
         <p class="headline" id="vHead"></p>
         <ul class="vlist" id="vList"></ul>
       </div>
+
+      <section class="card today" id="todayCard" hidden>
+        <h2>Today</h2>
+        <p class="today-head" id="todayHead"></p>
+        <div id="todayBody"></div>
+        <p class="hint" id="todayWhy"></p>
+      </section>
 
       <section class="card" id="summaryCard" hidden>
         <h2>Your balances</h2>
@@ -375,16 +382,17 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=9ab0297-8019ae"></script>
-<script src="account-store.js?v=9ab0297-8019ae"></script>
-<script src="plans.js?v=9ab0297-8019ae"></script>
-<script src="schools.js?v=9ab0297-8019ae"></script>
-<script src="app.js?v=9ab0297-8019ae"></script>
-<script src="ocr.js?v=9ab0297-8019ae"></script>
-<script src="receipt.js?v=9ab0297-8019ae"></script>
-<script src="tips.js?v=9ab0297-8019ae"></script>
-<script src="eat.js?v=9ab0297-8019ae"></script>
-<script src="advisor.js?v=9ab0297-8019ae"></script>
-<script src="auth.js?v=9ab0297-8019ae"></script>
+<script src="auth-config.js?v=2619cdc-2bb102"></script>
+<script src="account-store.js?v=2619cdc-2bb102"></script>
+<script src="plans.js?v=2619cdc-2bb102"></script>
+<script src="schools.js?v=2619cdc-2bb102"></script>
+<script src="app.js?v=2619cdc-2bb102"></script>
+<script src="ocr.js?v=2619cdc-2bb102"></script>
+<script src="receipt.js?v=2619cdc-2bb102"></script>
+<script src="tips.js?v=2619cdc-2bb102"></script>
+<script src="eat.js?v=2619cdc-2bb102"></script>
+<script src="today.js?v=2619cdc-2bb102"></script>
+<script src="advisor.js?v=2619cdc-2bb102"></script>
+<script src="auth.js?v=2619cdc-2bb102"></script>
 </body>
 </html>

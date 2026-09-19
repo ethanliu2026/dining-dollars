@@ -339,3 +339,9 @@ ul.tips .src { font-size: 11px; color: var(--text-3); margin-left: 4px; }
 /* term picker */
 .term-over { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--warn-bg); border: 1px solid var(--warn); font-size: 14px; }
 .term-over button { font-size: 13px; }
+
+/* today card */
+.today .today-head { font-size: 16px; margin: 0 0 8px; }
+.today .muted { color: var(--text-3); font-weight: normal; font-size: 13px; }
+.today-table td { padding: 6px 8px 6px 0; vertical-align: top; }
+.today-table td:first-child { color: var(--text-2); white-space: nowrap; width: 1%; padding-right: 14px; }

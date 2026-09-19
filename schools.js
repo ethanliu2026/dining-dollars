@@ -11,7 +11,7 @@ window.SCHOOLS = {
     aliases: ['CMU', 'Carnegie Mellon University', 'Tartans'],
     name: 'Carnegie Mellon',
     buckets: {
-      blocks: { label: 'Meal blocks', kind: 'count', unit: 'block', period: 'semester',
+      blocks: { label: 'Meal blocks', kind: 'count', unit: 'block', period: 'semester', maxPerDay: 4,
                 hint: 'Max 4 per day, 2 per meal period' },
       flex:   { label: 'FLEX', kind: 'money', period: 'semester' },
       dinex:  { label: 'DineXtra', kind: 'money', period: 'semester', optional: true,
@@ -70,7 +70,7 @@ window.SCHOOLS = {
     aliases: ['Pitt', 'UPitt', 'University of Pittsburgh', 'Panthers'],
     name: 'University of Pittsburgh',
     buckets: {
-      meals:     { label: 'Meals', kind: 'count', unit: 'meal', period: 'semester',
+      meals:     { label: 'Meals', kind: 'count', unit: 'meal', period: 'semester', maxPerDay: 5,
                    hint: 'Dining hall swipe or a Meal Exchange combo' },
       flexMeals: { label: 'Flex meals', kind: 'count', unit: 'meal', period: 'semester',
                    hint: 'Guest swipes; expire each semester' },
