@@ -176,6 +176,7 @@ function setMode(m) {
   $('modeHint').textContent = MODE_HINT[m];
   $('quickFields').hidden = m !== 'quick';
   $('logCard').hidden = m !== 'log';
+  $('scanCard').hidden = m !== 'log';
   $('txCard').hidden = m !== 'log';
   renderStartFields();
   render();

@@ -205,3 +205,33 @@ label.check input { width: auto; margin: 0; accent-color: var(--accent); }
 .split .money input { padding-left: 24px; }
 .split .del, .split .danger { padding: 4px; }
 td .plus { color: var(--text-3); }
+
+/* receipt scanning */
+.scan-btn { display: flex; gap: 12px; align-items: center; padding: 14px; border: 1px dashed var(--border); border-radius: 10px; cursor: pointer; background: var(--bg); margin: 0; color: var(--text); }
+.scan-btn:hover { border-color: var(--accent); }
+.scan-btn .ico { font-size: 26px; }
+.scan-btn small { color: var(--text-2); }
+.scan-btn.busy { opacity: .6; pointer-events: none; }
+.scan-status { margin-top: 10px; font-size: 14px; color: var(--text-2); display: flex; gap: 8px; align-items: center; }
+.scan-status.error { color: var(--bad); }
+.spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.scan-result { margin-top: 10px; padding: 12px 14px; border: 1px solid var(--good); background: var(--good-bg); border-radius: 10px; font-size: 14px; }
+.scan-result.warn { border-color: var(--warn); background: var(--warn-bg); }
+.scan-head { display: flex; gap: 8px; align-items: baseline; margin-bottom: 4px; }
+.scan-tag { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; font-weight: 600; color: var(--good); }
+.scan-result.warn .scan-tag { color: var(--warn); }
+.scan-where { font-weight: 600; }
+.scan-body { color: var(--text-2); }
+.scan-body b { color: var(--text); }
+.scan-actions { margin-top: 6px; display: flex; gap: 4px; }
+.scan-actions .link { padding-left: 0; }
+.scan-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; float: right; margin-left: 8px; }
+
+/* settings dialog */
+dialog { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); padding: 0; max-width: 440px; width: calc(100% - 32px); }
+dialog::backdrop { background: rgba(0,0,0,.45); }
+.settings-form { padding: 20px; }
+.settings-form h2 { margin: 0 0 6px; font-size: 18px; }
+.settings-form code { background: var(--bg); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+.settings-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }

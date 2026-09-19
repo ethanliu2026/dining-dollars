@@ -36,9 +36,18 @@ CMU publishes plans as a [PDF agreement](https://www.cmu.edu/dining/your-dining-
 2. `plans.json` — add its plans (`buckets` values are per-semester numbers, or `{amount, period}` for weekly/unlimited)
 3. `python3 scripts/update_plans.py --no-fetch`
 
+## Receipt scanning
+"Scan a receipt" → take a photo (or drop / paste an image on desktop). Claude reads it and the purchase is logged immediately — location matched to the dropdown, items summarized, and **each tender line mapped to a bucket** (a CMU receipt's `MEAL BLOCK` + `FLEX` lines become `1 block + $2.75 FLEX`). A green card shows what was read with **Undo** / **Edit**; it turns amber when the location wasn't a known one or Claude flagged something uncertain.
+
+Two ways to reach Claude (Settings):
+- **API key** — pasted into the app, stored only in that browser's localStorage. Fine for a demo; the app calls the API directly via the official `@anthropic-ai/sdk` (loaded from a CDN on first scan).
+- **Proxy URL** — deploy [`server/worker.js`](server/worker.js) to Cloudflare Workers (`wrangler secret put ANTHROPIC_API_KEY`, `wrangler deploy`) and paste its URL. The key never leaves the server.
+
+Model: `claude-opus-5` with structured outputs (JSON schema whose `bucket` enum is the current plan's buckets), `effort: medium`. Photos are downscaled to ≤1600px client-side before upload.
+
 ## Roadmap
 1. ~~Manual entry + analytics~~ ✅
-2. **Receipt photos** — snap a receipt, auto-fill a purchase
+2. ~~Receipt photos~~ ✅
 3. **Import** — pull transactions from Grubhub / the campus dining portal
 4. More schools
 
@@ -55,6 +64,8 @@ python3 -m http.server 8765
 | `index.html` | markup |
 | `style.css` | styles (light/dark via CSS vars) |
 | `app.js` | state, math, charts, insights |
+| `receipt.js` | receipt scanning (camera → Claude → purchase), Settings dialog |
+| `server/worker.js` | optional Cloudflare Worker proxy that holds the API key |
 | `schools.js` | per-school config: dates, **bucket definitions**, locations. **Add a school here.** |
 | `plans.json` / `plans.js` | meal plan catalog (see above) |
 | `scripts/update_plans.py` | refreshes the catalog from official sources |

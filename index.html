@@ -18,6 +18,7 @@
       <button class="link" id="btnSample">Load sample data</button>
       <button class="link" id="btnExport">Export</button>
       <button class="link" id="btnImport">Import</button>
+      <button class="link" id="btnSettings">Settings</button>
       <input id="fileImport" type="file" accept="application/json" hidden>
     </div>
   </header>
@@ -80,6 +81,29 @@
           </div>
           <p class="hint" id="breaksHint"></p>
         </details>
+      </section>
+
+      <section class="card" id="scanCard">
+        <h2>Scan a receipt</h2>
+        <label class="scan-btn" id="scanLabel">
+          <input id="receiptFile" type="file" accept="image/*" capture="environment" hidden>
+          <span class="ico">📷</span>
+          <span><b>Take a photo of your receipt</b><br><small>It gets logged automatically — you can undo or edit.</small></span>
+        </label>
+        <div id="scanStatus" class="scan-status" hidden></div>
+        <div id="scanResult" class="scan-result" hidden>
+          <div class="scan-head">
+            <span class="scan-tag" id="scanTag">Logged</span>
+            <span class="scan-where" id="scanWhere"></span>
+          </div>
+          <div class="scan-body" id="scanBody"></div>
+          <div class="scan-actions">
+            <button type="button" class="link" id="scanEdit">Edit</button>
+            <button type="button" class="link danger" id="scanUndo">Undo</button>
+            <button type="button" class="link" id="scanDismiss">Dismiss</button>
+          </div>
+        </div>
+        <p class="hint" id="scanHint"></p>
       </section>
 
       <section class="card" id="logCard">
@@ -170,11 +194,29 @@
   </div>
 
   <footer id="footer">Data stays in your browser.</footer>
+
 </main>
+
+<dialog id="settings">
+  <form method="dialog" class="settings-form">
+    <h2>Receipt scanning</h2>
+    <p class="hint">Photos are read by Claude. Either paste an Anthropic API key (stored only in this browser) or point the app at a proxy that holds the key for you.</p>
+    <label for="apiKey">Anthropic API key</label>
+    <input id="apiKey" type="password" placeholder="sk-ant-…" autocomplete="off">
+    <label for="proxyUrl">Proxy URL <span style="color:var(--text-3)">(optional, replaces the key)</span></label>
+    <input id="proxyUrl" type="url" placeholder="https://your-worker.workers.dev">
+    <p class="hint">A ready-made Cloudflare Worker is in <code>server/worker.js</code>.</p>
+    <div class="settings-actions">
+      <button type="button" class="link" id="settingsCancel">Cancel</button>
+      <button type="submit" class="primary" style="width:auto;margin:0" id="settingsSave">Save</button>
+    </div>
+  </form>
+</dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="plans.js"></script>
 <script src="schools.js"></script>
 <script src="app.js"></script>
+<script src="receipt.js"></script>
 </body>
 </html>
