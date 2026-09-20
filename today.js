@@ -74,13 +74,11 @@ function todayPlan(r) {
 }
 
 function renderToday() {
-  const card = $('todayCard');
   const r = (typeof compute === 'function') ? compute() : null;
-  if (!r || r.quick || state.mode !== 'log') { card.hidden = true; return; }
+  if (!r || r.quick || state.mode !== 'log') return;
   const plan = todayPlan(r);
   const { items, left, slots } = plan;
-  if (!items.length) { card.hidden = true; return; }
-  card.hidden = false;
+  if (!items.length) { $('todayHead').textContent = 'Enter your balances in Settings to get a daily plan.'; $('todayBody').innerHTML = ''; $('todayWhy').textContent = ''; return; }
 
   const hall = school().hallMealCost;
   const bv = blockValueTable();

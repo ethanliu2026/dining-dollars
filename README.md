@@ -11,7 +11,7 @@ SteelHacks 2026. Track meal blocks, FLEX, Dining Dollars — whatever your schoo
 **Live:** https://meal-blocks.tech (also https://ethanliu2026.github.io/dining-dollars/)
 
 ## What it does
-Four sections (tabs on desktop, bottom nav on phones): **Home** (today, verdict, balances, chart, log a purchase incl. receipt scan), **Log** (where it goes, purchases, block values, share), **Eat** (where-to-eat decider, tips), **Plans** (which plan fits me). **⚙︎ Settings** (header) holds school/plan/dates, appearance (auto/light/dark), receipt-scanning options and your data.
+Four sections (tabs on desktop, bottom nav on phones): **Home** (verdict + forecast, a Today / Balances / Semester dashboard, log a purchase incl. receipt scan), **Log** (where it goes, purchases, block values, share), **Eat** (where-to-eat decider, tips), **Plans** (which plan fits me). **⚙︎ Settings** (header) holds school/plan/dates, appearance (auto/light/dark), receipt-scanning options and your data.
 
 - Pick your school and your **actual meal plan** → allotments and semester dates are filled in. Catalogs (all 2026–27, each linked to its official source): **CMU, Pitt, Penn State, Temple, Penn, Drexel, Duquesne, Villanova, Lehigh, Rutgers–NB**
 - Searchable school picker (type "pitt", "psu", "nova"…). School not listed? **Other** lets you name it, define what your plan is made of (swipes / blocks / dollars, per-semester / weekly / unlimited), list your places to eat, and enter your breaks

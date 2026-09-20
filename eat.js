@@ -143,7 +143,7 @@ function renderTips() {
 }
 $('tipAdd').addEventListener('click', () => {
   const tip = $('tipText').value.trim(); if (!tip) return;
-  (state.tips ||= []).push({ id: crypto.randomUUID(), school: state.school, tag: $('tipTag').value, place: $('tipPlace').value !== OTHER ? $('tipPlace').value : '', tip, mine: true });
+  (state.tips ||= []).push({ id: uid(), school: state.school, tag: $('tipTag').value, place: $('tipPlace').value !== OTHER ? $('tipPlace').value : '', tip, mine: true });
   $('tipText').value = ''; save(); renderTips();
 });
 $('tipShare').addEventListener('click', () => {

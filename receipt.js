@@ -172,7 +172,7 @@ async function handleReceipt(file) {
     const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100, ...(defs[p.bucket].kind === 'count' && p.value > 0 ? { value: Math.round(p.value * 100) / 100 } : {}) }));
     if (!parts.length) { scanStatus(`Read "${r.location}" but couldn't find a meal-plan payment on it${r.notes ? ` (${r.notes})` : ''}. ${engine() === 'local' ? 'Try a sharper photo, or log it by hand below.' : 'Paid with card?'}`, 'error'); return; }
     const date = /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') && parse(r.date) <= today() ? r.date : toISO(today());
-    const tx = { id: crypto.randomUUID(), date, location: pickLocation(r.location || 'Unknown', r.location_in_list), item: r.item_summary || (r.items || []).join(', '), parts };
+    const tx = { id: uid(), date, location: pickLocation(r.location || 'Unknown', r.location_in_list), item: r.item_summary || (r.items || []).join(', '), parts };
     state.txns.push(tx); save(); render();
     lastScan = { txId: tx.id, dataUrl: img.dataUrl };
     showScanResult(tx, r);
@@ -266,7 +266,7 @@ $('pasteGo').addEventListener('click', () => {
   const parts = (r.parts || []).filter(p => defs[p.bucket] && p.amount > 0).map(p => ({ bucket: p.bucket, amount: Math.round(p.amount * 100) / 100 }));
   if (!parts.length) { scanStatus(`Couldn't find a meal-plan payment in that text${r.notes ? ` (${r.notes})` : ''}. Log it by hand below.`, 'error'); return; }
   const date = /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') && parse(r.date) <= today() ? r.date : toISO(today());
-  const tx = { id: crypto.randomUUID(), date, location: pickLocation(r.location || 'Unknown', r.location_in_list), item: r.item_summary || '', parts };
+  const tx = { id: uid(), date, location: pickLocation(r.location || 'Unknown', r.location_in_list), item: r.item_summary || '', parts };
   state.txns.push(tx); save(); render();
   lastScan = { txId: tx.id, dataUrl: null };
   showScanResult(tx, { ...r, notes: r.notes });

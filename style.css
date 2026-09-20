@@ -399,3 +399,12 @@ form.compact .money input { padding-left: 22px; }
 .vlist.forecast .fc-head::before { display: none; }
 .vlist.forecast .fc-head .muted { font-weight: normal; color: var(--text-3); font-size: 12px; }
 .legend i.band { border-top: 0; height: 10px; background: color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 2px; }
+
+/* home dashboard stack */
+.context { margin: -4px 0 4px; font-size: 13px; color: var(--text-2); }
+.context b { color: var(--text); }
+.dash-tabs { margin-bottom: 14px; grid-template-columns: repeat(3, 1fr); }
+.dash-pane[hidden] { display: none !important; }
+.chart-tabs-row { display: flex; justify-content: flex-end; margin-bottom: 8px; min-height: 22px; }
+#dashCard .today-head { margin-top: 2px; }
+@media (max-width: 760px) { #homeLeft { order: 2; } }   /* phones: status first, log form below */

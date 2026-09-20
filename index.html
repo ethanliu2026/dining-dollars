@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icon.svg">
-<link rel="stylesheet" href="style.css?v=aea2944-e1d715">
+<link rel="stylesheet" href="style.css?v=4984b50-f2428f">
 </head>
 <body>
 <main>
@@ -121,31 +121,36 @@
 
     </div>
     <div class="stack">
+      <p class="context" id="contextLine"></p>
       <div id="verdict" class="verdict good" hidden>
         <p class="headline" id="vHead"></p>
         <ul class="vlist" id="vList"></ul>
         <ul class="vlist forecast" id="forecastList" hidden></ul>
       </div>
 
-      <section class="card today" id="todayCard" hidden>
-        <h2>Today</h2>
+      <section class="card" id="dashCard" hidden>
+        <div class="dash-tabs seg three" role="tablist" aria-label="Dashboard">
+          <button type="button" data-dash="today">Today</button>
+          <button type="button" data-dash="balances">Balances</button>
+          <button type="button" data-dash="chart">Semester</button>
+        </div>
+        <div class="dash-pane" data-pane="today" id="todayCard" hidden>
+        
         <p class="today-head" id="todayHead"></p>
         <div id="todayBody"></div>
         <p class="hint" id="todayWhy"></p>
-      </section>
-
-      <section class="card" id="summaryCard" hidden>
-        <h2>Your balances</h2>
+              </div>
+        <div class="dash-pane" data-pane="balances" id="summaryCard" hidden>
+        
         <div class="table-x">
         <table id="summary">
           <thead><tr><th>Bucket</th><th class="num">Left</th><th class="num">Your pace</th><th class="num">Safe pace</th><th class="num">Projected end</th></tr></thead>
           <tbody></tbody>
         </table>
         </div>
-      </section>
-
-      <section class="card">
-        <h2>Over the semester <span class="right" id="chartTabs"></span></h2>
+              </div>
+        <div class="dash-pane" data-pane="chart" id="chartCard">
+        <div class="chart-tabs-row"><span class="right" id="chartTabs"></span></div>
         <div class="legend">
           <span><i></i>Actual</span>
           <span><i class="dash"></i>Projected at current pace</span>
@@ -154,8 +159,9 @@
         </div>
         <div class="chart-wrap">
           <canvas id="chartBalance" role="img" aria-label="Line chart of balance over the semester"></canvas>
-          <div class="empty" id="emptyBalance">Pick your school and plan in <button type="button" class="link" data-goto="setup">Setup</button> to see your projection.</div>
+          <div class="empty" id="emptyBalance">Pick your school and plan in <button type="button" class="link" data-goto="setup">⚙︎ Settings</button> to see your projection.</div>
         </div>
+              </div>
       </section>
 
     </div>
@@ -198,11 +204,11 @@
         <p class="hint" id="planHint"></p>
 
         <div id="midWrap" hidden>
-          <label class="check" style="margin-top:12px"><input type="checkbox" id="midOn"> I'm starting mid-semester</label>
+          <label class="check" style="margin-top:12px"><input type="checkbox" id="midOn"> I'm starting mid-semester (already used some of my plan)</label>
           <div id="midDate" hidden>
-            <label for="midFrom">First day I'm logging from</label>
+            <label for="midFrom">Date I'm starting from</label>
             <input id="midFrom" type="date">
-            <p class="hint">Enter what you had left on that day below (from the GET / dining app). Everything used before it counts as spent; purchases you log from then on are tracked.</p>
+            <p class="hint">Below, next to each starting amount, type <b>what you had left on that date</b> — the balance your dining app shows. Whatever's missing counts as already used, so your pace and projections are right from day one.</p>
           </div>
         </div>
         <div id="startFields"></div>
@@ -277,7 +283,7 @@
   </div>
 
   <div class="tab stack" data-tab="insights">
-    <div class="card empty" id="insightsEmpty" hidden>Insights need logged purchases — switch to <button type="button" class="link" data-goto="setup">Track purchases</button> in Setup and add a few on <button type="button" class="link" data-goto="home">Home</button>.</div>
+    <div class="card empty" id="insightsEmpty" hidden>The log needs purchases — choose <button type="button" class="link" data-goto="setup">Track purchases</button> in ⚙︎ Settings and add a few on <button type="button" class="link" data-goto="home">Home</button>.</div>
       <section class="card" id="analytics" hidden>
         <h2>Where it goes</h2>
         <ul class="insights" id="insights"></ul>
@@ -426,19 +432,19 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=aea2944-e1d715"></script>
-<script src="account-store.js?v=aea2944-e1d715"></script>
-<script src="plans.js?v=aea2944-e1d715"></script>
-<script src="schools.js?v=aea2944-e1d715"></script>
-<script src="app.js?v=aea2944-e1d715"></script>
-<script src="ocr.js?v=aea2944-e1d715"></script>
-<script src="receipt.js?v=aea2944-e1d715"></script>
-<script src="tips.js?v=aea2944-e1d715"></script>
-<script src="eat.js?v=aea2944-e1d715"></script>
-<script src="forecast.js?v=aea2944-e1d715"></script>
-<script src="today.js?v=aea2944-e1d715"></script>
-<script src="advisor.js?v=aea2944-e1d715"></script>
-<script src="share.js?v=aea2944-e1d715"></script>
-<script src="auth.js?v=aea2944-e1d715"></script>
+<script src="auth-config.js?v=4984b50-f2428f"></script>
+<script src="account-store.js?v=4984b50-f2428f"></script>
+<script src="plans.js?v=4984b50-f2428f"></script>
+<script src="schools.js?v=4984b50-f2428f"></script>
+<script src="app.js?v=4984b50-f2428f"></script>
+<script src="ocr.js?v=4984b50-f2428f"></script>
+<script src="receipt.js?v=4984b50-f2428f"></script>
+<script src="tips.js?v=4984b50-f2428f"></script>
+<script src="eat.js?v=4984b50-f2428f"></script>
+<script src="forecast.js?v=4984b50-f2428f"></script>
+<script src="today.js?v=4984b50-f2428f"></script>
+<script src="advisor.js?v=4984b50-f2428f"></script>
+<script src="share.js?v=4984b50-f2428f"></script>
+<script src="auth.js?v=4984b50-f2428f"></script>
 </body>
 </html>

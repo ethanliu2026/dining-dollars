@@ -27,6 +27,7 @@ function forecastBucket(b, r) {
   const breaks = breaksFor();
   const hist = dailyHistory(b, r, breaks);
   if (hist.length < MIN_DAYS || r.daysLeft === 0) return null;
+  if (hist.filter(h => h.amt > 0).length < 3) return null;   // nothing logged yet → no forecast
   // future eating days
   const future = [];
   for (let d = new Date(r.asOf.getTime() + DAY); d <= r.semEnd; d = new Date(d.getTime() + DAY)) if (isEatDay(d, breaks)) future.push({ date: new Date(d), dow: d.getDay() });

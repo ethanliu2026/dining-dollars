@@ -2,6 +2,8 @@
 const SCHOOLS = window.SCHOOLS, PLANS = window.PLANS;
 
 const $ = id => document.getElementById(id);
+// crypto.randomUUID only exists on https; fall back so logging works over plain http too
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10));
 const DAY = 86400000;
 const STORE = 'ddt.v3';
 const CUSTOM = 'custom';
@@ -564,7 +566,7 @@ $('txForm').addEventListener('submit', e => {
   const amt2 = Math.round(parseFloat($('txAmount2').value || 0) * 100) / 100;
   if (!$('splitFields').hidden && amt2 > 0 && $('txBucket2').value !== parts[0].bucket) parts.push({ bucket: $('txBucket2').value, amount: amt2 });
   state.txns.push({
-    id: crypto.randomUUID(),
+    id: uid(),
     date: $('txDate').value,
     location: ($('txLocation').value === OTHER ? $('txLocationOther').value : $('txLocation').value).trim(),
     item: $('txItem').value.trim(),
@@ -745,8 +747,10 @@ function render() {
   renderEatSummary(r);
   renderTermPicker();
 
-  $('verdict').hidden = !r; $('summaryCard').hidden = !r; $('emptyBalance').hidden = !!r;
+  renderContext();
+  $('verdict').hidden = !r; $('emptyBalance').hidden = !!r;
   $('chartTabs').replaceChildren();
+  syncDash(r);
   if (!r) { chartBalance?.destroy(); chartBalance = null; $('analytics').hidden = true; $('insightsEmpty').hidden = !$('txCard').hidden; return; }
 
   renderVerdict(r);
@@ -1013,11 +1017,11 @@ function sampleTxns(from, to) {
         const parts = [{ bucket: countB.key, amount: 1, value: Math.round(worth * 100) / 100 }];
         // sometimes a block plus a little money for a drink / extra side
         if (moneyB && rnd() < 0.35) parts.push({ bucket: moneyB.key, amount: Math.round((2 + rnd() * 4) * 100) / 100 });
-        out.push({ id: crypto.randomUUID(), date: toISO(d), location: hall, item: ['Lunch', 'Dinner', 'Brunch'][Math.floor(rnd() * 3)] + (parts.length > 1 ? ' + drink' : ''), parts });
+        out.push({ id: uid(), date: toISO(d), location: hall, item: ['Lunch', 'Dinner', 'Brunch'][Math.floor(rnd() * 3)] + (parts.length > 1 ? ' + drink' : ''), parts });
       } else if (moneyB) {
         const loc = rnd() < 0.55 ? favs[Math.floor(rnd() * favs.length)] : cafes[Math.floor(rnd() * cafes.length)];
         const [item, base] = menu[Math.floor(rnd() * menu.length)];
-        out.push({ id: crypto.randomUUID(), date: toISO(d), location: loc, item, parts: [{ bucket: moneyB.key, amount: Math.round((base * (0.85 + rnd() * 0.4)) * 100) / 100 }] });
+        out.push({ id: uid(), date: toISO(d), location: loc, item, parts: [{ bucket: moneyB.key, amount: Math.round((base * (0.85 + rnd() * 0.4)) * 100) / 100 }] });
       }
     }
   }
@@ -1066,6 +1070,38 @@ function applyTheme(t) {
 }
 for (const b of document.querySelectorAll('[data-theme-pick]')) b.addEventListener('click', () => { applyTheme(b.dataset.themePick); render(); });
 try { applyTheme(localStorage.getItem(THEME_STORE) || 'auto'); } catch { applyTheme('auto'); }
+
+// ---------- home dashboard (Today / Balances / Semester) ----------
+const DASH_STORE = 'ddt.dash';
+let dashPane = 'today';
+try { dashPane = localStorage.getItem(DASH_STORE) || 'today'; } catch {}
+function showDash(name, remember = true) {
+  const panes = [...document.querySelectorAll('#dashCard .dash-pane')];
+  const available = panes.filter(p => !p.dataset.unavailable).map(p => p.dataset.pane);
+  if (!available.includes(name)) name = available[0] || 'chart';
+  dashPane = name;
+  for (const p of panes) p.hidden = p.dataset.pane !== name;
+  for (const b of document.querySelectorAll('[data-dash]')) { b.setAttribute('aria-checked', b.dataset.dash === name); b.hidden = !available.includes(b.dataset.dash); }
+  if (remember) try { localStorage.setItem(DASH_STORE, name); } catch {}
+  requestAnimationFrame(() => chartBalance?.resize());
+}
+for (const b of document.querySelectorAll('[data-dash]')) b.addEventListener('click', () => showDash(b.dataset.dash));
+// Which panes make sense right now: Today only in log mode, Balances/Chart when there's a projection.
+function syncDash(r) {
+  const today = $('todayCard'), bal = $('summaryCard'), chart = $('chartCard');
+  today.dataset.unavailable = (!r || r.quick || state.mode !== 'log') ? '1' : '';
+  bal.dataset.unavailable = !r ? '1' : '';
+  chart.dataset.unavailable = '';
+  if (!today.dataset.unavailable) delete today.dataset.unavailable;
+  if (!bal.dataset.unavailable) delete bal.dataset.unavailable;
+  delete chart.dataset.unavailable;
+  $('dashCard').hidden = false;
+  showDash(dashPane, false);
+}
+function renderContext() {
+  const p = plan();
+  $('contextLine').innerHTML = `<b>${esc(school().name)}</b>${p ? ` · ${esc(p.name)}` : ''} · ${esc(state.mode === 'log' ? 'tracking purchases' : 'quick estimate')} — <button type="button" class="link" data-goto="setup">change in ⚙︎ Settings</button>`;
+}
 
 // ---------- section tabs ----------
 const TAB_STORE = 'ddt.tab';
