@@ -52,6 +52,7 @@ function normalizeState(s) {
                  semStart: t0.start, semEnd: t0.end, txns: [], custom: DEFAULT_CUSTOM(),
                  eat: { weekends: true, breaks: false }, blockValues: {},
                  trackFrom: null, trackBalance: {} };   // mid-semester start: balance on the day you began logging
+  if (s && s.mode !== 'log' && s.mode !== 'quick') s.mode = 'log';   // heal a bad mode from the old .seg bug
   const st = { ...base, ...(s || {}), asOf: s?.asOf || base.asOf,
                custom: { ...DEFAULT_CUSTOM(), ...(s?.custom || {}) }, eat: { ...base.eat, ...(s?.eat || {}) }, blockValues: { ...(s?.blockValues || {}) }, trackBalance: { ...(s?.trackBalance || {}) } };
   st.school = sch;
@@ -237,8 +238,9 @@ const MODE_HINT = {
   quick: 'Just type what you started with and what you have now.',
 };
 function setMode(m, persist = true) {
+  if (m !== 'log' && m !== 'quick') m = 'log';
   state.mode = m; if (persist) save();
-  for (const b of document.querySelectorAll('.seg button')) b.setAttribute('aria-checked', b.dataset.mode === m);
+  for (const b of document.querySelectorAll('.seg button[data-mode]')) b.setAttribute('aria-checked', b.dataset.mode === m);
   $('modeHint').textContent = MODE_HINT[m];
   $('quickFields').hidden = m !== 'quick';
   $('logCard').hidden = m !== 'log';
@@ -248,7 +250,7 @@ function setMode(m, persist = true) {
   renderStartFields();
   render();
 }
-for (const b of document.querySelectorAll('.seg button')) b.addEventListener('click', () => setMode(b.dataset.mode));
+for (const b of document.querySelectorAll('.seg button[data-mode]')) b.addEventListener('click', () => setMode(b.dataset.mode));
 
 function fillPlans() {
   const sel = $('plan');
