@@ -373,7 +373,10 @@ function renderStartFields() {
       inp.step = def.kind === 'money' ? '0.01' : '1';
       inp.placeholder = def.kind === 'money' ? '0.00' : '0';
       inp.value = state[which][key] ?? '';
-      inp.addEventListener('input', () => { state[which][key] = inp.value === '' ? undefined : +inp.value; save(); fillBuckets(); render(); });
+      // A catalog plan fixes the starting allotment; only "what's left" is yours to type.
+      const fixed = which === 'start' && p && pb !== undefined;
+      if (fixed) { inp.readOnly = true; inp.tabIndex = -1; inp.classList.add('fixed'); inp.title = `Set by the ${p.name}`; lab.innerHTML += ' <span class="pill">from plan</span>'; }
+      else inp.addEventListener('input', () => { state[which][key] = inp.value === '' ? undefined : +inp.value; save(); fillBuckets(); render(); });
       box.appendChild(inp); cell.append(lab, box);
       return cell;
     };

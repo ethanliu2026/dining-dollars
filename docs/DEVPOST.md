@@ -14,11 +14,12 @@ We wanted the number the app *should* show: **will this last, and what should I 
 
 ## What it does
 
-Pick your school and plan, log what you buy, and it tells you where you stand — *"You'll run out of FLEX around Nov 17 — drop to $11.05/day to make it"* — plus a plan for the rest of today (*"Dinner: 2 blocks at Schatz, up to $6 for a drink"*).
+Pick your school and plan, log what you buy, and it tells you where you stand — *"You'll run out of FLEX around Nov 17! Drop to $11.05/day to make it"* — plus a plan for the rest of today (*"Dinner: 2 blocks at Schatz, up to $6 for a drink"*).
 
 - **Log in seconds:** photo of a receipt, a pasted Grubhub email, or a two-field form. Split payments (a block + $2.75 FLEX) just work.
 - **Real forecasts, not a straight line:** 2,000 simulated semesters from your own daily spending give a probability of running out and a likely range, drawn as a band on the chart.
-- **Where it goes:** spend by place, and what a block actually buys at each one — learned from your receipts — so you know where blocks go furthest and where to pay with dollars instead.
+- **Where it goes:** spend by place, and what a block actually buys at each one
+- — learned from your receipts — so you know where blocks go furthest and where to pay with dollars instead.
 - **Where to eat:** a one-tap pick using live hours, ratings and specials (CMU), how you're paying, and where you haven't been lately.
 - **Which plan next semester:** projects your habits over the plans you're eligible for and scores each by true cost — including "skip the plan" when that's cheaper.
 - **10 schools** — CMU, Pitt, Penn State, Temple, Penn, Drexel, Duquesne, Villanova, Lehigh, Rutgers — every plan, price, eligibility rule, semester date and break taken from the school's official pages. Any other school can be set up by hand.

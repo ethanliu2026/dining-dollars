@@ -460,3 +460,6 @@ h1 { font-size: 24px; }
 .tour-target { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 12px; animation: tourpulse 1.4s ease-in-out infinite; }
 @keyframes tourpulse { 0%, 100% { outline-color: var(--accent); } 50% { outline-color: transparent; } }
 @media (max-width: 760px) { .tour { bottom: calc(64px + env(safe-area-inset-bottom)); } }
+input.fixed { color: var(--text-2); background: transparent; border-style: dashed; cursor: default; }
+input.fixed:focus { outline: none; border-color: var(--border); }
+.mid-field input, [id^="current-"] { border-color: var(--accent); }
