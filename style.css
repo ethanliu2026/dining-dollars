@@ -463,3 +463,9 @@ h1 { font-size: 24px; }
 input.fixed { color: var(--text-2); background: transparent; border-style: dashed; cursor: default; }
 input.fixed:focus { outline: none; border-color: var(--border); }
 .mid-field input, [id^="current-"] { border-color: var(--accent); }
+@media (max-width: 480px) {
+  #txTable { table-layout: fixed; width: 100%; }
+  #txTable th:nth-child(1), #txTable td:nth-child(1) { width: 52px; }
+  #txTable th:nth-child(3), #txTable td:nth-child(3) { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #txTable th:nth-child(5), #txTable td:nth-child(5) { width: 28px; }
+}
