@@ -1077,20 +1077,29 @@ function sampleTxns(from, to) {
   const cafes = locs.filter(l => !halls.includes(l));
   const favs = [cafes[0], cafes[3], cafes[5]].filter(Boolean);
   const out = [];
+  // Scale to the plan so the story is the same at every school: blocks to spare, dollars a bit short.
+  const days = Math.max(30, countEatDays(from, parse(state.semEnd), breaksFor()));
+  const slots = 2.1;   // purchases per day
+  const moneyTarget = moneyB ? (state.start[moneyB.key] || 0) / days * 1.3 : 0;   // $/day, 30% over safe pace
+  const blockTarget = countB ? (state.start[countB.key] || 0) / days * 0.65 : 0;  // blocks/day, well under pace
+  const pMoney = moneyB ? Math.min(0.5, Math.max(0.1, moneyTarget / 9.5 / slots)) : 0;
+  const pBlock = countB ? Math.min(1 - pMoney, Math.max(0.25, blockTarget / slots)) : 0;
+  const addOn = 0.5 * pMoney / 0.5;   // block + a drink, only when dollars are plentiful
   // Up to yesterday: today stays empty so the first live purchase shows up on the Today card.
   for (let d = new Date(from); d < to; d = new Date(d.getTime() + DAY)) {
     const meals = d.getDay() === 5 ? 3 : rnd() < 0.2 ? 1 : 2;
     for (let i = 0; i < meals; i++) {
-      const useBlock = countB && (!moneyB || rnd() < 0.5);
+      const roll = rnd();
+      const useBlock = roll < pBlock, useMoney = !useBlock && roll < pBlock + pMoney;
       if (useBlock) {
         const hall = halls[Math.floor(rnd() * halls.length)];
         // each place has its own block value (what the block covered on the receipt)
         const worth = HALL_WORTH[halls.indexOf(hall)] + Math.round((rnd() - 0.5) * 60) / 100;
         const parts = [{ bucket: countB.key, amount: 1, value: Math.round(worth * 100) / 100 }];
         // sometimes a block plus a little money for a drink / extra side
-        if (moneyB && rnd() < 0.5) parts.push({ bucket: moneyB.key, amount: Math.round((2.5 + rnd() * 4.5) * 100) / 100 });
+        if (moneyB && rnd() < addOn) parts.push({ bucket: moneyB.key, amount: Math.round((2.5 + rnd() * 4.5) * 100) / 100 });
         out.push({ id: uid(), date: toISO(d), location: hall, item: ['Lunch', 'Dinner', 'Brunch'][Math.floor(rnd() * 3)] + (parts.length > 1 ? ' + drink' : ''), parts });
-      } else if (moneyB) {
+      } else if (useMoney) {
         const loc = rnd() < 0.55 ? favs[Math.floor(rnd() * favs.length)] : cafes[Math.floor(rnd() * cafes.length)];
         const [item, base] = menu[Math.floor(rnd() * menu.length)];
         out.push({ id: uid(), date: toISO(d), location: loc, item, parts: [{ bucket: moneyB.key, amount: Math.round((base * (0.85 + rnd() * 0.4)) * 100) / 100 }] });
