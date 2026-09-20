@@ -11,7 +11,7 @@ OUT = Path(__file__).resolve().parent.parent / 'docs' / 'screenshots'
 OUT.mkdir(parents=True, exist_ok=True)
 SHOTS = [
     ('01-home-today',    'demo&tab=home&dash=today'),
-    ('02-home-semester', 'demo&tab=home&dash=chart', '#dashCard'),
+    ('02-home-semester', 'demo&tab=home&dash=chart', None, 0.74),
     ('03-log-where',     'demo&tab=insights&pane=where'),
     ('04-log-blockvalue','demo&tab=insights&pane=blocks'),
     ('05-eat',           'demo&tab=eat'),
@@ -22,10 +22,13 @@ with sync_playwright() as p:
     b = p.chromium.launch()
     ctx = b.new_context(viewport={'width': 1200, 'height': 800}, device_scale_factor=2, color_scheme='dark')
     page = ctx.new_page()
-    for name, q, *scroll in SHOTS:
+    for name, q, *rest in SHOTS:
+        scroll = rest[0] if rest else None
+        zoom = rest[1] if len(rest) > 1 else None
         page.goto(f'{BASE}?{q}', wait_until='networkidle')
         page.wait_for_timeout(1500)          # charts animate in; live data settles
-        if scroll: page.evaluate(f"document.querySelector('{scroll[0]}').scrollIntoView({{block: 'start'}}); window.scrollBy(0, -16)"); page.wait_for_timeout(400)
+        if zoom: page.evaluate(f"document.body.style.zoom='{zoom}'"); page.evaluate("chartBalance && chartBalance.resize()"); page.wait_for_timeout(600)
+        if scroll: page.evaluate(f"document.querySelector('{scroll}').scrollIntoView({{block: 'start'}}); window.scrollBy(0, -16)"); page.wait_for_timeout(400)
         if 'tab=eat' in q:
             page.evaluate("(async () => { showTab('eat'); await refreshEat(); renderPick(); })()"); page.wait_for_timeout(1200)
         page.screenshot(path=str(OUT / f'{name}.png'))
