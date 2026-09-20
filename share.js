@@ -1,7 +1,7 @@
 // Shareable semester card: a 1080×1350 PNG drawn on a canvas (no server), handed to the
 // phone's share sheet when available, otherwise downloaded. Loaded after app.js.
 
-const SHARE_URL = 'https://ethanliu2026.github.io/dining-dollars/';
+const SHARE_URL = 'https://meal-blocks.tech/';
 
 function shareStats() {
   const r = compute();

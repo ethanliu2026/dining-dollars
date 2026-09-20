@@ -9,7 +9,7 @@
 // Response: the JSON object Claude produced, matching `schema`.
 
 const MODEL = 'claude-opus-5';
-const ALLOWED_ORIGINS = ['https://ethanliu2026.github.io', 'http://localhost:8765', 'null'];  // 'null' = file://
+const ALLOWED_ORIGINS = ['https://meal-blocks.tech', 'https://www.meal-blocks.tech', 'https://ethanliu2026.github.io', 'http://localhost:8765', 'null'];  // 'null' = file://
 
 export default {
   async fetch(request, env) {

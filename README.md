@@ -8,7 +8,7 @@ The Team:
 
 SteelHacks 2026. Track meal blocks, FLEX, Dining Dollars — whatever your school's plan is made of. Log what you use, see where it goes, and find out whether you'll run out before the semester ends or leave it on the table.
 
-**Live:** https://ethanliu2026.github.io/dining-dollars/
+**Live:** https://meal-blocks.tech (also https://ethanliu2026.github.io/dining-dollars/)
 
 ## What it does
 Four sections (tabs on desktop, bottom nav on phones): **Home** (today, verdict, balances, chart, log a purchase incl. receipt scan), **Log** (where it goes, purchases, block values, share), **Eat** (where-to-eat decider, tips), **Plans** (which plan fits me). **⚙︎ Settings** (header) holds school/plan/dates, appearance (auto/light/dark), receipt-scanning options and your data.
