@@ -97,7 +97,13 @@ function replaceTrackerState(value) {
   chartKey = null;
   refreshSchool();
   setMode(state.mode, false);
-  showTab(Object.values(state.start || {}).some(v => v > 0) || state.txns.length ? 'home' : 'setup', false);
+  // Keep the URL's ?tab / the remembered tab; only fall back to Home/Settings on first load.
+  const q = new URLSearchParams(location.search);
+  const has = Object.values(state.start || {}).some(v => v > 0) || state.txns.length;
+  let remembered = null; try { remembered = localStorage.getItem(TAB_STORE); } catch {}
+  showTab(q.get('tab') || (has ? (remembered || 'home') : 'setup'), false);
+  if (q.get('dash')) showDash(q.get('dash'), false);
+  if (q.get('pane')) showLogPane(q.get('pane'), false);
   window.dispatchEvent(new Event('tracker-account-changed'));
 }
 
