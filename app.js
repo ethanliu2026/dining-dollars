@@ -1049,9 +1049,16 @@ $('btnSample').addEventListener('click', () => {
   // sample data is a whole-semester log: it replaces any mid-semester starting point
   state.trackFrom = null; state.trackBalance = {};
   state.txns = sampleTxns(parse(state.semStart), today());
+  demoPersona();
   save(); fillPlans(); renderStartFields(); fillBuckets(); render();
   showTab('home'); showDash('today');
 });
+
+// The sample student is a returning resident, so the advisor can compare every plan (not just the first-year three).
+function demoPersona() {
+  state.advisor ||= { mode: 'usage', group: 'firstYear', mealsWk: 12, moneyWk: 40 };
+  if (!state.advisor.groupTouched) state.advisor.group = 'resident';
+}
 
 function sampleTxns(from, to) {
   let seed = 42; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -1064,20 +1071,24 @@ function sampleTxns(from, to) {
   // All-you-care-to-eat spots take swipes; everything else takes money.
   let halls = locs.filter(l => /dining|commons|hall|eatery|perch|nourish|schatz|exchange|stack'd underground|hogan|rathbone|brodhead|atrium/i.test(l)).slice(0, 3);
   if (!halls.length) halls = locs.slice(0, 2);
+  // The all-you-care-to-eat room first: that's where a block buys the most.
+  halls.sort((a, b) => /dining room|dining hall|commons|eatery/i.test(b) - /dining room|dining hall|commons|eatery/i.test(a));
+  const HALL_WORTH = [15.5, 12.25, 9.75];   // a block covers a different amount at each place
   const cafes = locs.filter(l => !halls.includes(l));
   const favs = [cafes[0], cafes[3], cafes[5]].filter(Boolean);
   const out = [];
-  for (let d = new Date(from); d <= to; d = new Date(d.getTime() + DAY)) {
+  // Up to yesterday: today stays empty so the first live purchase shows up on the Today card.
+  for (let d = new Date(from); d < to; d = new Date(d.getTime() + DAY)) {
     const meals = d.getDay() === 5 ? 3 : rnd() < 0.2 ? 1 : 2;
     for (let i = 0; i < meals; i++) {
-      const useBlock = countB && (!moneyB || rnd() < 0.62);
+      const useBlock = countB && (!moneyB || rnd() < 0.5);
       if (useBlock) {
         const hall = halls[Math.floor(rnd() * halls.length)];
         // each place has its own block value (what the block covered on the receipt)
-        const worth = 10.5 + ((hall.charCodeAt(0) * 5) % 6) + Math.round(rnd() * 100) / 100;
+        const worth = HALL_WORTH[halls.indexOf(hall)] + Math.round((rnd() - 0.5) * 60) / 100;
         const parts = [{ bucket: countB.key, amount: 1, value: Math.round(worth * 100) / 100 }];
         // sometimes a block plus a little money for a drink / extra side
-        if (moneyB && rnd() < 0.35) parts.push({ bucket: moneyB.key, amount: Math.round((2 + rnd() * 4) * 100) / 100 });
+        if (moneyB && rnd() < 0.5) parts.push({ bucket: moneyB.key, amount: Math.round((2.5 + rnd() * 4.5) * 100) / 100 });
         out.push({ id: uid(), date: toISO(d), location: hall, item: ['Lunch', 'Dinner', 'Brunch'][Math.floor(rnd() * 3)] + (parts.length > 1 ? ' + drink' : ''), parts });
       } else if (moneyB) {
         const loc = rnd() < 0.55 ? favs[Math.floor(rnd() * favs.length)] : cafes[Math.floor(rnd() * cafes.length)];
@@ -1227,6 +1238,7 @@ const qs = new URLSearchParams(location.search);
 if (qs.has('demo') && !state.txns.length) {
   state.school = 'cmu'; state.planId = 'red'; state.start = { blocks: 205, flex: 880 };
   state.txns = sampleTxns(parse(termFor(SCHOOLS.cmu).start), today());
+  demoPersona();
   state.semStart = termFor(SCHOOLS.cmu).start; state.semEnd = termFor(SCHOOLS.cmu).end;
   try { localStorage.setItem('ddt.tour', 'done'); } catch {}
   save(); $('schoolSearch').value = schoolLabel('cmu'); refreshSchool();
