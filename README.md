@@ -41,7 +41,7 @@ CMU publishes plans as a [PDF agreement](https://www.cmu.edu/dining/your-dining-
 ## Receipt scanning
 "Scan a receipt" → take a photo (or drop / paste an image on desktop). The purchase is logged immediately — location matched to the dropdown, items listed, and **each tender line mapped to a bucket** (a CMU receipt's `MEAL BLOCK` + `FLEX` lines become `1 block + $2.75 FLEX`). A card shows what was read with **Undo** / **Edit**.
 
-Two engines; the best available is used automatically. (`CLAUDE_ENABLED` at the top of `receipt.js` turns the Claude path off entirely for a no-LLM build.)
+Two engines. **The shipped build is on-device OCR only** — `CLAUDE_ENABLED = false` at the top of `receipt.js` (no language model in the product). Flip it to `true` to enable the optional Claude path below.
 
 | | On-device OCR (default) | Claude vision (optional) |
 |---|---|---|
@@ -106,7 +106,8 @@ Guests keep everything in the browser. Signing in (email + password via Supabase
 
 Supabase setup checklist: run `supabase/schema.sql`; under Authentication → URL Configuration add every URL the app is served from (GitHub Pages, AFS, `http://localhost:8765`) as redirect URLs, or confirmation/reset links will bounce to the wrong place.
 
-## Deploying (GitHub Pages, CMU AFS, anywhere static)
+## Deploying (GitHub Pages, CMU AFS, DigitalOcean, anywhere static)
+`.do/app.yaml` is a DigitalOcean App Platform spec for the static site. For a custom domain on GitHub Pages, add a `CNAME` file containing the domain and point the domain's DNS at GitHub Pages (A records 185.199.108–111.153, or a CNAME to `ethanliu2026.github.io`).
 Copy the folder as-is. Asset URLs in `index.html` carry a `?v=<git hash>` stamp so browsers never reuse a stale `app.js` after an upload — a pre-commit hook keeps it current (`sh scripts/install-hooks.sh` once per clone, or run `python3 scripts/stamp.py` by hand before uploading). `.htaccess` additionally asks Apache to revalidate; AFS needs `fs setacl -dir ~/www/<folder> -acl system:anyuser rl` on any new directory.
 
 ## Run locally

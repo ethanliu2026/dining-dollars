@@ -8,7 +8,7 @@
 
 // Set to false to ship with no language model at all (SteelHacks "No Wrapper" track):
 // receipts are then read only by the on-device OCR, and the Claude settings are hidden.
-const CLAUDE_ENABLED = true;
+const CLAUDE_ENABLED = false;
 
 const KEY_STORE = 'ddt.apiKey';
 const PROXY_STORE = 'ddt.proxyUrl';

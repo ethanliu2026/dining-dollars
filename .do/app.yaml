@@ -1,0 +1,12 @@
+# DigitalOcean App Platform spec: hosts the static site (free static-site tier).
+# Deploy: doctl apps create --spec .do/app.yaml   (or paste into the App Platform UI)
+name: meal-plan-tracker
+static_sites:
+  - name: web
+    github:
+      repo: ethanliu2026/dining-dollars
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    index_document: index.html
+    catchall_document: index.html
