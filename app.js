@@ -1046,8 +1046,11 @@ $('btnSample').addEventListener('click', () => {
     if (m && !(state.start[m.key] > 0)) state.start[m.key] = 500;
   }
   if (parse(state.semStart) > today()) { alert(`${school().name}'s term hasn't started yet (${fmtDate(parse(state.semStart))}), so there's nothing to sample. Change the semester dates to try it.`); return; }
+  // sample data is a whole-semester log: it replaces any mid-semester starting point
+  state.trackFrom = null; state.trackBalance = {};
   state.txns = sampleTxns(parse(state.semStart), today());
   save(); fillPlans(); renderStartFields(); fillBuckets(); render();
+  showTab('home'); showDash('today');
 });
 
 function sampleTxns(from, to) {
@@ -1067,7 +1070,7 @@ function sampleTxns(from, to) {
   for (let d = new Date(from); d <= to; d = new Date(d.getTime() + DAY)) {
     const meals = d.getDay() === 5 ? 3 : rnd() < 0.2 ? 1 : 2;
     for (let i = 0; i < meals; i++) {
-      const useBlock = countB && (!moneyB || rnd() < 0.45);
+      const useBlock = countB && (!moneyB || rnd() < 0.62);
       if (useBlock) {
         const hall = halls[Math.floor(rnd() * halls.length)];
         // each place has its own block value (what the block covered on the receipt)
