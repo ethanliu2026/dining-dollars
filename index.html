@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icon.svg">
-<link rel="stylesheet" href="style.css?v=51a8bea-f2e349">
+<link rel="stylesheet" href="style.css?v=c639465-e20604">
 </head>
 <body>
 <main>
@@ -152,11 +152,15 @@
               </div>
         <div class="dash-pane" data-pane="chart" id="chartCard">
         <div class="chart-tabs-row"><span class="right" id="chartTabs"></span></div>
-        <div class="legend">
+        <div class="legend" id="legendSem">
           <span><i></i>Actual</span>
           <span><i class="dash"></i>Projected at current pace</span>
           <span><i class="ideal"></i>Ideal pace</span>
           <span id="legendBand" hidden><i class="band"></i>Likely range</span>
+        </div>
+        <div class="legend" id="legendWeek" hidden>
+          <span><i class="bar"></i>Meals used this week</span>
+          <span><i class="ideal dash"></i>Even pace</span>
         </div>
         <div class="chart-wrap">
           <canvas id="chartBalance" role="img" aria-label="Line chart of balance over the semester"></canvas>
@@ -433,19 +437,19 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=51a8bea-f2e349"></script>
-<script src="account-store.js?v=51a8bea-f2e349"></script>
-<script src="plans.js?v=51a8bea-f2e349"></script>
-<script src="schools.js?v=51a8bea-f2e349"></script>
-<script src="app.js?v=51a8bea-f2e349"></script>
-<script src="ocr.js?v=51a8bea-f2e349"></script>
-<script src="receipt.js?v=51a8bea-f2e349"></script>
-<script src="tips.js?v=51a8bea-f2e349"></script>
-<script src="eat.js?v=51a8bea-f2e349"></script>
-<script src="forecast.js?v=51a8bea-f2e349"></script>
-<script src="today.js?v=51a8bea-f2e349"></script>
-<script src="advisor.js?v=51a8bea-f2e349"></script>
-<script src="share.js?v=51a8bea-f2e349"></script>
-<script src="auth.js?v=51a8bea-f2e349"></script>
+<script src="auth-config.js?v=c639465-e20604"></script>
+<script src="account-store.js?v=c639465-e20604"></script>
+<script src="plans.js?v=c639465-e20604"></script>
+<script src="schools.js?v=c639465-e20604"></script>
+<script src="app.js?v=c639465-e20604"></script>
+<script src="ocr.js?v=c639465-e20604"></script>
+<script src="receipt.js?v=c639465-e20604"></script>
+<script src="tips.js?v=c639465-e20604"></script>
+<script src="eat.js?v=c639465-e20604"></script>
+<script src="forecast.js?v=c639465-e20604"></script>
+<script src="today.js?v=c639465-e20604"></script>
+<script src="advisor.js?v=c639465-e20604"></script>
+<script src="share.js?v=c639465-e20604"></script>
+<script src="auth.js?v=c639465-e20604"></script>
 </body>
 </html>

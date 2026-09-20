@@ -847,10 +847,12 @@ function describe(b, r) {
 function renderVerdict(r) {
   const tracked = r.buckets.filter(b => !b.noData && b.period === 'semester' && !b.passive);
   const worst = ['bad', 'warn', 'good'].map(s => tracked.find(b => b.status === s)).find(Boolean);
+  const weekly = r.buckets.find(b => b.period === 'week' && !b.noData);
   const v = $('verdict');
-  v.className = 'verdict ' + (worst?.status || 'good');
+  v.className = 'verdict ' + (worst?.status || weekly?.status || 'good');
   let head;
-  if (!worst) head = 'Nothing to project yet.';
+  if (!worst && weekly) head = weekly.balance <= 0 ? `No ${weekly.unit}s left this week — resets ${weekly.daysLeftWk === 1 ? 'tomorrow' : 'Sunday night'}.` : `${plural(weekly.balance, weekly.unit)} left this week${weekly.daysLeftWk > 1 ? ` — about ${fmtN(weekly.safe, 1)} a day` : ''}.`;
+  else if (!worst) head = 'Nothing to project yet.';
   else if (worst.balance <= 0) head = `You're out of ${worst.label}.`;
   else if (r.daysLeft === 0) head = worst.status === 'warn' ? `Semester's over with ${fmtQ(worst, worst.balance)} unused.` : "Semester's over — nicely done.";
   else if (!r.quick && !r.txns.length) head = 'Nothing logged yet.';
@@ -879,6 +881,9 @@ function renderSummary(r) {
 
 function renderChartTabs(r) {
   const plottable = r.buckets.filter(b => b.period === 'semester' && !b.noData && !b.passive);
+  const weekly = r.buckets.filter(b => b.period === 'week' && !b.noData);
+  if (!plottable.length && weekly.length) { drawWeek(r, weekly[0]); return; }
+  $('legendWeek').hidden = true; $('legendSem').hidden = false;
   if (!plottable.some(b => b.key === chartKey)) chartKey = plottable[0]?.key || null;
   if (!chartKey) { chartBalance?.destroy(); chartBalance = null; $('emptyBalance').hidden = false; return; }
   if (plottable.length > 1) {
@@ -911,6 +916,26 @@ function renderTable() {
     tr.querySelector('button').addEventListener('click', () => removeTx(t.id));
     return tr;
   }));
+}
+
+// Weekly plans: meals used each day this week vs. the even-pace allowance.
+function drawWeek(r, b) {
+  $('legendWeek').hidden = false; $('legendSem').hidden = true;
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const dow = (r.asOf.getDay() + 6) % 7;
+  const used = Array(7).fill(0);
+  for (const t of b.txns) { const d = parse(t.date); if (d >= b.weekStart && d <= new Date(b.weekStart.getTime() + 6 * DAY)) used[(d.getDay() + 6) % 7] += t.amount; }
+  const perDay = b.start / 7;
+  const accent = css('--accent'), idealC = css('--ideal'), grid = css('--grid'), ink = css('--text-2');
+  const data = { labels: days, datasets: [
+    { type: 'bar', label: 'Used', data: used, backgroundColor: days.map((_, i) => i > dow ? 'transparent' : accent), borderColor: accent, borderWidth: days.map((_, i) => i > dow ? 1 : 0), borderRadius: 4, barThickness: 22 },
+    { type: 'line', label: 'Even pace', data: days.map(() => perDay), borderColor: idealC, borderWidth: 2, borderDash: [4, 4], pointRadius: 0 },
+  ] };
+  const options = { responsive: true, maintainAspectRatio: false, animation: { duration: 250 },
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: it => ` ${it.dataset.label}: ${fmtN(it.parsed.y, 1)} ${b.unit}${it.parsed.y === 1 ? '' : 's'}` } } },
+    scales: { x: { ticks: { color: ink }, grid: { display: false }, border: { color: grid } },
+              y: { min: 0, suggestedMax: Math.max(3, Math.ceil(perDay) + 1), ticks: { color: ink, stepSize: 1 }, grid: { color: grid }, border: { color: grid } } } };
+  chartBalance?.destroy(); chartBalance = new Chart($('chartBalance'), { type: 'bar', data, options });
 }
 
 function drawBalance(r, b) {
@@ -959,8 +984,8 @@ function drawBalance(r, b) {
       y: { min: 0, ticks: { color: ink, callback: v => b.kind === 'money' ? '$' + v : v }, grid: { color: grid }, border: { color: grid } },
     },
   };
-  if (chartBalance) { chartBalance.data = data; chartBalance.options = options; chartBalance.update(); }
-  else chartBalance = new Chart($('chartBalance'), { type: 'line', data, options });
+  if (chartBalance && chartBalance.config.type === 'line') { chartBalance.data = data; chartBalance.options = options; chartBalance.update(); }
+  else { chartBalance?.destroy(); chartBalance = new Chart($('chartBalance'), { type: 'line', data, options }); }
 }
 
 function drawPlaces(a) {
@@ -1119,6 +1144,8 @@ function syncDash(r) {
   if (!bal.dataset.unavailable) delete bal.dataset.unavailable;
   delete chart.dataset.unavailable;
   $('dashCard').hidden = false;
+  const weeklyOnly = r && !r.buckets.some(b => b.period === 'semester' && !b.noData && !b.passive) && r.buckets.some(b => b.period === 'week' && !b.noData);
+  document.querySelector('[data-dash="chart"]').textContent = weeklyOnly ? 'This week' : 'Semester';
   showDash(dashPane, false);
 }
 function renderContext() {

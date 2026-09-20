@@ -438,3 +438,4 @@ h1 { font-size: 24px; }
 .tabs-nav button[aria-selected="true"], button.primary { background: var(--accent); }
 .scan-row .scan-btn { font-size: 13px; padding: 9px 6px; gap: 6px; white-space: nowrap; }
 .scan-row .scan-btn .ico { font-size: 16px; }
+.legend i.bar { border-top: 0; height: 10px; width: 14px; background: var(--accent); border-radius: 2px; }
