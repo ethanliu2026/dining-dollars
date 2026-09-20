@@ -10,14 +10,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icon.svg">
-<link rel="stylesheet" href="style.css?v=5df447a-012d12">
+<link rel="stylesheet" href="style.css?v=51a8bea-f2e349">
 </head>
 <body>
 <main>
+  <div class="stripe" aria-hidden="true"></div>
   <header>
-    <div>
+    <div class="brand">
+      <span class="badge" id="schoolBadge" hidden><img id="schoolLogo" alt="" width="22" height="22"><span id="schoolShort"></span></span>
       <h1>Meal Plan Tracker</h1>
-      <p class="sub">Blocks, FLEX, Dining Dollars — log what you use, see where it goes, know your safe daily pace.</p>
     </div>
     <div class="toolbar" id="dataTools">
       <button class="link" id="btnSample">Load sample data</button>
@@ -28,7 +29,7 @@
 
   <section class="account-bar" aria-label="Your account">
     <div class="account-copy">
-      <strong id="accountName">Your meal plan, wherever you go</strong>
+      <strong id="accountName" hidden>Your meal plan, wherever you go</strong>
       <p id="accountStatus" role="status" aria-live="polite">Guest mode · saved on this device</p>
     </div>
     <div class="account-actions">
@@ -62,11 +63,11 @@
               <input id="receiptFile" type="file" accept="image/*" capture="environment" hidden>
               <span class="ico">📷</span><span>Scan a receipt</span>
             </label>
-            <details class="paste">
-              <summary>Paste an order</summary>
-              <textarea id="pasteText" rows="4" placeholder="Paste a Grubhub email or GET receipt"></textarea>
-              <button type="button" class="primary" id="pasteGo" style="margin-top:8px;width:auto">Log it</button>
-            </details>
+            <button type="button" class="scan-btn" id="pasteToggle" aria-expanded="false"><span class="ico">📋</span><span>Paste an order</span></button>
+          </div>
+          <div id="pasteBox" hidden>
+            <textarea id="pasteText" rows="4" placeholder="Paste a Grubhub email or GET receipt"></textarea>
+            <button type="button" class="primary" id="pasteGo" style="margin-top:8px;width:auto">Log it</button>
           </div>
           <div id="scanStatus" class="scan-status" hidden></div>
           <div id="scanResult" class="scan-result" hidden>
@@ -432,19 +433,19 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=5df447a-012d12"></script>
-<script src="account-store.js?v=5df447a-012d12"></script>
-<script src="plans.js?v=5df447a-012d12"></script>
-<script src="schools.js?v=5df447a-012d12"></script>
-<script src="app.js?v=5df447a-012d12"></script>
-<script src="ocr.js?v=5df447a-012d12"></script>
-<script src="receipt.js?v=5df447a-012d12"></script>
-<script src="tips.js?v=5df447a-012d12"></script>
-<script src="eat.js?v=5df447a-012d12"></script>
-<script src="forecast.js?v=5df447a-012d12"></script>
-<script src="today.js?v=5df447a-012d12"></script>
-<script src="advisor.js?v=5df447a-012d12"></script>
-<script src="share.js?v=5df447a-012d12"></script>
-<script src="auth.js?v=5df447a-012d12"></script>
+<script src="auth-config.js?v=51a8bea-f2e349"></script>
+<script src="account-store.js?v=51a8bea-f2e349"></script>
+<script src="plans.js?v=51a8bea-f2e349"></script>
+<script src="schools.js?v=51a8bea-f2e349"></script>
+<script src="app.js?v=51a8bea-f2e349"></script>
+<script src="ocr.js?v=51a8bea-f2e349"></script>
+<script src="receipt.js?v=51a8bea-f2e349"></script>
+<script src="tips.js?v=51a8bea-f2e349"></script>
+<script src="eat.js?v=51a8bea-f2e349"></script>
+<script src="forecast.js?v=51a8bea-f2e349"></script>
+<script src="today.js?v=51a8bea-f2e349"></script>
+<script src="advisor.js?v=51a8bea-f2e349"></script>
+<script src="share.js?v=51a8bea-f2e349"></script>
+<script src="auth.js?v=51a8bea-f2e349"></script>
 </body>
 </html>

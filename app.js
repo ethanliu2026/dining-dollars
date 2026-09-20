@@ -421,7 +421,27 @@ $('termNext').addEventListener('click', () => {
   save(); renderStartFields(); fillBuckets(); render();
 });
 
+// School colors + badge once a school is chosen; default blue otherwise.
+function applySchoolTheme() {
+  const sch = state.school !== OTHER_SCHOOL ? SCHOOLS[state.school] : null;
+  const root = document.documentElement;
+  const dark = root.dataset.theme === 'dark' || (!root.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+  if (sch?.colors) {
+    root.style.setProperty('--accent', dark ? sch.colors.dark : sch.colors.light);
+    root.style.setProperty('--accent2', sch.colors.second);
+    $('schoolShort').textContent = sch.short || sch.name;
+    const img = $('schoolLogo');
+    img.hidden = false; img.src = `https://www.google.com/s2/favicons?domain=${sch.domain}&sz=64`;
+    img.onerror = () => { img.hidden = true; };
+    $('schoolBadge').hidden = false;
+  } else {
+    root.style.removeProperty('--accent'); root.style.removeProperty('--accent2');
+    $('schoolBadge').hidden = true;
+  }
+}
+
 function refreshSchool() {
+  applySchoolTheme();
   $('customSchool').hidden = state.school !== OTHER_SCHOOL;
   if (state.school === OTHER_SCHOOL) renderCustomEditor();
   fillPlans(); renderStartFields(); loadLocations(); fillBuckets(); render();
@@ -1070,7 +1090,8 @@ function applyTheme(t) {
   for (const b of document.querySelectorAll('[data-theme-pick]')) b.setAttribute('aria-checked', b.dataset.themePick === (t || 'auto'));
   try { t && t !== 'auto' ? localStorage.setItem(THEME_STORE, t) : localStorage.removeItem(THEME_STORE); } catch {}
 }
-for (const b of document.querySelectorAll('[data-theme-pick]')) b.addEventListener('click', () => { applyTheme(b.dataset.themePick); render(); });
+for (const b of document.querySelectorAll('[data-theme-pick]')) b.addEventListener('click', () => { applyTheme(b.dataset.themePick); applySchoolTheme(); render(); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { applySchoolTheme(); });
 try { applyTheme(localStorage.getItem(THEME_STORE) || 'auto'); } catch { applyTheme('auto'); }
 
 // ---------- home dashboard (Today / Balances / Semester) ----------
@@ -1125,9 +1146,10 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigat
 
 // ---------- go ----------
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
-$('footer').innerHTML = `Guest data stays in your browser; signed-in data is saved to your account. Meal plan catalogs for ${Object.keys(PLANS).length} schools, each linked to its official source in the plan picker. Semester dates are defaults — check them in “Semester dates”.`;
+$('footer').innerHTML = `Guest data stays on this device; sign in to sync. Plans for ${Object.keys(PLANS).length} schools from their official dining pages.`;
 $('customSchool').hidden = state.school !== OTHER_SCHOOL;
 if (state.school === OTHER_SCHOOL) renderCustomEditor();
+applySchoolTheme();
 fillPlans();
 loadLocations();
 fillBuckets();

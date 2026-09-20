@@ -8,6 +8,9 @@
 //   unit:   singular noun for count buckets
 window.SCHOOLS = {
   cmu: {
+    short: 'CMU', domain: 'cmu.edu',
+    // School colors: accent for light / dark backgrounds, plus a secondary for the top stripe
+    colors: { light: '#C41230', dark: '#E8425A', second: '#FDB515' },
     aliases: ['CMU', 'Carnegie Mellon University', 'Tartans'],
     name: 'Carnegie Mellon',
     buckets: {
@@ -67,6 +70,9 @@ window.SCHOOLS = {
     },
   },
   pitt: {
+    short: 'Pitt', domain: 'pitt.edu',
+    // School colors: accent for light / dark backgrounds, plus a secondary for the top stripe
+    colors: { light: '#003594', dark: '#4C7BE0', second: '#FFB81C' },
     aliases: ['Pitt', 'UPitt', 'University of Pittsburgh', 'Panthers'],
     name: 'University of Pittsburgh',
     buckets: {
@@ -102,6 +108,9 @@ window.SCHOOLS = {
   },
 
   psu: {
+    short: 'Penn State', domain: 'psu.edu',
+    // School colors: accent for light / dark backgrounds, plus a secondary for the top stripe
+    colors: { light: '#1E407C', dark: '#5B86D6', second: '#96BEE6' },
     aliases: ['PSU', 'Penn State', 'Nittany Lions', 'State College'],
     name: 'Penn State (University Park)',
     // No swipes here: dining-commons meals are paid from Dining Dollars at set prices
@@ -136,6 +145,9 @@ window.SCHOOLS = {
     ],
   },
   temple: {
+    short: 'Temple', domain: 'temple.edu',
+    // School colors: accent for light / dark backgrounds, plus a secondary for the top stripe
+    colors: { light: '#9D2235', dark: '#D6465D', second: '#FFCB05' },
     aliases: ['TU', 'Temple', 'Owls'],
     name: 'Temple University',
     buckets: {
@@ -167,6 +179,9 @@ window.SCHOOLS = {
     ],
   },
   penn: {
+    short: 'Penn', domain: 'upenn.edu',
+    // School colors: accent for light / dark backgrounds, plus a secondary for the top stripe
+    colors: { light: '#011F5B', dark: '#3F6DC9', second: '#990000' },
     aliases: ['UPenn', 'Penn', 'Quakers'],
     name: 'University of Pennsylvania',
     buckets: {
@@ -197,6 +212,9 @@ window.SCHOOLS = {
     ],
   },
   drexel: {
+    short: 'Drexel', domain: 'drexel.edu',
+    // School colors: accent for light / dark backgrounds, plus a secondary for the top stripe
+    colors: { light: '#07294D', dark: '#4C7BE0', second: '#FFC600' },
     aliases: ['Drexel', 'Dragons'],
     name: 'Drexel University',
     buckets: {
@@ -231,6 +249,9 @@ window.SCHOOLS = {
     ],
   },
   duq: {
+    short: 'Duquesne', domain: 'duq.edu',
+    // School colors: accent for light / dark backgrounds, plus a secondary for the top stripe
+    colors: { light: '#BA0C2F', dark: '#E0405E', second: '#041E42' },
     aliases: ['DU', 'Duquesne', 'Dukes'],
     name: 'Duquesne University',
     buckets: {
@@ -263,6 +284,9 @@ window.SCHOOLS = {
     ],
   },
   villanova: {
+    short: 'Villanova', domain: 'villanova.edu',
+    // School colors: accent for light / dark backgrounds, plus a secondary for the top stripe
+    colors: { light: '#00205B', dark: '#3F6DC9', second: '#13B5EA' },
     aliases: ['Nova', 'Villanova', 'Wildcats'],
     name: 'Villanova University',
     buckets: {
@@ -296,6 +320,9 @@ window.SCHOOLS = {
     ],
   },
   lehigh: {
+    short: 'Lehigh', domain: 'lehigh.edu',
+    // School colors: accent for light / dark backgrounds, plus a secondary for the top stripe
+    colors: { light: '#653819', dark: '#B0703F', second: '#F0D49A' },
     aliases: ['Lehigh', 'Mountain Hawks'],
     name: 'Lehigh University',
     buckets: {
@@ -325,6 +352,9 @@ window.SCHOOLS = {
     ],
   },
   rutgers: {
+    short: 'Rutgers', domain: 'rutgers.edu',
+    // School colors: accent for light / dark backgrounds, plus a secondary for the top stripe
+    colors: { light: '#CC0033', dark: '#F04A6A', second: '#5F6A72' },
     aliases: ['RU', 'Rutgers', 'Scarlet Knights', 'New Brunswick'],
     name: 'Rutgers–New Brunswick',
     buckets: {

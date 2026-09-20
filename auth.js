@@ -86,7 +86,8 @@
     if (appliedId === (nextUser?.id || null)) return;
     appliedId = nextUser?.id || null;
     user = nextUser;
-    $('accountName').textContent = user?.email || (user ? 'Your account' : 'Your meal plan, wherever you go');
+    $('accountName').textContent = user?.email || (user ? 'Your account' : '');
+    $('accountName').hidden = !user;   // guests just see the status line
     document.querySelector('.account-bar').classList.toggle('signed-in', !!user);
     $('btnAccount').hidden = !!user;
     $('btnSignOut').hidden = !user;

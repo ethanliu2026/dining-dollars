@@ -256,6 +256,11 @@ $('scanCard').addEventListener('dragover', e => { e.preventDefault(); $('scanLab
 $('scanCard').addEventListener('dragleave', () => { $('scanLabel').style.borderColor = ''; });
 $('scanCard').addEventListener('drop', e => { e.preventDefault(); $('scanLabel').style.borderColor = ''; handleReceipt(e.dataTransfer.files[0]); });
 document.addEventListener('paste', e => { const f = [...(e.clipboardData?.files || [])].find(f => f.type.startsWith('image/')); if (f && state.mode === 'log') handleReceipt(f); });
+$('pasteToggle').addEventListener('click', () => {
+  const open = $('pasteBox').hidden;
+  $('pasteBox').hidden = !open; $('pasteToggle').setAttribute('aria-expanded', open);
+  if (open) $('pasteText').focus();
+});
 // Paste-an-order: same parser as the OCR path, no photo needed (Grubhub emails, GET receipts).
 $('pasteGo').addEventListener('click', () => {
   const text = $('pasteText').value.trim();
@@ -271,6 +276,6 @@ $('pasteGo').addEventListener('click', () => {
   lastScan = { txId: tx.id, dataUrl: null };
   showScanResult(tx, { ...r, notes: r.notes });
   scanStatus('');
-  $('pasteText').value = '';
+  $('pasteText').value = ''; $('pasteBox').hidden = true; $('pasteToggle').setAttribute('aria-expanded', false);
 });
 updateScanHint();

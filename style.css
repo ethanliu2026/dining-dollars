@@ -408,3 +408,33 @@ form.compact .money input { padding-left: 22px; }
 .chart-tabs-row { display: flex; justify-content: flex-end; margin-bottom: 8px; min-height: 22px; }
 #dashCard .today-head { margin-top: 2px; }
 @media (max-width: 760px) { #homeLeft { order: 2; } }   /* phones: status first, log form below */
+
+/* ===== cleaner header, school theming ===== */
+:root { --accent2: #1baf7a; }
+.stripe { height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); margin: -32px -16px 20px; }
+header { margin-bottom: 14px; align-items: center; }
+.brand { display: flex; align-items: center; gap: 12px; }
+h1 { font-size: 24px; }
+.badge { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px 5px 6px; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 700; font-size: 13px; letter-spacing: .02em; }
+.badge img { width: 22px; height: 22px; border-radius: 50%; background: #fff; object-fit: contain; }
+.badge img[hidden] { display: none; }
+/* slim account bar */
+.account-bar { padding: 8px 12px; margin-bottom: 14px; font-size: 13px; }
+.account-copy p { font-size: 13px; }
+.account-actions button { font-size: 12px; padding: 6px 10px; }
+.account-bar.signed-in .account-copy strong { display: block; font-size: 13px; }
+/* bigger nav labels */
+.tabs-nav button { font-size: 15px; padding: 10px 8px; }
+.tabs-nav .ico { font-size: 17px; }
+@media (max-width: 760px) { .tabs-nav button { font-size: 12px; } .tabs-nav .ico { font-size: 22px; } .stripe { margin: -20px -16px 14px; } }
+/* two equal scan buttons */
+.scan-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.scan-row .scan-btn { justify-content: center; padding: 10px 8px; margin: 0; font: inherit; font-weight: 600; font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; }
+.scan-row .scan-btn:hover { border-color: var(--accent); }
+.scan-row .scan-btn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+#pasteBox { margin-top: 8px; }
+/* softer cards */
+.card { box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+.tabs-nav button[aria-selected="true"], button.primary { background: var(--accent); }
+.scan-row .scan-btn { font-size: 13px; padding: 9px 6px; gap: 6px; white-space: nowrap; }
+.scan-row .scan-btn .ico { font-size: 16px; }
