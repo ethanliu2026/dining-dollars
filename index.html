@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meal Plan Tracker</title>
 <meta name="description" content="Track meal blocks and dining dollars, see where they go, and find out whether you'll run out or leave them on the table.">
-<link rel="stylesheet" href="style.css?v=7884926-e20604">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2a78d6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="style.css?v=f96aa10-d968a9">
 </head>
 <body>
 <main>
@@ -119,6 +124,7 @@
       <div id="verdict" class="verdict good" hidden>
         <p class="headline" id="vHead"></p>
         <ul class="vlist" id="vList"></ul>
+        <ul class="vlist forecast" id="forecastList" hidden></ul>
       </div>
 
       <section class="card today" id="todayCard" hidden>
@@ -144,6 +150,7 @@
           <span><i></i>Actual</span>
           <span><i class="dash"></i>Projected at current pace</span>
           <span><i class="ideal"></i>Ideal pace</span>
+          <span id="legendBand" hidden><i class="band"></i>Likely range</span>
         </div>
         <div class="chart-wrap">
           <canvas id="chartBalance" role="img" aria-label="Line chart of balance over the semester"></canvas>
@@ -419,18 +426,19 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=7884926-e20604"></script>
-<script src="account-store.js?v=7884926-e20604"></script>
-<script src="plans.js?v=7884926-e20604"></script>
-<script src="schools.js?v=7884926-e20604"></script>
-<script src="app.js?v=7884926-e20604"></script>
-<script src="ocr.js?v=7884926-e20604"></script>
-<script src="receipt.js?v=7884926-e20604"></script>
-<script src="tips.js?v=7884926-e20604"></script>
-<script src="eat.js?v=7884926-e20604"></script>
-<script src="today.js?v=7884926-e20604"></script>
-<script src="advisor.js?v=7884926-e20604"></script>
-<script src="share.js?v=7884926-e20604"></script>
-<script src="auth.js?v=7884926-e20604"></script>
+<script src="auth-config.js?v=f96aa10-d968a9"></script>
+<script src="account-store.js?v=f96aa10-d968a9"></script>
+<script src="plans.js?v=f96aa10-d968a9"></script>
+<script src="schools.js?v=f96aa10-d968a9"></script>
+<script src="app.js?v=f96aa10-d968a9"></script>
+<script src="ocr.js?v=f96aa10-d968a9"></script>
+<script src="receipt.js?v=f96aa10-d968a9"></script>
+<script src="tips.js?v=f96aa10-d968a9"></script>
+<script src="eat.js?v=f96aa10-d968a9"></script>
+<script src="forecast.js?v=f96aa10-d968a9"></script>
+<script src="today.js?v=f96aa10-d968a9"></script>
+<script src="advisor.js?v=f96aa10-d968a9"></script>
+<script src="share.js?v=f96aa10-d968a9"></script>
+<script src="auth.js?v=f96aa10-d968a9"></script>
 </body>
 </html>

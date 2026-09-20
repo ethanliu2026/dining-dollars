@@ -1,0 +1,11 @@
+{
+  "name": "Meal Plan Tracker",
+  "short_name": "Meal Plan",
+  "description": "Track meal blocks and dining dollars, see where they go, and pick the right plan.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#121211",
+  "theme_color": "#2a78d6",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

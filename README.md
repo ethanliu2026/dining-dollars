@@ -69,6 +69,12 @@ Pick your group (first-year / returning resident / on-campus apartment / off-cam
 
 Scoring: **true cost** = plan price + what you'd pay out of pocket for anything it doesn't cover (dining-hall meals at ~$14, money 1:1). Lowest true cost wins; ties within 1% are called out; if the winner involves out-of-pocket spending, the cheapest plan that fully covers you is offered too. Unused swipes are valued at what the plan charges per swipe (`(price − dollars) ÷ swipes`) and shown as waste. Money-only schools (Penn State) convert meals to dollars via `hallMealCost` in `schools.js`.
 
+## Forecast (Monte Carlo)
+Under the verdict once you have a week of history: 2,000 simulated semesters, each built by resampling your own daily spending (per weekday when there are ≥3 samples for that weekday, otherwise from all days), over the eating days left. Reports the probability of running out, the likely run-out window (10th–90th percentile), and the likely leftover range; the chart shades the 10th–90th percentile band. Seeded RNG so it doesn't flicker. Pure statistics, no model — `forecast.js`.
+
+## Installable / offline
+`manifest.webmanifest` + `sw.js` make it an installable app (Add to Home Screen) that works offline: network-first so deploys are picked up immediately, cache fallback when there's no signal. OCR and all the math run on-device.
+
 ## Today
 On Home: how many blocks and how many dollars to use for the rest of today, split across the meal periods left (breakfast / lunch / dinner / late night), minus what's already logged today. Spare blocks round up ("use 3 today"), short ones round down; money follows the safe daily rate (nudged up when you're under pace). Blocks are pointed at the best-value place known. Respects per-day caps (CMU 4 blocks, Pitt 5 meals).
 

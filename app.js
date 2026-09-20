@@ -907,7 +907,15 @@ function drawBalance(r, b) {
   const fy = v => b.kind === 'money' ? fmt$(v) : fmtN(v, 0);
 
   const accent = css('--accent'), idealC = css('--ideal'), grid = css('--grid'), ink = css('--text-2');
+  // Monte Carlo band (10th–90th percentile of simulated balance), when there's enough history
+  const f = typeof forecastBucket === 'function' ? forecastBucket(b, r) : null;
+  const bandSets = f ? [
+    { label: 'Likely range (90th pct)', data: [pt(r.asOf, b.balance), ...f.band.map(x => pt(x.date, x.hi))], borderColor: 'transparent', backgroundColor: accent.replace(')', ', 0.16)').replace('rgb(', 'rgba(').replace(/^#([0-9a-f]{6})$/i, (m, h) => `rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},0.16)`), fill: '+1', pointRadius: 0, pointHoverRadius: 0, tension: 0.3 },
+    { label: 'Likely range (10th pct)', data: [pt(r.asOf, b.balance), ...f.band.map(x => pt(x.date, x.lo))], borderColor: 'transparent', backgroundColor: 'transparent', fill: false, pointRadius: 0, pointHoverRadius: 0, tension: 0.3 },
+  ] : [];
+  $('legendBand').hidden = !f;
   const data = { datasets: [
+    ...bandSets,
     { label: 'Actual', data: actual, borderColor: accent, backgroundColor: accent, borderWidth: 2.5, pointRadius: actual.length > 30 ? 0 : 3, pointHoverRadius: 6 },
     { label: 'Projected', data: projected, borderColor: accent, backgroundColor: accent, borderWidth: 2, borderDash: [6, 5], pointRadius: [0, 4], pointHoverRadius: 6 },
     { label: 'Ideal pace', data: ideal, borderColor: idealC, backgroundColor: idealC, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5 },
@@ -915,7 +923,7 @@ function drawBalance(r, b) {
   const options = {
     responsive: true, maintainAspectRatio: false, animation: { duration: 250 },
     interaction: { mode: 'nearest', intersect: false },
-    plugins: { legend: { display: false }, tooltip: { callbacks: {
+    plugins: { legend: { display: false }, tooltip: { filter: it => !/pct/.test(it.dataset.label), callbacks: {
       title: items => fmtDate(new Date(items[0].parsed.x)),
       label: it => ` ${it.dataset.label}: ${fy(it.parsed.y)}`,
     } } },
@@ -1073,6 +1081,9 @@ function showTab(name, push = true) {
 for (const b of document.querySelectorAll('.tabs-nav button')) b.addEventListener('click', () => showTab(b.dataset.tab));
 $('btnSettings').addEventListener('click', () => showTab('setup'));
 document.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if (g) showTab(g.dataset.goto); });
+
+// ---------- PWA ----------
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
 
 // ---------- go ----------
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);

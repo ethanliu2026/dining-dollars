@@ -392,3 +392,10 @@ form.compact .money input { padding-left: 22px; }
 .factions .primary { width: auto; margin: 0; flex: 1; }
 .factions .link { padding: 6px 4px; white-space: nowrap; }
 #logCard h2 { margin-bottom: 8px; }
+
+/* forecast */
+.vlist.forecast { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(128,128,128,.25); }
+.vlist.forecast .fc-head { font-weight: 600; color: var(--text); padding-left: 0; }
+.vlist.forecast .fc-head::before { display: none; }
+.vlist.forecast .fc-head .muted { font-weight: normal; color: var(--text-3); font-size: 12px; }
+.legend i.band { border-top: 0; height: 10px; background: color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 2px; }
