@@ -1212,6 +1212,20 @@ fillPlans();
 loadLocations();
 fillBuckets();
 setMode(state.mode);
+// ?demo loads the CMU sample data (for judges / screenshots); ?tab=home|insights|eat|advisor|setup opens a tab;
+// ?dash=today|balances|chart and ?pane=where|purchases|blocks pick the stacked panels.
+const qs = new URLSearchParams(location.search);
+if (qs.has('demo') && !state.txns.length) {
+  state.school = 'cmu'; state.planId = 'red'; state.start = { blocks: 205, flex: 880 };
+  state.txns = sampleTxns(parse(termFor(SCHOOLS.cmu).start), today());
+  state.semStart = termFor(SCHOOLS.cmu).start; state.semEnd = termFor(SCHOOLS.cmu).end;
+  try { localStorage.setItem('ddt.tour', 'done'); } catch {}
+  save(); $('schoolSearch').value = schoolLabel('cmu'); refreshSchool();
+}
+if (qs.get('dash')) { dashPane = qs.get('dash'); }
+if (qs.get('pane')) { logPane = qs.get('pane'); }
 // First visit with nothing set up → start on Setup; otherwise the last tab used.
 const hasSetup = Object.values(state.start || {}).some(v => v > 0) || state.txns.length;
-showTab(hasSetup ? (localStorage.getItem(TAB_STORE) || 'home') : 'setup', false);
+showTab(qs.get('tab') || (hasSetup ? (localStorage.getItem(TAB_STORE) || 'home') : 'setup'), false);
+if (qs.get('dash')) showDash(qs.get('dash'), false);
+if (qs.get('pane')) showLogPane(qs.get('pane'), false);

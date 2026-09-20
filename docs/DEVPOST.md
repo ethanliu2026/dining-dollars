@@ -1,11 +1,3 @@
-# Meal Blocks — Devpost submission
-
-**Tagline (60 chars max):** Know if your meal plan will last — and what to eat today.
-
-**Try it:** https://meal-blocks.tech · **Code:** https://github.com/ethanliu2026/dining-dollars
-
----
-
 ## Inspiration
 
 It's November. You open the dining app and it says *183 blocks, $41.20 FLEX*. Is that good? Nobody knows. One friend is rationing cereal; another will hand $300 back to the university in December. A CMU meal plan costs almost $4,000 a semester, it's made of two different currencies with different rules, and the only thing the school gives you is a balance.
@@ -50,13 +42,13 @@ Receipts are read **on the device** with Tesseract.js: we binarize the photo, re
 **About the problem**
 
 - *The balance isn't the product; the decision is.* Every dining app already shows a number. What nobody shows is whether it's enough — and once we framed the app around one sentence ("you'll run out around Nov 17, drop to $11/day"), every other feature either served that sentence or got cut.
-- *"Days left" is a lie.* A straight-line projection over calendar days was wrong for everyone: students go home for Thanksgiving, skip weekends, and Drexel is on quarters. Counting only the days you'll actually eat on campus — from each school's real academic calendar — changed the answer by 10–20%.
+- *"Days left" is a lie.* A straight-line projection over calendar days was wrong for everyone: students go home for Thanksgiving, skip weekends, and Drexel is on quarters. Counting only the days you'll actually eat on campus, which was pulled from each school's real academic calendar, changed the answer by 10–20%.
 - *The straight line was overconfident.* Resampling a student's own daily spending 2,000 times gave a range instead of a date, and a probability instead of a verdict. When the linear model said "Nov 23" and the simulation said "58% chance, Dec 2–11 if so," the simulation was the honest one.
 - *Value is per place, not per plan.* A block "costs" $14.58 on the Red Plan, but it buys $15.50 at one dining hall and $9.75 at a café. Schools don't publish that anywhere — it only exists on the receipt itself, which is why the receipt scanner captures it.
 
 **About building it**
 
-- *Get the model right before the features.* We rewrote the core three times (single balance → blocks + dollars → arbitrary "buckets" with semester/weekly/unlimited periods). Only the last one let ten very different schools share one code path — and after that, adding a school was a data entry, not an engineering task.
+- *Get the model right before the features.* We rewrote the core three times (single balance → blocks + dollars → arbitrary "buckets" with semester/weekly/unlimited periods). Only the last one let ten very different schools share one code path. After that, adding a school was a data entry, not an engineering task.
 - *Verify sources, then verify again.* We transcribed every plan and calendar from official pages and still got dates wrong — a PDF whose labels sat below their week row cost us a week on CMU's start date until a teammate caught it. Keeping a source URL and a "verified" date next to every number made mistakes findable.
 - *Client-only has real limits.* No public API exists for Grubhub or campus-card history, so "import your transactions" became "paste the confirmation email." Receipts are read on-device because that's the only option that needs no key, no account and no server — and because privacy is a feature when the data is what you ate.
 - *The boring bugs are the ones users hit.* Windows line endings turned a 150-line change into an 1,800-line diff; a cached `index.html` made a deploy look broken; a browser API we relied on only exists on https; an iOS tap on a dropdown blurred the input before the tap landed. None of these were "interesting," and every one of them was reported by a teammate on a real phone.
@@ -65,18 +57,11 @@ Receipts are read **on the device** with Tesseract.js: we binarize the photo, re
 
 - *Watching people use it beat every assumption.* Testers typed over the plan's fixed allotments and broke their own numbers; the fix was to lock what the plan defines and leave editable only what's theirs. A "Not feeling it" button that returned the same restaurant read as "broken," not "confident."
 - *Trust comes from traceability.* Every plan links to its official page, every insight says how many receipts it's based on, every OCR result is flagged "check this" with one-tap undo. People forgive an app that's wrong and says so; they abandon one that's wrong and confident.
-- *Clutter is a feature failure.* The app became overwhelming the moment it did everything on one screen. The last hours went to cutting — tabs, stacked panels, collapsed tips, a settings page — until a first-time user could answer "am I okay?" without scrolling.
+- *Clutter is a feature failure.* The app became overwhelming the moment it did everything on one screen. The last hours went to cutting — tabs, stacked panels, collapsed tips, a settings page, only until a first-time user could answer "am I okay?" without scrolling.
 
 ## What's next
 
-- Crowd-sourced block values and tips per campus (the "block includes a drink at Tartan Express" knowledge every senior has).
 - Receipt deskew before OCR, and an optional cloud reader for hard photos.
 - Reminders ("you have 2 blocks to use before Sunday").
-- More schools — adding one is a JSON entry plus its calendar.
-
----
-
-### Track notes (delete before posting)
-- **Compound:** the "what could go wrong" answers are in Challenges (OCR flagged + undo; sync conflicts refused; dates from registrars but editable; synthetic sample data for demos).
-- **No Wrapper:** the shipped build has `CLAUDE_ENABLED = false`; do not mention Claude/LLMs in the story or tags.
-- **Seed Round:** lead with "10 schools, one model, adding a school is a JSON entry" and the crowd-sourced tips loop.
+- More schools since adding one is a JSON entry plus its calendar.
+- Turning the website into an app that customers can use offline.
