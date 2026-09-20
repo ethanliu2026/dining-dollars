@@ -439,3 +439,11 @@ h1 { font-size: 24px; }
 .scan-row .scan-btn { font-size: 13px; padding: 9px 6px; gap: 6px; white-space: nowrap; }
 .scan-row .scan-btn .ico { font-size: 16px; }
 .legend i.bar { border-top: 0; height: 10px; width: 14px; background: var(--accent); border-radius: 2px; }
+
+/* log stack + floating share */
+.pane-sub { margin: -4px 0 8px; font-size: 13px; color: var(--text-3); }
+#logStack .chart-wrap.short { margin-top: 4px; }
+.fab { position: fixed; right: 20px; bottom: 20px; z-index: 25; padding: 10px 16px; border-radius: 999px; background: var(--accent); color: #fff; border: 0; font-weight: 700; font-size: 14px; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+.fab[hidden] { display: none; }
+@media (max-width: 760px) { .fab { bottom: calc(72px + env(safe-area-inset-bottom)); right: 14px; } }
+#shareDialog .share-preview { width: 100%; max-width: 100%; margin-top: 12px; }

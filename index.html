@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icon.svg">
-<link rel="stylesheet" href="style.css?v=c639465-e20604">
+<link rel="stylesheet" href="style.css?v=f8176ef-819986">
 </head>
 <body>
 <main>
@@ -288,37 +288,22 @@
   </div>
 
   <div class="tab stack" data-tab="insights">
-    <div class="card empty" id="insightsEmpty" hidden>The log needs purchases — choose <button type="button" class="link" data-goto="setup">Track purchases</button> in ⚙︎ Settings and add a few on <button type="button" class="link" data-goto="home">Home</button>.</div>
-      <section class="card" id="analytics" hidden>
-        <h2>Where it goes</h2>
+      <section class="card" id="logStack" hidden>
+        <div class="dash-tabs seg three" role="tablist" aria-label="Log sections">
+          <button type="button" data-lpane="where">Where it goes</button>
+          <button type="button" data-lpane="purchases">Purchases</button>
+          <button type="button" data-lpane="blocks" id="blockValuesTab">Block value</button>
+        </div>
+        <div class="dash-pane" data-pane="where" id="analytics">
+        
         <ul class="insights" id="insights"></ul>
         <div class="chart-wrap short">
           <canvas id="chartPlaces" role="img" aria-label="Bar chart of spending by location"></canvas>
         </div>
         <p class="hint" id="placesHint"></p>
-      </section>
-
-      <section class="card" id="shareCard">
-        <h2>Share</h2>
-        <p class="hint">A card with your semester so far — how much you've used, where you're headed, and what the advisor says. Made on your device; nothing is uploaded.</p>
-        <button type="button" class="primary" id="btnShare" style="width:auto;margin:0">Share my semester</button>
-        <p class="hint" id="shareHint"></p>
-        <div id="sharePreviewWrap" hidden><img id="sharePreview" alt="Your semester card" class="share-preview"></div>
-      </section>
-
-      <section class="card" id="blockValues" hidden>
-        <h2 id="blockValuesTitle">What a block is worth by place</h2>
-        <p class="hint">Learned from receipts (the "MEAL BLOCK −$12.49" line) and anything you enter. Use blocks where they buy the most; pay with dollars where they buy the least.</p>
-        <div id="blockValuesBody"></div>
-        <div class="bv-add">
-          <select id="bvPlace"></select>
-          <div class="money"><span>$</span><input id="bvValue" type="number" min="0" step="0.01" placeholder="14.00"></div>
-          <button type="button" id="bvAdd">Add</button>
-        </div>
-      </section>
-
-      <section class="card" id="txCard">
-        <h2>Purchases <span class="right" id="txCount"></span></h2>
+              </div>
+        <div class="dash-pane" data-pane="purchases" id="txCard" hidden>
+        <p class="pane-sub"><span id="txCount"></span></p>
         <div class="table-scroll table-x">
           <table id="txTable">
             <thead><tr><th>Date</th><th>Where</th><th>What</th><th class="num">Paid</th><th></th></tr></thead>
@@ -326,7 +311,22 @@
           </table>
         </div>
         <div class="empty" id="emptyTx">Nothing logged yet — add purchases on <button type="button" class="link" data-goto="home">Home</button>.</div>
+              </div>
+        <div class="dash-pane" data-pane="blocks" id="blockValues" hidden>
+        
+        <p class="hint" id="blockValuesHint">How much a block covers at each place, from your receipts. Use blocks where they buy the most.</p>
+        <div id="blockValuesBody"></div>
+        <div class="bv-add">
+          <select id="bvPlace"></select>
+          <div class="money"><span>$</span><input id="bvValue" type="number" min="0" step="0.01" placeholder="14.00"></div>
+          <button type="button" id="bvAdd">Add</button>
+        </div>
+              </div>
       </section>
+    <div class="card empty" id="insightsEmpty" hidden>The log needs purchases — choose <button type="button" class="link" data-goto="setup">Track purchases</button> in ⚙︎ Settings and add a few on <button type="button" class="link" data-goto="home">Home</button>.</div>
+
+
+
 
   </div>
 
@@ -388,6 +388,15 @@
 
   </div>
 
+  <button type="button" class="fab" id="btnShareFab" hidden title="Share my semester">📤 Share</button>
+  <dialog id="shareDialog">
+    <div class="settings-form">
+      <div class="auth-heading"><h2>Your semester card</h2><button type="button" class="link" id="shareClose" aria-label="Close">✕</button></div>
+      <img id="sharePreview" alt="Your semester card" class="share-preview">
+      <p class="hint" id="shareHint"></p>
+    </div>
+  </dialog>
+
   <footer id="footer">Data stays in your browser.</footer>
   </div>
 
@@ -437,19 +446,19 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="auth-config.js?v=c639465-e20604"></script>
-<script src="account-store.js?v=c639465-e20604"></script>
-<script src="plans.js?v=c639465-e20604"></script>
-<script src="schools.js?v=c639465-e20604"></script>
-<script src="app.js?v=c639465-e20604"></script>
-<script src="ocr.js?v=c639465-e20604"></script>
-<script src="receipt.js?v=c639465-e20604"></script>
-<script src="tips.js?v=c639465-e20604"></script>
-<script src="eat.js?v=c639465-e20604"></script>
-<script src="forecast.js?v=c639465-e20604"></script>
-<script src="today.js?v=c639465-e20604"></script>
-<script src="advisor.js?v=c639465-e20604"></script>
-<script src="share.js?v=c639465-e20604"></script>
-<script src="auth.js?v=c639465-e20604"></script>
+<script src="auth-config.js?v=f8176ef-819986"></script>
+<script src="account-store.js?v=f8176ef-819986"></script>
+<script src="plans.js?v=f8176ef-819986"></script>
+<script src="schools.js?v=f8176ef-819986"></script>
+<script src="app.js?v=f8176ef-819986"></script>
+<script src="ocr.js?v=f8176ef-819986"></script>
+<script src="receipt.js?v=f8176ef-819986"></script>
+<script src="tips.js?v=f8176ef-819986"></script>
+<script src="eat.js?v=f8176ef-819986"></script>
+<script src="forecast.js?v=f8176ef-819986"></script>
+<script src="today.js?v=f8176ef-819986"></script>
+<script src="advisor.js?v=f8176ef-819986"></script>
+<script src="share.js?v=f8176ef-819986"></script>
+<script src="auth.js?v=f8176ef-819986"></script>
 </body>
 </html>

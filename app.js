@@ -246,7 +246,7 @@ function setMode(m, persist = true) {
   $('logCard').hidden = m !== 'log';
   $('scanCard').hidden = m !== 'log';
   $('homeLeft').hidden = m !== 'log';
-  $('txCard').hidden = m !== 'log';
+  setAvail('txCard', m === 'log');
   renderStartFields();
   render();
 }
@@ -773,15 +773,15 @@ function render() {
   $('verdict').hidden = !r; $('emptyBalance').hidden = !!r;
   $('chartTabs').replaceChildren();
   syncDash(r);
-  if (!r) { chartBalance?.destroy(); chartBalance = null; $('analytics').hidden = true; $('insightsEmpty').hidden = !$('txCard').hidden; return; }
+  if (!r) { chartBalance?.destroy(); chartBalance = null; setAvail('analytics', false); setAvail('blockValues', false); setAvail('txCard', state.mode === 'log'); syncLogStack(); return; }
 
   renderVerdict(r);
   renderSummary(r);
   renderChartTabs(r);
 
   const a = r.quick ? null : analyze(r);
-  $('analytics').hidden = !a;
-  $('insightsEmpty').hidden = !(!a && $('txCard').hidden);
+  setAvail('analytics', !!a);
+  setAvail('txCard', state.mode === 'log');
   if (a) {
     $('insights').innerHTML = a.insights.map(i => `<li class="${i.hot ? 'hot' : ''}">${i.html}</li>`).join('');
     $('placesHint').textContent = a.hasCount && a.uv
@@ -790,17 +790,19 @@ function render() {
       : '';
     drawPlaces(a);
     renderBlockValues(a.blockPlaces);
-  }
+  } else setAvail('blockValues', false);
+  syncLogStack();
 }
 
 function renderBlockValues(rows) {
   const box = $('blockValues');
   const defs = school().buckets;
   const countB = Object.values(defs).find(d => d.kind === 'count' && !d.passive);
-  if (!countB) { box.hidden = true; return; }
-  box.hidden = false;
+  if (!countB) { setAvail('blockValues', false); return; }
+  setAvail('blockValues', true);
   const unit = countB.unit;
-  $('blockValuesTitle').textContent = `What a ${unit} is worth by place`;
+  $('blockValuesTab').textContent = `${unit[0].toUpperCase() + unit.slice(1)} value`;
+  $('blockValuesHint').textContent = `How much a ${unit} covers at each place, from your receipts. Use ${unit}s where they buy the most.`;
   if (!rows.length) {
     $('blockValuesBody').innerHTML = `<p class="hint">Unknown so far. Scan a receipt that shows a ${unit} payment, or type a value when logging a ${unit} ("worth $"), or add one below.</p>`;
   } else {
@@ -1153,12 +1155,38 @@ function renderContext() {
   $('contextLine').innerHTML = `<b>${esc(school().name)}</b>${p ? ` · ${esc(p.name)}` : ''} · ${esc(state.mode === 'log' ? 'tracking purchases' : 'quick estimate')} — <button type="button" class="link" data-goto="setup">change in ⚙︎ Settings</button>`;
 }
 
+// ---------- log stack (Where it goes / Purchases / Block value) ----------
+const LSTACK_STORE = 'ddt.lstack';
+let logPane = 'where';
+try { logPane = localStorage.getItem(LSTACK_STORE) || 'where'; } catch {}
+function showLogPane(name, remember = true) {
+  const panes = [...document.querySelectorAll('#logStack .dash-pane')];
+  const available = panes.filter(p => !p.dataset.unavailable).map(p => p.dataset.pane);
+  if (!available.includes(name)) name = available[0];
+  logPane = name;
+  for (const p of panes) p.hidden = p.dataset.pane !== name;
+  for (const b of document.querySelectorAll('[data-lpane]')) { b.setAttribute('aria-checked', b.dataset.lpane === name); b.hidden = !available.includes(b.dataset.lpane); }
+  if (remember) try { localStorage.setItem(LSTACK_STORE, name); } catch {}
+  requestAnimationFrame(() => chartPlaces?.resize());
+}
+for (const b of document.querySelectorAll('[data-lpane]')) b.addEventListener('click', () => showLogPane(b.dataset.lpane));
+// availability flags are set during render(); this applies them
+function syncLogStack() {
+  const panes = [...document.querySelectorAll('#logStack .dash-pane')];
+  const any = panes.some(p => !p.dataset.unavailable);
+  $('logStack').hidden = !any;
+  $('insightsEmpty').hidden = any;
+  if (any) showLogPane(logPane, false);
+}
+const setAvail = (id, ok) => { const el = $(id); if (ok) delete el.dataset.unavailable; else el.dataset.unavailable = '1'; };
+
 // ---------- section tabs ----------
 const TAB_STORE = 'ddt.tab';
 function showTab(name, push = true) {
   if (!document.querySelector(`.tab[data-tab="${name}"]`)) name = 'home';
   for (const t of document.querySelectorAll('.tab')) t.hidden = t.dataset.tab !== name;
   for (const b of document.querySelectorAll('.tabs-nav button')) b.setAttribute('aria-selected', b.dataset.tab === name);
+  $('btnShareFab').hidden = name !== 'insights';
   try { localStorage.setItem(TAB_STORE, name); } catch {}
   // charts drawn while hidden have no size; nudge them once visible
   requestAnimationFrame(() => { chartBalance?.resize(); chartPlaces?.resize(); });

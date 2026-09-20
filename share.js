@@ -103,15 +103,16 @@ async function shareCard() {
   const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
   const file = new File([blob], 'my-meal-plan.png', { type: 'image/png' });
   const textLine = `${s.verdict}${s.advice ? ' · ' + s.advice : ''} — ${SHARE_URL}`;
-  // preview
-  $('sharePreview').src = URL.createObjectURL(blob);
-  $('sharePreviewWrap').hidden = false;
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try { await navigator.share({ files: [file], title: 'My meal plan', text: textLine }); return; } catch (e) { if (e.name === 'AbortError') return; }
   }
+  // desktop: download + show a preview
+  $('sharePreview').src = URL.createObjectURL(blob);
   const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'my-meal-plan.png' });
   a.click();
-  try { await navigator.clipboard.writeText(textLine); $('shareHint').textContent = 'Image downloaded and caption copied to your clipboard.'; } catch { $('shareHint').textContent = 'Image downloaded.'; }
+  try { await navigator.clipboard.writeText(textLine); $('shareHint').textContent = 'Saved to your downloads; caption copied to your clipboard.'; } catch { $('shareHint').textContent = 'Saved to your downloads.'; }
+  $('shareDialog').showModal();
 }
-$('btnShare').addEventListener('click', shareCard);
-$('btnShareTop').addEventListener('click', () => { showTab('insights'); $('shareCard').scrollIntoView({ block: 'start' }); shareCard(); });
+$('btnShareFab').addEventListener('click', shareCard);
+$('btnShareTop').addEventListener('click', shareCard);
+$('shareClose').addEventListener('click', () => $('shareDialog').close());
