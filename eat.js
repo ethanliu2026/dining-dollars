@@ -109,8 +109,8 @@ function renderPick(result) {
       ${top.l?.area ? `<div class="pick-area">${esc(top.l.area)}${top.l.blurb ? ` · ${esc(top.l.blurb)}` : ''}</div>` : ''}
       <ul class="pick-why">${top.why.map(w => `<li>${esc(w)}</li>`).join('')}${top.flags.map(f => `<li class="flag">${esc(f)}</li>`).join('')}${tipsHere.map(t => `<li class="tip">💡 ${esc(t.tip)}</li>`).join('')}</ul>
       <div class="pick-actions">
-        <button type="button" class="primary" id="eatAgain" style="width:auto;margin:0">Not feeling it</button>
-        <button type="button" id="eatLog">I'm going — log it</button>
+        <button type="button" class="primary" id="eatLog" style="width:auto;margin:0">I'm going — log it</button>
+        <button type="button" id="eatAgain">Not feeling it</button>
         ${top.l?.menu ? `<a class="link" href="${esc(top.l.menu)}" target="_blank" rel="noopener">Menu ↗</a>` : ''}
       </div>
     </div>

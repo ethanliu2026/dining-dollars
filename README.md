@@ -78,6 +78,9 @@ Under the verdict once you have a week of history: 2,000 simulated semesters, ea
 ## Today
 On Home: how many blocks and how many dollars to use for the rest of today, split across the meal periods left (breakfast / lunch / dinner / late night), minus what's already logged today. Spare blocks round up ("use 3 today"), short ones round down; money follows the safe daily rate (nudged up when you're under pace). Blocks are pointed at the best-value place known. Respects per-day caps (CMU 4 blocks, Pitt 5 meals).
 
+## First-run guide
+`tour.js`: a 7-step walkthrough that auto-starts for new visitors (no plan/balances, no purchases, tour not yet done on this device) and can be replayed from Settings → "Show the guide". Each step switches to the right tab and highlights the relevant card.
+
 ## Starting mid-semester
 Setup → "I'm starting mid-semester": pick the first day you're logging from and enter what you had left that day (from the GET / dining app). Everything used before that counts as spent, pacing and projections use the whole semester, and the chart draws a straight line from the semester start to that point, then follows your log.
 
