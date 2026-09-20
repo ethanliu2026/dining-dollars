@@ -1,6 +1,6 @@
 # Meal Plan Tracker
 
-The Team:
+## The Team:
 - Zhala Ismayilzada (ismayilzadazhala@gmail.com)
 - Ethan Liu (ethanyliu@cmu.edu)
 - Andrew Wang (andiewyf@hotmail.com)
@@ -9,13 +9,6 @@ The Team:
 SteelHacks 2026. Track meal blocks, FLEX, Dining Dollars — whatever your school's plan is made of. Log what you use, see where it goes, and find out whether you'll run out before the semester ends or leave it on the table.
 
 **Live:** https://meal-blocks.tech (also https://ethanliu2026.github.io/dining-dollars/)
-
-## Team
-<!-- SteelHacks requires full name + email for each member here -->
-- Ethan Liu — ethanlil@andrew.cmu.edu
-- (teammate) — (email)
-- (teammate) — (email)
-- (teammate) — (email)
 
 **Devpost story:** [docs/DEVPOST.md](docs/DEVPOST.md)
 
